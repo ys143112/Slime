@@ -1,0 +1,60 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace Game.Gameplay
+{
+    // 기능: spec-002 (돌연변이 판정은 spec-005, 오염 유전자 태깅은 spec-006 CorruptedGeneTagger 가 SlimeCaptured 이벤트를 구독해 처리한다)
+    public sealed class CaptureTool : MonoBehaviour
+    {
+        [SerializeField] private float captureRange = 1.2f;
+
+        private void Update()
+        {
+            if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+            {
+                TryCapture();
+            }
+        }
+
+        private void TryCapture()
+        {
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, captureRange);
+            foreach (Collider2D hit in hits)
+            {
+                WildSlimeAgent agent = hit.GetComponent<WildSlimeAgent>();
+                if (agent == null)
+                {
+                    continue;
+                }
+
+                if (!agent.Instance.weakened)
+                {
+                    Debug.Log("capture_failed: 대상이 약화되지 않았습니다.");
+                    continue;
+                }
+
+                string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
+                agent.Instance.capturedBiomeId = biomeId;
+
+                if (MutantRollService.TryRollMutant(0))
+                {
+                    MutantRollService.ApplyReversal(agent.Instance);
+                }
+
+                if (PlayerRoster.Instance == null)
+                {
+                    Debug.LogError("CaptureTool: PlayerRoster 인스턴스가 없어 포획을 기록할 수 없습니다.");
+                    return;
+                }
+
+                PlayerRoster.Instance.Add(agent.Instance);
+                Destroy(hit.gameObject);
+
+                EventBus.Publish(new GameEvent(GameEventId.SlimeCaptured, biomeId, agent.Instance));
+                return;
+            }
+
+            Debug.Log("capture_failed: 범위 안에 약화된 슬라임이 없습니다.");
+        }
+    }
+}
