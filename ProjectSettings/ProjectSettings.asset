@@ -665,7 +665,13 @@ PlayerSettings:
   XboxOneXTitleMemory: 8
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Build: 0
+    Game Performance: 0
+    Legacy Analytics: 0
+    Purchasing: 0
+    UDP: 0
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -688,11 +694,11 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 24b3a25b-70a8-4b90-abff-e90f49f18b03
+  cloudProjectId: af58d6c1-23eb-4c3d-bf09-d34c15ac6476
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: Slime
-  organizationId: yunsukim
+  organizationId: qldpdml12
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

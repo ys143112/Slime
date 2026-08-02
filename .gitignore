@@ -104,3 +104,8 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# PixelLab 로 생성한 스프라이트. Game-Developer-AI/asset_output 이 원본이고
+# 여기는 재생성 가능한 산출물이라 커밋하지 않는다.
+/[Aa]ssets/Generated/
+/[Aa]ssets/Generated.meta

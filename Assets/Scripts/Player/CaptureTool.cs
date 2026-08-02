@@ -36,7 +36,10 @@ namespace Game.Gameplay
                 string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
                 agent.Instance.capturedBiomeId = biomeId;
 
-                if (MutantRollService.TryRollMutant(0))
+                int corruptionTier = BiomeStigmaManager.Instance != null
+                    ? BiomeStigmaManager.Instance.GetCorruptionTier(biomeId)
+                    : 0;
+                if (MutantRollService.TryRollMutant(corruptionTier))
                 {
                     MutantRollService.ApplyReversal(agent.Instance);
                 }

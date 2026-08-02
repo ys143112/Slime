@@ -21,9 +21,22 @@ namespace Game.Gameplay
                 corruptedGeneFlag = parentA.corruptedGeneFlag || parentB.corruptedGeneFlag,
             };
 
-            if (MutantRollService.TryRollMutant(0))
+            // spec-005 acceptance: 부모 중 하나라도 MutantFlag 면 자손은 100% 상속한다.
+            // 둘 다 아니면 그때만 바이옴 오염 티어를 반영한 낮은 확률로 새로 굴린다.
+            if (parentA.mutantFlag || parentB.mutantFlag)
             {
                 MutantRollService.ApplyReversal(offspring);
+            }
+            else
+            {
+                string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
+                int corruptionTier = BiomeStigmaManager.Instance != null
+                    ? BiomeStigmaManager.Instance.GetCorruptionTier(biomeId)
+                    : 0;
+                if (MutantRollService.TryRollMutant(corruptionTier))
+                {
+                    MutantRollService.ApplyReversal(offspring);
+                }
             }
 
             if (PlayerRoster.Instance == null)
