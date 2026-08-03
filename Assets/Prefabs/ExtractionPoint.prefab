@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5315230999544844132}
   - component: {fileID: 4823719678388559003}
   - component: {fileID: 8268748271149016215}
-  - component: {fileID: 4499331162153610947}
+  - component: {fileID: 7128387135083662103}
   m_Layer: 0
   m_Name: ExtractionPoint
   m_TagString: Untagged
@@ -106,7 +106,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!61 &4499331162153610947
+--- !u!61 &7128387135083662103
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
