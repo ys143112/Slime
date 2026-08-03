@@ -104,12 +104,10 @@ namespace Game.Gameplay
 
         private void LoadContentScene(string sceneName)
         {
-            if (!string.IsNullOrEmpty(_activeContentScene))
-            {
-                SceneManager.UnloadSceneAsync(_activeContentScene);
-            }
-
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+            // Single 로 연다. Additive + UnloadSceneAsync 은 언로드가 끝나기 전에
+            // 다음 씬이 올라와 바이옴 씬이 두 장 겹쳤다 — spec-009 는 다른 바이옴
+            // 씬이 0장일 것을 요구한다. 매니저는 DontDestroyOnLoad 라 살아남는다.
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             _activeContentScene = sceneName;
         }
     }

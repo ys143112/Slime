@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.RanchFacility
   facilityId: facility_1
-  outputTable: {fileID: 0}
+  outputTable: {fileID: 11400000, guid: 9ca9f9741e0c279428700cbd51fc51bb, type: 2}
   tickSeconds: 2
 --- !u!61 &487068895
 BoxCollider2D:
@@ -320,7 +320,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4, y: 4}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 4, y: 4}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
