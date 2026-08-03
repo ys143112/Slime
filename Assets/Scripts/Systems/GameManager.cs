@@ -24,9 +24,13 @@ namespace Game.Gameplay
 
         [SerializeField] private string hubSceneName = "Hub";
         [SerializeField] private string biomeSceneName = "Biome";
+        [SerializeField] private BiomeCatalog biomeCatalog;
 
         public RunState CurrentState { get; private set; } = RunState.Hub;
         public string CurrentBiomeId { get; private set; } = "biome_default";
+
+        // spec-009: 야생 슬라임 종 추첨과 목장 안내판이 같은 표를 본다.
+        public BiomeCatalog Catalog => biomeCatalog;
 
         private string _activeContentScene = "";
 
@@ -57,16 +61,38 @@ namespace Game.Gameplay
         {
             CurrentBiomeId = biomeId;
             CurrentState = RunState.Diving;
-            LoadContentScene(biomeSceneName);
+
+            // spec-009: 바이옴마다 자기 씬이 있다. 표에 없는 id 는 기본 씬으로
+            // 떨어뜨린다 — 낙인이 아직 없는 첫 런도 열려야 한다.
+            LoadContentScene(SceneNameFor(biomeId));
 
             var gameEvent = new GameEvent(GameEventId.RunStarted, biomeId);
             EventBus.Publish(gameEvent);
+            Debug.Log($"dive_started biome={biomeId}");
             RunLogWriter.AppendLine($"RunStarted biome={biomeId}");
+        }
+
+        public string SceneNameFor(string biomeId)
+        {
+            BiomeEntry entry = biomeCatalog != null ? biomeCatalog.Find(biomeId) : null;
+            return entry != null && !string.IsNullOrEmpty(entry.sceneName) ? entry.sceneName : biomeSceneName;
         }
 
         public void EndRun(RunEndCause cause)
         {
             CurrentState = cause == RunEndCause.Death ? RunState.Dead : RunState.Extracted;
+
+            // spec-011: 낙인(spec-004)이 붙기 전에 전리품을 정산한다. 순서가
+            // 바뀌어도 결과는 같지만, 로그가 "무엇을 잃고 무엇을 얻었는지" 다음에
+            // 오염이 오르는 순으로 남아야 읽힌다.
+            if (cause == RunEndCause.Extraction)
+            {
+                RunSatchel.Commit();
+            }
+            else
+            {
+                RunSatchel.Discard();
+            }
 
             var gameEvent = new GameEvent(GameEventId.RunEnded, CurrentBiomeId, cause);
             EventBus.Publish(gameEvent);

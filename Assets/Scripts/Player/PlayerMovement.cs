@@ -8,6 +8,10 @@ namespace Game.Gameplay
     {
         [SerializeField] private float moveSpeed = 5f;
 
+        // spec-012: 근접 공격이 바라보는 쪽으로 나가야 한다. 멈춰 있어도 마지막
+        // 방향을 유지한다 — 정지 중에 공격이 자기 발밑을 때리면 시선이 없다.
+        public Vector2 LastDirection { get; private set; } = Vector2.down;
+
         private Rigidbody2D _body;
 
         private void Awake()
@@ -29,6 +33,11 @@ namespace Game.Gameplay
                 if (Keyboard.current.sKey.isPressed) input.y -= 1f;
                 if (Keyboard.current.aKey.isPressed) input.x -= 1f;
                 if (Keyboard.current.dKey.isPressed) input.x += 1f;
+            }
+
+            if (input != Vector2.zero)
+            {
+                LastDirection = input.normalized;
             }
 
             _body.linearVelocity = input.normalized * moveSpeed;
