@@ -32,5 +32,18 @@ namespace Game.Gameplay
             _roster.Add(instance);
             SaveSystem.Save(SaveKey, _roster);
         }
+
+        // spec-008: 교배장에 내놓은 슬라임은 보유 목록에서 빠진다. 같은 개체가
+        // 목록과 교배장에 동시에 있으면 한 마리로 두 번 교배할 수 있다.
+        public bool Remove(SlimeInstance instance)
+        {
+            if (!_roster.Remove(instance))
+            {
+                return false;
+            }
+
+            SaveSystem.Save(SaveKey, _roster);
+            return true;
+        }
     }
 }

@@ -43,6 +43,16 @@ namespace Game.Gameplay
             DontDestroyOnLoad(gameObject);
         }
 
+        private void Start()
+        {
+            // Boot 씬에는 매니저만 있다. 목장을 띄우지 않으면 런이 시작될 곳이
+            // 없어 게임이 빈 화면에서 멈춘다.
+            if (string.IsNullOrEmpty(_activeContentScene))
+            {
+                LoadContentScene(hubSceneName);
+            }
+        }
+
         public void StartRun(string biomeId)
         {
             CurrentBiomeId = biomeId;
