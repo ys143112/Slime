@@ -231,11 +231,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1053117699067865864, guid: 1a021cf14855ce24b836e1efcdf01e22, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -9
       objectReference: {fileID: 0}
     - target: {fileID: 1053117699067865864, guid: 1a021cf14855ce24b836e1efcdf01e22, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -6
       objectReference: {fileID: 0}
     - target: {fileID: 1053117699067865864, guid: 1a021cf14855ce24b836e1efcdf01e22, type: 3}
       propertyPath: m_LocalPosition.z
@@ -367,11 +367,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5315230999544844132, guid: bd12d0bf2068c4248afe99626bbf2b08, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 5315230999544844132, guid: bd12d0bf2068c4248afe99626bbf2b08, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 5315230999544844132, guid: bd12d0bf2068c4248afe99626bbf2b08, type: 3}
       propertyPath: m_LocalPosition.z
@@ -424,11 +424,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1053117699067865864, guid: 1a021cf14855ce24b836e1efcdf01e22, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1053117699067865864, guid: 1a021cf14855ce24b836e1efcdf01e22, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1053117699067865864, guid: 1a021cf14855ce24b836e1efcdf01e22, type: 3}
       propertyPath: m_LocalPosition.z
@@ -561,6 +561,7 @@ GameObject:
   - component: {fileID: 2049719659}
   - component: {fileID: 2049719658}
   - component: {fileID: 2049719657}
+  - component: {fileID: 2049719660}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -642,6 +643,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2049719660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2049719656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b468b0d9fad851449f5d5d19282ca12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.CameraFollow
+  targetTag: Player
 --- !u!1 &2121075575
 GameObject:
   m_ObjectHideFlags: 0
