@@ -10,19 +10,32 @@ namespace Game.Gameplay
         [SerializeField] private string defaultBiomeId = "biome_default";
         [SerializeField] private Text destinationText;
 
+        // spec-004: 목적지 바이옴에 낙인이 쌓여 있으면 표시. 텍스트만으론 오염
+        // 여부가 눈에 안 띈다.
+        [SerializeField] private GameObject stigmaIcon;
+
         // spec-009: 다음 런이 어느 바이옴에서 시작하는지 진입 전에 보여준다.
         // 낙인이 목적지를 바꾸는 것이 화면에서 관측되지 않으면 없는 기능이다.
         private void Update()
         {
-            if (destinationText == null)
+            string biomeId = NextBiomeId();
+
+            if (destinationText != null)
             {
-                return;
+                BiomeCatalog catalog = GameManager.Instance != null ? GameManager.Instance.Catalog : null;
+                string name = catalog != null ? catalog.DisplayNameOf(biomeId) : biomeId;
+                destinationText.text = $"다음 목적지: {name}";
             }
 
-            string biomeId = NextBiomeId();
-            BiomeCatalog catalog = GameManager.Instance != null ? GameManager.Instance.Catalog : null;
-            string name = catalog != null ? catalog.DisplayNameOf(biomeId) : biomeId;
-            destinationText.text = $"다음 목적지: {name}";
+            if (stigmaIcon != null)
+            {
+                bool hasStigma = BiomeStigmaManager.Instance != null &&
+                    BiomeStigmaManager.Instance.GetCorruptionTier(biomeId) > 0;
+                if (stigmaIcon.activeSelf != hasStigma)
+                {
+                    stigmaIcon.SetActive(hasStigma);
+                }
+            }
         }
 
         private string NextBiomeId()
