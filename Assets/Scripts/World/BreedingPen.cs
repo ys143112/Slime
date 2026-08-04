@@ -12,6 +12,9 @@ namespace Game.Gameplay
         [SerializeField] private TraitInheritanceTable inheritanceTable;
         [SerializeField] private GameObject placedSlimePrefab;
         [SerializeField] private Transform[] slots = new Transform[Capacity];
+        [SerializeField] private float hatchDurationSeconds = 30f;
+        [SerializeField] private string hatchConditionLabel = "부화 시간 경과";
+
 
         private readonly List<SlimeInstance> _placed = new List<SlimeInstance>(Capacity);
         private readonly List<GameObject> _placedObjects = new List<GameObject>(Capacity);
@@ -120,7 +123,7 @@ namespace Game.Gameplay
             _placedObjects.Clear();
         }
 
-        public void Breed(SlimeInstance parentA, SlimeInstance parentB)
+public void Breed(SlimeInstance parentA, SlimeInstance parentB)
         {
             if (inheritanceTable == null)
             {
@@ -152,14 +155,15 @@ namespace Game.Gameplay
                 }
             }
 
-            if (PlayerRoster.Instance == null)
+            // spec-003: 자손은 즉시 로스터에 들어가지 않고 알로 감싸여 부화 시간만큼 기다린다.
+            if (EggIncubator.Instance == null)
             {
-                Debug.LogError("BreedingPen: PlayerRoster 인스턴스가 없어 자손을 등록할 수 없습니다.");
+                Debug.LogError("BreedingPen: EggIncubator 인스턴스가 없어 알을 생성할 수 없습니다.");
                 return;
             }
 
-            PlayerRoster.Instance.Add(offspring);
-            RunLogWriter.AppendLine($"BreedingCompleted species={offspring.speciesId}");
+            EggIncubator.Instance.AddEgg(offspring, hatchDurationSeconds, hatchConditionLabel);
+            RunLogWriter.AppendLine($"BreedingProducedEgg species={offspring.speciesId}");
         }
     }
 }
