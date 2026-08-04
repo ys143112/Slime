@@ -15,6 +15,13 @@ namespace Game.Gameplay
         [SerializeField] private string speciesId = "slime_basic";
         [SerializeField] private int attackDamage = 5;
         [SerializeField] private float detectionRadius = 4f;
+        [SerializeField] private HealthBar healthBar;
+        [SerializeField] private DamageFlash damageFlash;
+
+        // 기획 assetsNeeded 의 "weakened slime visual indicator". 약화는 지금까지
+        // 슬라임이 멈추는 것 말고는 화면에 아무 표시가 없어, 잡을 때가 됐는지
+        // 맞을 때까지 세어야 했다.
+        [SerializeField] private GameObject weakenedIndicator;
 
         // 기획서 core_mechanics: "각 오염 스택은 바이옴의 오염 티어를 올리고,
         // 이는 야생 슬라임 스탯을 강화한다." 티어당 15% 가산.
@@ -48,6 +55,12 @@ namespace Game.Gameplay
                 Mathf.RoundToInt(2 * multiplier),
                 Mathf.RoundToInt(3 * multiplier));
             Instance = new SlimeInstance(speciesId, stats);
+
+            UpdateHealthBar();
+            if (weakenedIndicator != null)
+            {
+                weakenedIndicator.SetActive(false);
+            }
         }
 
         // spec-009: 바이옴마다 나오는 종이 다르다. 표에 풀이 없으면 인스펙터에
@@ -143,11 +156,39 @@ namespace Game.Gameplay
             }
 
             Instance.currentHp = Mathf.Max(0, Instance.currentHp - amount);
+            Debug.Log(
+                $"slime_damaged species={Instance.speciesId} " +
+                $"hp={Instance.currentHp}/{Instance.baseStats.maxHp}");
+
+            if (damageFlash != null)
+            {
+                damageFlash.Play();
+            }
+
+            UpdateHealthBar();
+
             if (Instance.currentHp == 0)
             {
                 Instance.weakened = true;
                 RunLogWriter.AppendLine($"WildSlimeWeakened species={Instance.speciesId}");
+
+                // 막대는 0 이 되면 스스로 숨는다. 그 자리를 약화 표식이 대신해
+                // "이제 E 로 잡는다" 를 알린다.
+                if (weakenedIndicator != null)
+                {
+                    weakenedIndicator.SetActive(true);
+                }
             }
+        }
+
+        private void UpdateHealthBar()
+        {
+            if (healthBar == null)
+            {
+                return;
+            }
+
+            healthBar.SetRatio((float)Instance.currentHp / Mathf.Max(1, Instance.baseStats.maxHp));
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
