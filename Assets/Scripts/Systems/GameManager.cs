@@ -24,9 +24,13 @@ namespace Game.Gameplay
 
         [SerializeField] private string hubSceneName = "Hub";
         [SerializeField] private string biomeSceneName = "Biome";
+        [SerializeField] private BiomeCatalog biomeCatalog;
 
         public RunState CurrentState { get; private set; } = RunState.Hub;
         public string CurrentBiomeId { get; private set; } = "biome_default";
+
+        // spec-009: 야생 슬라임 종 추첨과 목장 안내판이 같은 표를 본다.
+        public BiomeCatalog Catalog => biomeCatalog;
 
         private string _activeContentScene = "";
 
@@ -43,20 +47,52 @@ namespace Game.Gameplay
             DontDestroyOnLoad(gameObject);
         }
 
+        private void Start()
+        {
+            // Boot 씬에는 매니저만 있다. 목장을 띄우지 않으면 런이 시작될 곳이
+            // 없어 게임이 빈 화면에서 멈춘다.
+            if (string.IsNullOrEmpty(_activeContentScene))
+            {
+                LoadContentScene(hubSceneName);
+            }
+        }
+
         public void StartRun(string biomeId)
         {
             CurrentBiomeId = biomeId;
             CurrentState = RunState.Diving;
-            LoadContentScene(biomeSceneName);
+
+            // spec-009: 바이옴마다 자기 씬이 있다. 표에 없는 id 는 기본 씬으로
+            // 떨어뜨린다 — 낙인이 아직 없는 첫 런도 열려야 한다.
+            LoadContentScene(SceneNameFor(biomeId));
 
             var gameEvent = new GameEvent(GameEventId.RunStarted, biomeId);
             EventBus.Publish(gameEvent);
+            Debug.Log($"dive_started biome={biomeId}");
             RunLogWriter.AppendLine($"RunStarted biome={biomeId}");
+        }
+
+        public string SceneNameFor(string biomeId)
+        {
+            BiomeEntry entry = biomeCatalog != null ? biomeCatalog.Find(biomeId) : null;
+            return entry != null && !string.IsNullOrEmpty(entry.sceneName) ? entry.sceneName : biomeSceneName;
         }
 
         public void EndRun(RunEndCause cause)
         {
             CurrentState = cause == RunEndCause.Death ? RunState.Dead : RunState.Extracted;
+
+            // spec-011: 낙인(spec-004)이 붙기 전에 전리품을 정산한다. 순서가
+            // 바뀌어도 결과는 같지만, 로그가 "무엇을 잃고 무엇을 얻었는지" 다음에
+            // 오염이 오르는 순으로 남아야 읽힌다.
+            if (cause == RunEndCause.Extraction)
+            {
+                RunSatchel.Commit();
+            }
+            else
+            {
+                RunSatchel.Discard();
+            }
 
             var gameEvent = new GameEvent(GameEventId.RunEnded, CurrentBiomeId, cause);
             EventBus.Publish(gameEvent);
@@ -68,12 +104,10 @@ namespace Game.Gameplay
 
         private void LoadContentScene(string sceneName)
         {
-            if (!string.IsNullOrEmpty(_activeContentScene))
-            {
-                SceneManager.UnloadSceneAsync(_activeContentScene);
-            }
-
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+            // Single 로 연다. Additive + UnloadSceneAsync 은 언로드가 끝나기 전에
+            // 다음 씬이 올라와 바이옴 씬이 두 장 겹쳤다 — spec-009 는 다른 바이옴
+            // 씬이 0장일 것을 요구한다. 매니저는 DontDestroyOnLoad 라 살아남는다.
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             _activeContentScene = sceneName;
         }
     }

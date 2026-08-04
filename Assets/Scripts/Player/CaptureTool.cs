@@ -44,13 +44,9 @@ namespace Game.Gameplay
                     MutantRollService.ApplyReversal(agent.Instance);
                 }
 
-                if (PlayerRoster.Instance == null)
-                {
-                    Debug.LogError("CaptureTool: PlayerRoster 인스턴스가 없어 포획을 기록할 수 없습니다.");
-                    return;
-                }
-
-                PlayerRoster.Instance.Add(agent.Instance);
+                // spec-011: 런 중 포획은 곧바로 보유 목록에 들어가지 않는다.
+                // 추출에 성공해야 확정되고, 죽으면 몰수된다.
+                RunSatchel.Add(agent.Instance);
                 Destroy(hit.gameObject);
 
                 EventBus.Publish(new GameEvent(GameEventId.SlimeCaptured, biomeId, agent.Instance));

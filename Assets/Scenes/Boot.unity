@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.GameManager
   hubSceneName: Hub
   biomeSceneName: Biome
+  biomeCatalog: {fileID: 11400000, guid: bddc4fcd56b262f4faa63beb749c05e8, type: 2}
 --- !u!4 &321726964
 Transform:
   m_ObjectHideFlags: 0
