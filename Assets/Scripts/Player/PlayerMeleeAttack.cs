@@ -42,9 +42,48 @@ namespace Game.Gameplay
 
         private void PerformAttack()
         {
+            PerformAttack(ResolveFacing());
+        }
+
+        // 마우스가 있으면 마우스 쪽, 없으면 마지막 이동 방향. 어느 쪽이든 상하좌우
+        // 네 방향 중 하나로 접는다.
+        private Vector2 ResolveFacing()
+        {
+            Vector2 fallback = _movement != null ? _movement.LastDirection : Vector2.down;
+            Camera view = Camera.main;
+            if (Mouse.current == null || view == null)
+            {
+                return SnapToCardinal(fallback);
+            }
+
+            Vector3 pointer = view.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            Vector2 toPointer = (Vector2)pointer - (Vector2)transform.position;
+
+            // 커서가 플레이어 위에 정확히 겹치면 방향이 없다. 그때는 이동 방향을 쓴다.
+            return SnapToCardinal(toPointer.sqrMagnitude < 0.0001f ? fallback : toPointer);
+        }
+
+        // 대각선을 허용하면 판정 원 네 자리와 궤적 스프라이트 네 방향으로는
+        // 표현할 수 없는 각이 생긴다. 큰 축 하나만 남긴다.
+        public static Vector2 SnapToCardinal(Vector2 direction)
+        {
+            if (direction == Vector2.zero)
+            {
+                return Vector2.down;
+            }
+
+            if (Mathf.Abs(direction.x) >= Mathf.Abs(direction.y))
+            {
+                return direction.x >= 0f ? Vector2.right : Vector2.left;
+            }
+
+            return direction.y >= 0f ? Vector2.up : Vector2.down;
+        }
+
+        private void PerformAttack(Vector2 facing)
+        {
             // spec-012: 판정 원을 바라보는 쪽으로 밀어낸다. 반대쪽을 보고 때리면
             // 원이 대상에서 벗어나 피해가 0 이 된다.
-            Vector2 facing = _movement != null ? _movement.LastDirection : Vector2.down;
             Vector2 origin = (Vector2)transform.position + facing * reachOffset;
             ShowSwingArc(facing);
             Collider2D[] hits = Physics2D.OverlapCircleAll(origin, hitboxRadius);

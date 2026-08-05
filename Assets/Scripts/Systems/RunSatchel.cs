@@ -12,6 +12,9 @@ namespace Game.Gameplay
 
         public static int Count => Held.Count;
 
+        // 목록 UI 가 읽을 자리. 몇 마리인지만으로는 무엇을 잃게 되는지 알 수 없다.
+        public static IReadOnlyList<SlimeInstance> Contents => Held;
+
         public static void Add(SlimeInstance instance)
         {
             if (instance == null)

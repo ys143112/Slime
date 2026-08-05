@@ -141,7 +141,6 @@ namespace Game.Gameplay.Tests
             WildSlimeAgent agent = PlaceSlime(0f);
             _slime.transform.position = Arena + new Vector3(0f, -0.9f, 0f);
 
-            PlayerMovement movement = _player.AddComponent<PlayerMovement>();
             PlayerMeleeAttack attack = _player.AddComponent<PlayerMeleeAttack>();
             int damage = (int)typeof(PlayerMeleeAttack)
                 .GetField("attackDamage", BindingFlags.NonPublic | BindingFlags.Instance)
@@ -150,29 +149,34 @@ namespace Game.Gameplay.Tests
 
             int fullHp = agent.Instance.currentHp;
 
-            SetFacing(movement, Vector2.up);
-            Invoke(attack, "PerformAttack");
+            Attack(attack, Vector2.up);
             Assert.AreEqual(fullHp, agent.Instance.currentHp,
                 "반대쪽을 보고 때렸는데 슬라임이 피해를 입었습니다.");
 
-            SetFacing(movement, Vector2.down);
-            Invoke(attack, "PerformAttack");
+            Attack(attack, Vector2.down);
             Assert.AreEqual(fullHp - damage, agent.Instance.currentHp,
                 "슬라임을 보고 때렸는데 공격력만큼 피해가 들어가지 않았습니다.");
         }
 
-        private static void SetFacing(PlayerMovement movement, Vector2 direction)
+        [Test]
+        public void Test_Attack_Direction_Snaps_To_Four_Ways()
         {
-            typeof(PlayerMovement)
-                .GetProperty("LastDirection", BindingFlags.Public | BindingFlags.Instance)
-                .SetValue(movement, direction);
+            // 마우스가 어느 각도에 있든 판정은 상하좌우 넷 중 하나여야 한다.
+            Assert.AreEqual(Vector2.right, PlayerMeleeAttack.SnapToCardinal(new Vector2(3f, 1f)));
+            Assert.AreEqual(Vector2.up, PlayerMeleeAttack.SnapToCardinal(new Vector2(1f, 3f)));
+            Assert.AreEqual(Vector2.left, PlayerMeleeAttack.SnapToCardinal(new Vector2(-2f, -1f)));
+            Assert.AreEqual(Vector2.down, PlayerMeleeAttack.SnapToCardinal(new Vector2(-1f, -2f)));
+
+            // 커서가 플레이어 위에 겹쳐 방향이 없을 때도 값이 나와야 한다.
+            Assert.AreEqual(Vector2.down, PlayerMeleeAttack.SnapToCardinal(Vector2.zero));
         }
 
-        private static void Invoke(object target, string methodName)
+        private static void Attack(PlayerMeleeAttack attack, Vector2 facing)
         {
-            target.GetType()
-                .GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance)
-                .Invoke(target, null);
+            typeof(PlayerMeleeAttack)
+                .GetMethod("PerformAttack", BindingFlags.NonPublic | BindingFlags.Instance,
+                    null, new[] { typeof(Vector2) }, null)
+                .Invoke(attack, new object[] { facing });
         }
     }
 }
