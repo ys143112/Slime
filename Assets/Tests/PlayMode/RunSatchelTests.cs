@@ -125,11 +125,16 @@ namespace Game.Gameplay.Tests
 
             int rosterBefore = PlayerRoster.Instance.Roster.Count;
 
+            var logs = new LogCatcher("run_payout");
             manager.EndRun(RunEndCause.Extraction);
+            logs.Stop();
 
             Assert.AreEqual(rosterBefore + 3, PlayerRoster.Instance.Roster.Count,
                 "추출했는데 배낭 3마리가 보유 목록에 확정되지 않았습니다.");
             Assert.AreEqual(0, RunSatchel.Count, "정산 후에도 배낭이 비지 않았습니다.");
+            Assert.AreEqual(1, logs.Lines.Count, "정산 로그 run_payout 이 한 번 남아야 합니다.");
+            StringAssert.Contains("committed=3", logs.Lines[0],
+                "정산 로그에 확정된 마리 수가 없습니다: " + logs.Lines[0]);
 
             // EndRun 이 예약한 Hub 씬 로드를 이 테스트 안에서 소화한다.
             yield return SceneLoadWait.UntilRunEndSceneLoaded();
@@ -146,11 +151,16 @@ namespace Game.Gameplay.Tests
 
             int rosterBefore = PlayerRoster.Instance.Roster.Count;
 
+            var logs = new LogCatcher("run_forfeit");
             manager.EndRun(RunEndCause.Death);
+            logs.Stop();
 
             Assert.AreEqual(rosterBefore, PlayerRoster.Instance.Roster.Count,
                 "사망했는데 배낭 내용이 보유 목록에 들어갔습니다.");
             Assert.AreEqual(0, RunSatchel.Count, "사망 후에도 배낭이 비지 않았습니다.");
+            Assert.AreEqual(1, logs.Lines.Count, "몰수 로그 run_forfeit 이 한 번 남아야 합니다.");
+            StringAssert.Contains("forfeited=3", logs.Lines[0],
+                "몰수 로그에 잃은 마리 수가 없습니다: " + logs.Lines[0]);
 
             yield return SceneLoadWait.UntilRunEndSceneLoaded();
         }
