@@ -87,6 +87,7 @@ namespace Game.Gameplay
             Vector2 origin = (Vector2)transform.position + facing * reachOffset;
             ShowSwingArc(facing);
             Collider2D[] hits = Physics2D.OverlapCircleAll(origin, hitboxRadius);
+            int struck = 0;
             foreach (Collider2D hit in hits)
             {
                 if (hit.gameObject == gameObject)
@@ -101,7 +102,12 @@ namespace Game.Gameplay
                 }
 
                 target.ApplyDamage(attackDamage, this);
+                struck++;
             }
+
+            // 빗나가도 지금까진 아무 표시가 없어 키가 안 먹는 것처럼 보였다.
+            // 판정 자체는 매번 발생한다는 걸 로그로 구분할 수 있게 한다.
+            Debug.Log(struck > 0 ? $"melee_hit count={struck}" : "melee_miss");
         }
 
         // 궤적 스프라이트는 위(+Y)를 향해 그려져 있다. 판정 원과 같은 자리에
