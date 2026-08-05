@@ -16,23 +16,21 @@ namespace Game.Gameplay
         public RosterSlotButton gridSlotTemplate;
         public Text slotAText;
         public Text slotBText;
-        public Text eggResultText;
-        public Text hatchConditionText;
-        public Text hatchTimeText;
         public Button breedButton;
+        public RectTransform eggListContent;
+        public EggSlotView eggSlotTemplate;
+
+        public static BreedingUIPanel Instance { get; private set; }
 
         private SlimeInstance _slotA;
         private SlimeInstance _slotB;
         private readonly List<RosterSlotButton> _spawnedButtons = new List<RosterSlotButton>();
-        private SlimeEgg _shownEgg;
+        private readonly List<EggSlotView> _spawnedEggSlots = new List<EggSlotView>();
         private bool _visible;
 
         private void OnEnable()
         {
-            if (EggIncubator.Instance != null)
-            {
-                EggIncubator.Instance.EggAdded += OnEggAdded;
-            }
+            Instance = this;
 
             if (breedButton != null)
             {
@@ -40,15 +38,41 @@ namespace Game.Gameplay
             }
 
             SetVisible(false);
-            RefreshGrid();
             RefreshSlots();
+        }
+
+        // spec-003: PlayerRoster.Instance 는 Awake 에서 세팅된다 - 같은 Boot 씬의
+        // 영속 오브젝트끼리는 Awake 실행 순서가 보장되지 않으므로, OnEnable 에서
+        // 구독하면 PlayerRoster 가 아직 null 일 때 조용히 스킵되고 다시는 구독되지
+        // 않을 수 있다. Start 는 씬의 모든 Awake 가 끝난 뒤 실행이 보장된다.
+        private void Start()
+        {
+            if (EggIncubator.Instance != null)
+            {
+                EggIncubator.Instance.EggAdded += OnEggListChanged;
+                EggIncubator.Instance.EggHatched += OnEggListChanged;
+            }
+
+            if (PlayerRoster.Instance != null)
+            {
+                PlayerRoster.Instance.RosterChanged += RefreshGrid;
+            }
+
+            RefreshGrid();
+            RefreshEggList();
         }
 
         private void OnDisable()
         {
             if (EggIncubator.Instance != null)
             {
-                EggIncubator.Instance.EggAdded -= OnEggAdded;
+                EggIncubator.Instance.EggAdded -= OnEggListChanged;
+                EggIncubator.Instance.EggHatched -= OnEggListChanged;
+            }
+
+            if (PlayerRoster.Instance != null)
+            {
+                PlayerRoster.Instance.RosterChanged -= RefreshGrid;
             }
 
             if (breedButton != null)
@@ -65,24 +89,26 @@ namespace Game.Gameplay
                 // BreedingPen 이 없다 - 그럴 땐 U 를 눌러도 열리지 않는다.
                 if (_visible || ResolvePen() != null)
                 {
-                    SetVisible(!_visible);
+                    bool next = !_visible;
+                    if (next)
+                    {
+                        // U 로 교배 UI 를 열 때 인벤토리(I)가 떠 있으면 같이 닫는다 -
+                        // 두 창이 동시에 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
+                        InventoryUI.Instance?.Close();
+                    }
+
+                    SetVisible(next);
                 }
             }
 
-            if (_shownEgg == null || hatchTimeText == null)
+            DateTime now = DateTime.UtcNow;
+            foreach (EggSlotView slot in _spawnedEggSlots)
             {
-                return;
+                if (slot != null)
+                {
+                    slot.Tick(now);
+                }
             }
-
-            if (EggIncubator.Instance == null || !EggIncubator.Instance.Eggs.Contains(_shownEgg))
-            {
-                hatchTimeText.text = "부화 완료";
-                _shownEgg = null;
-                return;
-            }
-
-            float remaining = _shownEgg.RemainingSeconds(DateTime.UtcNow);
-            hatchTimeText.text = $"부화까지 {remaining:0.0}초";
         }
 
         // spec-003: U 키로 패널을 켜고 끈다. 이 오브젝트 자체는 계속 활성 상태로
@@ -99,6 +125,11 @@ namespace Game.Gameplay
             canvasGroup.alpha = visible ? 1f : 0f;
             canvasGroup.interactable = visible;
             canvasGroup.blocksRaycasts = visible;
+        }
+
+        public void Close()
+        {
+            SetVisible(false);
         }
 
         // spec-003: 로스터가 바뀔 때마다(교배 완료 포함) 그리드를 다시 그린다.
@@ -126,27 +157,36 @@ namespace Game.Gameplay
                 RosterSlotButton spawned = Instantiate(gridSlotTemplate, gridContent);
                 spawned.gameObject.SetActive(true);
                 spawned.Bind(instance, OnRosterSlotClicked);
+                spawned.SetSelected(instance == _slotA || instance == _slotB);
                 _spawnedButtons.Add(spawned);
             }
         }
 
+        // spec-003: 클릭은 고르고 되돌리기만 한다 - 실제 교배(소모)는 breedButton
+        // 을 눌러야만 일어난다. 예전엔 두 마리가 차는 순간 바로 교배해버려서,
+        // 그리드가 다시 그려지며 자리가 밀리는 와중에 연타하면 의도 안 한 조합이
+        // 곧바로 소모돼 버렸다.
         private void OnRosterSlotClicked(SlimeInstance instance)
         {
-            if (_slotA == null)
+            if (instance == _slotA)
+            {
+                _slotA = null;
+            }
+            else if (instance == _slotB)
+            {
+                _slotB = null;
+            }
+            else if (_slotA == null)
             {
                 _slotA = instance;
             }
-            else if (_slotB == null && instance != _slotA)
+            else if (_slotB == null)
             {
                 _slotB = instance;
             }
 
             RefreshSlots();
-
-            if (_slotA != null && _slotB != null)
-            {
-                Breed();
-            }
+            RefreshGrid();
         }
 
         private void RefreshSlots()
@@ -211,18 +251,39 @@ namespace Game.Gameplay
             RefreshGrid();
         }
 
-        private void OnEggAdded(SlimeEgg egg)
+        private void OnEggListChanged(SlimeEgg egg)
         {
-            _shownEgg = egg;
+            RefreshEggList();
+        }
 
-            if (eggResultText != null)
+        // spec-003: 부화 대기 중인 알을 전부 스크롤 목록으로 보여준다 - 마지막
+        // 한 마리만 보이면 여러 마리를 동시에 교배시켰을 때 나머지는 진행 상황을
+        // 알 길이 없다.
+        private void RefreshEggList()
+        {
+            foreach (EggSlotView slot in _spawnedEggSlots)
             {
-                eggResultText.text = $"슬라임 알 ({egg.speciesId})";
+                if (slot != null)
+                {
+                    Destroy(slot.gameObject);
+                }
             }
 
-            if (hatchConditionText != null)
+            _spawnedEggSlots.Clear();
+
+            if (eggSlotTemplate == null || eggListContent == null || EggIncubator.Instance == null)
             {
-                hatchConditionText.text = $"부화 조건: {egg.hatchConditionLabel}";
+                return;
+            }
+
+            eggSlotTemplate.gameObject.SetActive(false);
+
+            foreach (SlimeEgg egg in EggIncubator.Instance.Eggs)
+            {
+                EggSlotView spawned = Instantiate(eggSlotTemplate, eggListContent);
+                spawned.gameObject.SetActive(true);
+                spawned.Bind(egg);
+                _spawnedEggSlots.Add(spawned);
             }
         }
     }

@@ -13,12 +13,46 @@ namespace Game.Gameplay
         [SerializeField] private Transform slotContainer;
         [SerializeField] private InventorySlotView slotPrefab;
 
+        public static InventoryUI Instance { get; private set; }
+
         private readonly List<InventorySlotView> _spawned = new List<InventorySlotView>();
 
         private void Awake()
         {
+            Instance = this;
+
             // Boot 씬에만 있다 — 바이옴을 오가도 인벤토리 창은 그대로 떠 있어야 한다.
             DontDestroyOnLoad(gameObject);
+        }
+
+        // PlayerRoster.Instance 는 Awake 에서 세팅된다 - 같은 Boot 씬의 영속
+        // 오브젝트끼리는 Awake 순서가 보장되지 않으므로, OnEnable 에서 구독하면
+        // PlayerRoster 가 아직 null 일 때 조용히 스킵되고 다시는 구독되지 않을 수
+        // 있다. Start 는 씬의 모든 Awake 가 끝난 뒤 실행이 보장된다.
+        private void Start()
+        {
+            if (PlayerRoster.Instance != null)
+            {
+                PlayerRoster.Instance.RosterChanged += OnRosterChanged;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (PlayerRoster.Instance != null)
+            {
+                PlayerRoster.Instance.RosterChanged -= OnRosterChanged;
+            }
+        }
+
+        // 열려 있는 채로 포획·부화·교배장 배치가 일어나도 다시 열 필요 없이
+        // 바로 갱신되도록 - 닫혀 있으면 어차피 Toggle() 이 열 때 다시 그린다.
+        private void OnRosterChanged()
+        {
+            if (panelRoot != null && panelRoot.activeSelf)
+            {
+                Refresh();
+            }
         }
 
         private void Update()
@@ -40,7 +74,18 @@ namespace Game.Gameplay
             panelRoot.SetActive(next);
             if (next)
             {
+                // I 로 인벤토리를 열 때 교배 UI(U)가 떠 있으면 같이 닫는다 -
+                // 두 창이 동시에 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
+                BreedingUIPanel.Instance?.Close();
                 Refresh();
+            }
+        }
+
+        public void Close()
+        {
+            if (panelRoot != null)
+            {
+                panelRoot.SetActive(false);
             }
         }
 

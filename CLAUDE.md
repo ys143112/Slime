@@ -12,19 +12,19 @@
 런타임 검증 + 시각 자산 보강 + 자동 테스트(전무). 브랜치 전략: 기능별로
 `feat-*` 브랜치 파서 작업 후 `dev` 로 머지.
 
-미해결 설계 충돌: spec-002 acceptance criterion "캡처 성공 1프레임 안에
-PlayerRoster 카운트가 HUD 에 반영" — 실제로는 spec-011 이 다이브 중 캡처를
-`RunSatchel` 로 돌린다(추출 성공해야 `PlayerRoster` 로 확정). 사람 결정 필요:
-(a) spec-002 문구를 satchel 기준으로 수정 (b) roster 전용 HUD 추가하고
-"캡처 즉시" 문구 삭제.
+spec-002/011 HUD 타이밍은 satchel 기준으로 확정됨(2026-08-05): 다이브
+중 캡처는 `RunSatchel` 에 쌓이고, 추출 성공해야 `PlayerRoster` 로 옮겨간다
+("죽으면 몰수"가 의미 있으려면 이래야 함) — spec-002 원본 문서의
+acceptanceCriteria 를 satchel 기준으로 고쳤다(원본:
+`Doc/설계/plans/slime-rancher-roguelite.json`).
 
 ## Spec → 파일 매핑
 
 | spec | 핵심 파일 |
 |---|---|
-| 001 런루프 | `GameManager` `EventBus` `GameEvent` `SaveSystem` `RunLogWriter` `ExtractionPoint` `BiomeDiveTrigger` `CameraFollow` |
+| 001 런루프 | `GameManager` `EventBus` `GameEvent` `SaveSystem` `RunLogWriter` `ExtractionPoint` `BiomeDiveTrigger` `CameraFollow` `ExtractionDirectionArrow` |
 | 002 캡처 | `CaptureTool` `PlayerRoster` `CapturePromptUI` `InventoryUI` `InventorySlotView` |
-| 003 교배 | `BreedingPen` `TraitInheritanceTable` |
+| 003 교배 | `BreedingPen` `TraitInheritanceTable` `BreedingUIPanel` `RosterSlotButton` `EggSlotView` |
 | 004 낙인/오염티어 | `BiomeStigmaManager` `CorruptionOverlay` |
 | 005 돌연변이 | `MutantRollService` |
 | 006 오염 유전 계보 | `CorruptedGeneTagger` `LineageEvolutionChecker` `LineageEvolutionTable` |
@@ -32,7 +32,7 @@ PlayerRoster 카운트가 HUD 에 반영" — 실제로는 spec-011 이 다이�
 | 008 교배장 상호작용 | `BreedingPenInteractor` |
 | 009 바이옴 로스터 | `BiomeCatalog` (`Assets/SO/BiomeCatalog.asset`, 3바이옴: default/marsh/ashfall) |
 | 010 목장 시설 | `RanchFacility` `RanchFacilityInteractor` `LaborOutputTable` |
-| 011 런 전리품 | `RunSatchel` `SatchelCounterUI` |
+| 011 런 전리품 | `RunSatchel` `SatchelCounterUI` `SatchelSlotView` |
 | 012 야생 슬라임 AI | `WildSlimeAgent` |
 
 ## 조작
@@ -52,7 +52,26 @@ Space 3타로 약화, 접촉 6회로 플레이어 사망. 낙인 스택 3당 티
 `GameManager.SceneNameFor()` 가 biomeId→씬 해석). `Boot` 에 `DontDestroyOnLoad`
 싱글턴 전부 있음: `GameManager` `PlayerRoster` `BiomeStigmaManager`
 `CorruptedGeneTagger` `LineageEvolutionChecker` `InventoryUI`(Canvas 포함, I 키
-토글, Screen Space Overlay라 씬 안 가려도 항상 뜬다).
+토글, Screen Space Overlay라 씬 안 가려도 항상 뜬다). `PersistentRoot`
+붙은 `PersistentUICanvas` 밑에 `BreedingUIPanel`(U 키)도 같은 방식으로 얹혀
+있다 — `pen` 필드는 Hub 씬에만 있는 `BreedingPen` 을 매번
+`GameObject.Find("BreedingPen")` 로 다시 찾는다(캐시하면 씬 전환마다 죽은
+참조가 됨), Hub 밖에서는 U 를 눌러도 안 열린다. `InventoryUI`/`BreedingUIPanel`
+은 서로 `static Instance` 를 참조해 상호 배타로 연다(I 누르면 U 닫히고 반대도
+같음) — 안 하면 두 창이 겹쳐 뜬다(2026-08-05).
+
+`PlayerRoster.RosterChanged` 를 구독하는 UI(`InventoryUI`/`BreedingUIPanel`)는
+**`OnEnable` 이 아니라 `Start` 에서 구독한다** — 같은 Boot 씬 영속 오브젝트끼리
+`Awake` 순서가 안 보장돼, `OnEnable` 시점엔 `PlayerRoster.Instance` 가 아직
+null 일 수 있고 그러면 구독이 조용히 스킵된 채 다시는 안 걸린다(2026-08-05,
+교배 UI에 잡은 슬라임이 안 뜨는 버그로 드러남). `Start` 는 씬의 모든 `Awake`가
+끝난 뒤 실행이 보장된다.
+
+`BreedingUIPanel` 로스터 그리드 클릭은 **선택/해제만** 한다 — 예전엔 2마리가
+차는 즉시 자동으로 교배(소모)했는데, 그리드가 다시 그려지며 자리가 밀리는 와중에
+연타하면 의도 안 한 조합이 곧바로 소모돼 버렸다(2026-08-05, 로스터 전멸 버그).
+실제 교배는 `breedButton` 을 눌러야만 일어난다. 선택된 슬롯은 라벨 앞
+`▶` 표시 + 살짝 확대로 구분된다.
 
 **Boot 씬으로 Play 눌러야 한다** — Hub/Biome 씬에서 바로 Play 하면
 `GameManager.Instance` 가 null (Boot 를 거치지 않아 싱글턴이 생성 안 됨).
@@ -80,6 +99,27 @@ Import 직후 `.meta` 기본값이 프로젝트 관례와 다르다 — 고쳐�
 `spritePixelsToUnits: 100`→ 생성 시 넘긴 `size` 값과 동일하게(예: 32px 요청
 → PPU 32, 128px 아이콘 → PPU 128) — 안 맞추면 씬에서 크기가 어긋난다.
 고친 뒤 `Unity_ManageAsset Action=Import` 로 강제 재임포트.
+
+## ExtractionPoint 는 벽 안쪽에 있어야 한다
+
+바이옴 씬의 `Walls`/`Collision` `CompositeCollider2D` 가 실제 걸어다닐 수 있는
+영역을 정한다 — `ExtractionPoint` 를 그 바깥에 두면 트리거 자체는 멀쩡해도
+플레이어가 걸어서 절대 도달할 수 없다(2026-08-05, 세 바이옴 씬 전부 (16, -10)
+에 있었는데 벽 범위는 대략 x/y ±8~±12 였다 — 트리거·스프라이트 다 정상인데
+"눌러도 안 됨" 버그로만 드러났다). 좌표를 손으로 넣기 전에
+`CompositeCollider2D.bounds`/`OverlapPoint` 로 벽 안쪽인지 확인할 것 — 지금은
+세 씬 다 (9, -6) 로 옮겼다.
+
+## 씬 병합 함정
+
+`.unity` 는 텍스트 병합이 줄 단위로 되지만 의미 단위(오브젝트 하나)로는 안 된다
+— 두 브랜치가 같은 fileID 슬롯 근처를 건드리면 git 이 충돌 표시 없이 한쪽
+오브젝트 전체를 통째로 삼켜버릴 수 있다. 실제로 `f6999ef`(`feat-lobby`→`dev`
+머지)가 이렇게 `InventoryUI` Canvas 전체(패널·슬롯 컨테이너·타이틀, 4개
+GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아무도 눈치 못 챘고,
+"I 키 눌러도 아무것도 안 뜸" 버그 리포트로만 드러났다(2026-08-05, 복구함).
+씬을 건드리는 브랜치를 머지한 뒤에는 `grep -c "^--- !u!" before after` 로 오브젝트
+총수가 두 브랜치 합보다 부자연스럽게 줄지 않았는지 확인하는 게 값싸다.
 
 ## Unity_RunCommand 함정 (겪은 것들)
 

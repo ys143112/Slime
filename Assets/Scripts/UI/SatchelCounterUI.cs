@@ -1,4 +1,4 @@
-using System.Text;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -10,16 +10,19 @@ namespace Game.Gameplay
     {
         [SerializeField] private Text counterText;
 
-        // B 키로 여는 내용물 목록. 숫자만 봐서는 지금 무엇을 걸고 있는지 알 수 없다.
-        [SerializeField] private Text detailText;
+        // B 키로 여는 내용물 목록. 스크롤 패널 전체를 켜고 끈다.
+        [SerializeField] private GameObject detailPanel;
+        [SerializeField] private RectTransform detailListContent;
+        [SerializeField] private SatchelSlotView detailSlotTemplate;
 
-        private readonly StringBuilder _builder = new StringBuilder();
+        private readonly List<SatchelSlotView> _spawned = new List<SatchelSlotView>();
+        private int _lastRenderedCount = -1;
 
         private void Awake()
         {
-            if (detailText != null)
+            if (detailPanel != null)
             {
-                detailText.gameObject.SetActive(false);
+                detailPanel.SetActive(false);
             }
         }
 
@@ -32,45 +35,56 @@ namespace Game.Gameplay
                 counterText.text = $"위험 슬라임 {RunSatchel.Count}마리";
             }
 
-            if (detailText == null)
+            if (detailPanel == null)
             {
                 return;
             }
 
             if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
             {
-                detailText.gameObject.SetActive(!detailText.gameObject.activeSelf);
+                bool next = !detailPanel.activeSelf;
+                detailPanel.SetActive(next);
+                if (next)
+                {
+                    _lastRenderedCount = -1;
+                }
             }
 
-            if (detailText.gameObject.activeSelf)
+            // 목록을 매 프레임 다시 그리면 스폰/파괴가 반복돼 낭비다 - 마릿수가
+            // 실제로 바뀐 프레임에만 다시 그린다.
+            if (detailPanel.activeSelf && RunSatchel.Count != _lastRenderedCount)
             {
-                detailText.text = BuildContents();
+                RefreshDetailList();
             }
         }
 
-        private string BuildContents()
+        private void RefreshDetailList()
         {
-            _builder.Clear();
-            _builder.AppendLine("배낭 (B)");
-
-            if (RunSatchel.Count == 0)
+            foreach (SatchelSlotView slot in _spawned)
             {
-                _builder.Append("비어 있음");
-                return _builder.ToString();
-            }
-
-            foreach (SlimeInstance held in RunSatchel.Contents)
-            {
-                _builder.Append(held.speciesId);
-                if (held.mutantFlag)
+                if (slot != null)
                 {
-                    _builder.Append(" [돌연변이]");
+                    Destroy(slot.gameObject);
                 }
-
-                _builder.AppendLine($" HP {held.baseStats.maxHp} ATK {held.baseStats.attack}");
             }
 
-            return _builder.ToString();
+            _spawned.Clear();
+            _lastRenderedCount = RunSatchel.Count;
+
+            if (detailSlotTemplate == null || detailListContent == null)
+            {
+                return;
+            }
+
+            detailSlotTemplate.gameObject.SetActive(false);
+
+            foreach (SlimeInstance instance in RunSatchel.Contents)
+            {
+                SatchelSlotView spawned = Instantiate(detailSlotTemplate, detailListContent);
+                spawned.gameObject.SetActive(true);
+                spawned.Bind(instance);
+                _spawned.Add(spawned);
+            }
         }
     }
 }

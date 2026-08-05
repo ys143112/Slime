@@ -13,6 +13,7 @@ namespace Game.Gameplay
 
         private SlimeInstance _instance;
         private Action<SlimeInstance> _onClicked;
+        private string _baseLabel = "";
         private static Sprite _circleSprite;
 
         private void Awake()
@@ -66,14 +67,20 @@ namespace Game.Gameplay
             return _circleSprite;
         }
 
+        // 인벤토리 슬롯과 같은 정보(종족·돌연변이/오염 태그·HP)를 보여준다 -
+        // 교배 상대를 고를 때 인벤토리에서 본 그 슬라임인지 구별해야 한다.
         public void Bind(SlimeInstance instance, Action<SlimeInstance> onClicked)
         {
             _instance = instance;
             _onClicked = onClicked;
 
-            if (label != null)
+            string tag = instance.mutantFlag ? " [돌연변이]" : instance.corruptedGeneFlag ? " [오염]" : "";
+            _baseLabel = $"{instance.speciesId}{tag}\nHP {instance.currentHp}/{instance.baseStats.maxHp}";
+
+            if (icon != null)
             {
-                label.text = instance.speciesId;
+                icon.color = instance.corruptedGeneFlag ? new Color(0.6f, 0.4f, 0.9f) :
+                    instance.mutantFlag ? new Color(0.95f, 0.55f, 0.2f) : Color.white;
             }
 
             if (button != null)
@@ -81,6 +88,21 @@ namespace Game.Gameplay
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => _onClicked?.Invoke(_instance));
             }
+
+            SetSelected(false);
+        }
+
+        // 교배 확정 전 골라둔 두 마리를 표시한다 - 눈에 안 보이면 연타로
+        // 엉뚱한 두 마리가 짝지어져도 알아챌 수 없다. icon.color 는 돌연변이/오염
+        // 태그 표시에 이미 쓰고 있어서 선택 표시는 라벨·크기로 따로 낸다.
+        public void SetSelected(bool selected)
+        {
+            if (label != null)
+            {
+                label.text = selected ? $"▶ {_baseLabel}" : _baseLabel;
+            }
+
+            transform.localScale = selected ? Vector3.one * 1.1f : Vector3.one;
         }
     }
 }
