@@ -132,7 +132,7 @@ namespace Game.Gameplay.Tests
             Assert.AreEqual(0, RunSatchel.Count, "정산 후에도 배낭이 비지 않았습니다.");
 
             // EndRun 이 예약한 Hub 씬 로드를 이 테스트 안에서 소화한다.
-            yield return null;
+            yield return SceneLoadWait.UntilRunEndSceneLoaded();
         }
 
         [UnityTest]
@@ -152,7 +152,7 @@ namespace Game.Gameplay.Tests
                 "사망했는데 배낭 내용이 보유 목록에 들어갔습니다.");
             Assert.AreEqual(0, RunSatchel.Count, "사망 후에도 배낭이 비지 않았습니다.");
 
-            yield return null;
+            yield return SceneLoadWait.UntilRunEndSceneLoaded();
         }
 
         [UnityTest]

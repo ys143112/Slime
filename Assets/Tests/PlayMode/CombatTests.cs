@@ -15,6 +15,8 @@ namespace Game.Gameplay.Tests
         // 테스트용 충돌이 섞이지 않도록 실제 레벨에서 멀리 떨어진 곳에서 논다.
         private static readonly Vector3 Arena = new Vector3(1000f, 1000f, 0f);
 
+        private readonly SoloPlayerTag _soloPlayer = new SoloPlayerTag();
+
         private GameObject _player;
         private GameObject _slime;
         private GameObject _managerObject;
@@ -22,6 +24,8 @@ namespace Game.Gameplay.Tests
         [SetUp]
         public void SetUp()
         {
+            _soloPlayer.SilenceExisting();
+
             _player = MakePhysicsObject("TestPlayer");
             _player.tag = "Player";
             _player.transform.position = Arena;
@@ -38,6 +42,7 @@ namespace Game.Gameplay.Tests
             DestroyIfAlive(_slime);
             DestroyIfAlive(_player);
             DestroyIfAlive(_managerObject);
+            _soloPlayer.Restore();
         }
 
         private static GameObject MakePhysicsObject(string name)
@@ -76,8 +81,12 @@ namespace Game.Gameplay.Tests
             _player.transform.position = Arena;
             _slime.transform.position = Arena + new Vector3(0.4f, 0f, 0f);
 
-            yield return new WaitForFixedUpdate();
-            yield return new WaitForFixedUpdate();
+            // 충돌이 몇 번째 물리 프레임에 잡히는지는 보장되지 않는다. 고정 프레임
+            // 수로 기다리면 에디터가 느린 순간에만 실패하는 테스트가 된다.
+            for (int frame = 0; frame < 30 && health.CurrentHp == fullHp; frame++)
+            {
+                yield return new WaitForFixedUpdate();
+            }
 
             Assert.AreEqual(fullHp - expectedDamage, health.CurrentHp,
                 "접촉 후 플레이어 체력이 슬라임 공격력만큼 줄지 않았습니다.");
@@ -146,7 +155,7 @@ namespace Game.Gameplay.Tests
 
             // EndRun 이 예약한 Hub 씬 로드를 이 테스트 안에서 소화한다. 남겨두면
             // 다음 테스트가 프레임을 넘기는 순간 그 테스트의 오브젝트가 지워진다.
-            yield return null;
+            yield return SceneLoadWait.UntilRunEndSceneLoaded();
         }
     }
 }

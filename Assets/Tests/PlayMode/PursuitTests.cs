@@ -15,12 +15,16 @@ namespace Game.Gameplay.Tests
 
         private const int ObservedFrames = 60;
 
+        private readonly SoloPlayerTag _soloPlayer = new SoloPlayerTag();
+
         private GameObject _player;
         private GameObject _slime;
 
         [SetUp]
         public void SetUp()
         {
+            _soloPlayer.SilenceExisting();
+
             _player = MakePhysicsObject("TestPlayer");
             _player.tag = "Player";
             _player.transform.position = Arena;
@@ -34,6 +38,7 @@ namespace Game.Gameplay.Tests
         {
             DestroyIfAlive(_slime);
             DestroyIfAlive(_player);
+            _soloPlayer.Restore();
         }
 
         private static GameObject MakePhysicsObject(string name)
