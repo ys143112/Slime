@@ -112,3 +112,7 @@ InitTestScene*.unity*
 # 여기는 재생성 가능한 산출물이라 커밋하지 않는다.
 /[Aa]ssets/Generated/
 /[Aa]ssets/Generated.meta
+
+# Unity 크래시 복구 잔여물
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta

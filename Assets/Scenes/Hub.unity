@@ -7861,6 +7861,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8526271671317112966, guid: 6ec6d7e1d9908774dac539c0732c72ce, type: 3}
+      propertyPath: stigmaIcon
+      value: 
+      objectReference: {fileID: 1027996367}
+    - target: {fileID: 8526271671317112966, guid: 6ec6d7e1d9908774dac539c0732c72ce, type: 3}
       propertyPath: destinationText
       value: 
       objectReference: {fileID: 0}

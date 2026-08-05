@@ -23,6 +23,11 @@ namespace Game.Gameplay
         // 맞을 때까지 세어야 했다.
         [SerializeField] private GameObject weakenedIndicator;
 
+        // spec-012 assetsNeeded 의 "slime alert indicator". 추격이 시작된 것을
+        // 화면에서 알 방법이 지금까지 없었다 — 슬라임이 움직이기 시작할 때쯤엔
+        // 이미 붙어 있다.
+        [SerializeField] private GameObject alertIndicator;
+
         // 기획서 core_mechanics: "각 오염 스택은 바이옴의 오염 티어를 올리고,
         // 이는 야생 슬라임 스탯을 강화한다." 티어당 15% 가산.
         private const float StatMultiplierPerTier = 0.15f;
@@ -60,6 +65,11 @@ namespace Game.Gameplay
             if (weakenedIndicator != null)
             {
                 weakenedIndicator.SetActive(false);
+            }
+
+            if (alertIndicator != null)
+            {
+                alertIndicator.SetActive(false);
             }
         }
 
@@ -136,6 +146,11 @@ namespace Game.Gameplay
             WildSlimeState previous = State;
             State = next;
             Debug.Log($"slime_state_changed species={Instance.speciesId} from={previous} to={next}");
+
+            if (alertIndicator != null)
+            {
+                alertIndicator.SetActive(next == WildSlimeState.Pursuing);
+            }
         }
 
         private static int CurrentCorruptionTier()

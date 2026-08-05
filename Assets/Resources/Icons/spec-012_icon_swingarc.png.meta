@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e00569429f44a52468bd3c3ec96336be
+guid: fd0ec1ea11c3f134fa0348569fff4f8a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2339175330131289809
-    second: spec-004_tile_fbf248c4_0
+      213: -7969203706820976919
+    second: spec-012_spec-012_ui_panel_14b808b3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,17 +96,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spec-004_tile_fbf248c4_0
+      name: spec-012_spec-012_ui_panel_14b808b3_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 128
-        height: 128
+        x: 3
+        y: 63
+        width: 378
+        height: 146
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f29da244e64998fd0800000000000000
-      internalID: -2339175330131289809
+      spriteID: 9ee95388373b76190800000000000000
+      internalID: -7969203706820976919
       vertices: []
       indices: 
       edges: []
@@ -135,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      spec-004_tile_fbf248c4_0: -2339175330131289809
+      spec-012_spec-012_ui_panel_14b808b3_0: -7969203706820976919
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
