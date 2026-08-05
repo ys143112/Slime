@@ -2,6 +2,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Game.Gameplay
@@ -10,6 +11,7 @@ namespace Game.Gameplay
     public sealed class BreedingUIPanel : MonoBehaviour
     {
         public BreedingPen pen;
+        public CanvasGroup canvasGroup;
         public RectTransform gridContent;
         public RosterSlotButton gridSlotTemplate;
         public Text slotAText;
@@ -23,6 +25,7 @@ namespace Game.Gameplay
         private SlimeInstance _slotB;
         private readonly List<RosterSlotButton> _spawnedButtons = new List<RosterSlotButton>();
         private SlimeEgg _shownEgg;
+        private bool _visible;
 
         private void OnEnable()
         {
@@ -36,6 +39,7 @@ namespace Game.Gameplay
                 breedButton.onClick.AddListener(OnBreedButtonClicked);
             }
 
+            SetVisible(false);
             RefreshGrid();
             RefreshSlots();
         }
@@ -55,6 +59,16 @@ namespace Game.Gameplay
 
         private void Update()
         {
+            if (Keyboard.current != null && Keyboard.current.uKey.wasPressedThisFrame)
+            {
+                // spec-003: 패널은 씬을 넘나드는 영구 오브젝트라 Hub 밖에서는
+                // BreedingPen 이 없다 - 그럴 땐 U 를 눌러도 열리지 않는다.
+                if (_visible || ResolvePen() != null)
+                {
+                    SetVisible(!_visible);
+                }
+            }
+
             if (_shownEgg == null || hatchTimeText == null)
             {
                 return;
@@ -69,6 +83,22 @@ namespace Game.Gameplay
 
             float remaining = _shownEgg.RemainingSeconds(DateTime.UtcNow);
             hatchTimeText.text = $"부화까지 {remaining:0.0}초";
+        }
+
+        // spec-003: U 키로 패널을 켜고 끈다. 이 오브젝트 자체는 계속 활성 상태로
+        // 둬야 Update() 가 다음 U 입력과 부화 카운트다운을 계속 감지한다.
+        private void SetVisible(bool visible)
+        {
+            _visible = visible;
+
+            if (canvasGroup == null)
+            {
+                return;
+            }
+
+            canvasGroup.alpha = visible ? 1f : 0f;
+            canvasGroup.interactable = visible;
+            canvasGroup.blocksRaycasts = visible;
         }
 
         // spec-003: 로스터가 바뀔 때마다(교배 완료 포함) 그리드를 다시 그린다.
@@ -142,21 +172,36 @@ namespace Game.Gameplay
             Breed();
         }
 
+        // spec-003: pen 은 Hub 씬에만 있는 오브젝트다. 이 패널은 DontDestroyOnLoad
+        // 로 씬을 넘나들며 살아남으므로, Hub 가 다시 로드될 때마다 새 인스턴스를
+        // 다시 찾아야 한다 - 캐시된 참조는 씬이 바뀌면 죽은 참조가 된다.
+        private BreedingPen ResolvePen()
+        {
+            if (pen == null)
+            {
+                GameObject go = GameObject.Find("BreedingPen");
+                pen = go != null ? go.GetComponent<BreedingPen>() : null;
+            }
+
+            return pen;
+        }
+
         private void Breed()
         {
-            if (pen == null || _slotA == null || _slotB == null)
+            BreedingPen activePen = ResolvePen();
+            if (activePen == null || _slotA == null || _slotB == null)
             {
                 return;
             }
 
-            if (!pen.TryPlace(_slotA))
+            if (!activePen.TryPlace(_slotA))
             {
                 return;
             }
 
-            if (!pen.TryPlace(_slotB))
+            if (!activePen.TryPlace(_slotB))
             {
-                pen.WithdrawLast();
+                activePen.WithdrawLast();
                 return;
             }
 
