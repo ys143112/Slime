@@ -30,6 +30,7 @@ namespace Game.Gameplay
                 if (!agent.Instance.weakened)
                 {
                     Debug.Log("capture_failed: 대상이 약화되지 않았습니다.");
+                    PublishCaptureFailed("대상이 약화되지 않았습니다.");
                     continue;
                 }
 
@@ -54,6 +55,13 @@ namespace Game.Gameplay
             }
 
             Debug.Log("capture_failed: 범위 안에 약화된 슬라임이 없습니다.");
+            PublishCaptureFailed("범위 안에 약화된 슬라임이 없습니다.");
+        }
+
+        private static void PublishCaptureFailed(string reason)
+        {
+            string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
+            EventBus.Publish(new GameEvent(GameEventId.SlimeCaptureFailed, biomeId, reason));
         }
     }
 }

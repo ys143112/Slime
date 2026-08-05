@@ -6,6 +6,7 @@ namespace Game.Gameplay
         RunStarted,
         RunEnded,
         SlimeCaptured,
+        SlimeCaptureFailed,
         CorruptionTierChanged,
     }
 

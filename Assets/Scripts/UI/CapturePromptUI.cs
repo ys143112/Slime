@@ -11,11 +11,13 @@ namespace Game.Gameplay
         private void OnEnable()
         {
             EventBus.Subscribe(GameEventId.SlimeCaptured, OnSlimeCaptured);
+            EventBus.Subscribe(GameEventId.SlimeCaptureFailed, OnSlimeCaptureFailed);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe(GameEventId.SlimeCaptured, OnSlimeCaptured);
+            EventBus.Unsubscribe(GameEventId.SlimeCaptureFailed, OnSlimeCaptureFailed);
         }
 
         private void OnSlimeCaptured(GameEvent gameEvent)
@@ -29,6 +31,17 @@ namespace Game.Gameplay
             SlimeInstance instance = gameEvent.Payload as SlimeInstance;
             string species = instance != null ? instance.speciesId : "슬라임";
             promptText.text = $"{species} 포획 성공!";
+        }
+
+        private void OnSlimeCaptureFailed(GameEvent gameEvent)
+        {
+            if (promptText == null)
+            {
+                return;
+            }
+
+            string reason = gameEvent.Payload as string;
+            promptText.text = string.IsNullOrEmpty(reason) ? "포획 실패" : $"포획 실패: {reason}";
         }
     }
 }
