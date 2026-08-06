@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Game.Gameplay
 {
@@ -13,6 +14,11 @@ namespace Game.Gameplay
         public string hatchConditionLabel;
         public long hatchAtUtcTicks;
 
+        // 이로치는 교배 시점에 정해진다. 알이 이 둘을 안 실어 나르면 부화하는
+        // 순간 색이 사라져, 이로치가 나와도 플레이어는 영영 못 본다.
+        public bool shinyFlag;
+        public Color shinyTint = Color.white;
+
         public SlimeEgg() { }
 
         public SlimeEgg(SlimeInstance offspring, string hatchConditionLabel, DateTime hatchAtUtc)
@@ -21,6 +27,8 @@ namespace Game.Gameplay
             offspringStats = offspring.baseStats;
             mutantFlag = offspring.mutantFlag;
             corruptedGeneFlag = offspring.corruptedGeneFlag;
+            shinyFlag = offspring.shinyFlag;
+            shinyTint = offspring.shinyTint;
             this.hatchConditionLabel = hatchConditionLabel;
             hatchAtUtcTicks = hatchAtUtc.Ticks;
         }
@@ -41,6 +49,8 @@ namespace Game.Gameplay
             {
                 mutantFlag = mutantFlag,
                 corruptedGeneFlag = corruptedGeneFlag,
+                shinyFlag = shinyFlag,
+                shinyTint = shinyTint,
             };
         }
     }

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b90b7aab59e41743b93c333f33a3b5c, type: 3}
+  m_Name: SlimeSpeciesCatalog
+  m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpeciesCatalog
+  species:
+  - {fileID: 11400000, guid: ce22159cd10673c4bb96c9ae19e22d3d, type: 2}
+  - {fileID: 11400000, guid: 1edda4a9aec31834080337283011e9e5, type: 2}
+  - {fileID: 11400000, guid: 06b10cb6498c0f74aab7a5dd3adad823, type: 2}
+  - {fileID: 11400000, guid: db700fdc95f59eb4cb558ab7ac5780ce, type: 2}
+  - {fileID: 11400000, guid: 1568557e9a382424eb4504e0dbf862d1, type: 2}
