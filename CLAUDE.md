@@ -195,6 +195,18 @@ GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아�
   실패를 못 알아채고 부모를 비활성화 → 이제 그 값들을 고칠 방법이 도구
   안에는 없다. **`create` 직후 반드시 `get_components` 로 실제 값이 들어갔는지
   확인**하고 나서 다음 단계(특히 비활성화)로 넘어갈 것.
+- 실제로 물린 사례: `create` 로 Canvas 를 만들며 `renderMode: 0`
+  (Screen Space Overlay)을 같이 넘겼는데 씹혔고, **World Space(2)로 남았다.**
+  월드 캔버스는 하이라키에는 멀쩡히 보이지만 화면에는 아무것도 안 나온다 —
+  "오브젝트는 다 있는데 화면이 비었다"는 증상으로만 드러났다(2026-08-06,
+  Boot 시작 화면). `CanvasScaler` 에 `m_PresetInfoIsWorld: 1` 이 같이 박히는
+  것이 흔적이다. Canvas 를 만들었으면 `renderMode` 를 눈으로 확인할 것.
+
+**UI 배치는 씬 좌표가 아니라 화면 좌표로 확인한다.** RectTransform 의
+`anchoredPosition` 만 봐서는 화면에 들어오는지 알 수 없다(위 월드 캔버스
+사고가 그랬다 — 좌표는 전부 정상이었다). Play 중에
+`RectTransform.GetWorldCorners()` 로 각 요소의 좌하·우상 코너를 받아
+`0..Screen.width`, `0..Screen.height` 안에 있는지 보는 것이 값싸고 확실하다.
 
 ## 코드 규약
 
