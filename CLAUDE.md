@@ -1,5 +1,9 @@
 # Slime (Slime Stigma Ranch)
 
+**도구가 실패하면 반복 재시도하지 말 것.** 한두 번 진단성 시도까지만 —
+그래도 안 되면 멈추고 상황과 해결 방법(우회안 포함)을 사용자에게 제시하고
+물어본다. 토큰 낭비된다(사용자 지시, 2026-08-06).
+
 로그라이트 몬스터 목장 시뮬레이션. 기획서 원본은
 `C:/dev/Game-Developer-AI/Doc/설계/plans/slime-rancher-roguelite.json`
 (spec-001~012, 각 goal/implementationScope/acceptanceCriteria/unityHints 포함).
@@ -76,6 +80,32 @@ null 일 수 있고 그러면 구독이 조용히 스킵된 채 다시는 안 �
 **Boot 씬으로 Play 눌러야 한다** — Hub/Biome 씬에서 바로 Play 하면
 `GameManager.Instance` 가 null (Boot 를 거치지 않아 싱글턴이 생성 안 됨).
 
+Boot 씬에 시작 화면(`BootCanvas`)이 있다 — 시작하기/설정/종료 버튼
+(`BootMenuUI`), 설정 버튼을 누르면 뜨는 `SettingsPanel`(배경음·효과음
+슬라이더, 조작키 설명, 게임 설명, 닫기)로 구성된다(2026-08-06).
+`GameManager.Start()` 가 예전엔 즉시 Hub 를 띄웠지만 이제는 그 자동 진입을
+없애고 `GameManager.BeginGame()` 을 시작하기 버튼이 호출하는 방식으로 바꿨다 —
+Play 를 눌러도 시작 화면에서 멈춰 있는 게 정상이다. 배경은 흰 placeholder
+Image(`Background`), 실제 PNG 는 나중에 교체 예정.
+
+**`SettingsPanel` 은 씬에 활성 상태로 두고, `BootMenuUI.Awake` 가 런타임에
+끈다.** 씬에서 비활성으로 저장해두면 MCP 도구가 그 서브트리를 아예 못
+건드리게 되기 때문이다(아래 `Unity_ManageGameObject` 함정 참고) — 편집
+가능성을 유지하려는 의도적 선택이다.
+
+두 스크립트(`BootMenuUI`/`SettingsPanel`)는 인스펙터 배선 대신
+`transform.Find` 로 자식을 찾는다 — 위 MCP 함정(오브젝트 참조 필드 배선이
+안 먹힘) 때문에 고른 방식이다.
+
+캔버스는 **1920×1080 기준**이다: `CanvasScaler` 가 `ScaleWithScreenSize`,
+reference resolution 1920×1080, match 0.5. UI 좌표는 전부 이 해상도 기준의
+픽셀값으로 넣는다 — 예전에 800×600 짜리 `ConstantPixelSize` 였던 걸 바꿨다.
+
+`AudioManager`(Boot 씬 영속 싱글턴)가 BGM/SFX `AudioSource` 두 개와 볼륨을
+들고 있고 `PlayerPrefs` 에 저장한다. **실제 클립은 아직 하나도 없다** —
+`PlayBgm`/`PlaySfx` 와 `BootMenuUI.clickSfx` 는 클립을 꽂으면 바로 도는
+빈 틀이다(클립이 null 이면 조용히 무시).
+
 EventSystem 은 씬마다 하나씩 필요(uGUI 버튼 클릭용) — Hub, Biome 3종 전부
 갖고 있음. 새 씬 만들면 빠뜨리기 쉬움, 확인할 것.
 
@@ -141,6 +171,30 @@ GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아�
 - `Unity_ManageAsset Action=Move` 는 실패 응답(`MoveAsset call failed
   unexpectedly`)을 내고도 실제로는 이동에 성공하는 경우가 있었다 — 응답을
   못 믿겠으면 파일시스템으로 직접 확인.
+
+## Unity_ManageGameObject 함정 (겪은 것들, 2026-08-06 Boot 시작화면 작업)
+
+- `create` 액션에 같이 넘긴 `component_properties` 는 **RectTransform/Text 등
+  새로 붙은 컴포넌트에 조용히 안 먹는다** — 에러 없이 성공 응답을 주고 값은
+  기본값(예: RectTransform `sizeDelta 100x100`, `anchorMin/Max 0.5,0.5`,
+  `Text.text` 빈 문자열)으로 남는다. `create` 로 오브젝트만 만들고, 속성은
+  **별도의 `modify` 호출**로 나눠야 실제로 적용된다.
+- 컴포넌트 키는 짧은 이름("RectTransform")이 아니라 **완전한 이름
+  ("UnityEngine.RectTransform")을 써야 한다** — 짧은 이름은 에러 없이 조용히
+  무시된다. `Image` 가 이름 충돌로 에러 내는 것과 달리 이건 성공 응답을 주면서
+  아무 일도 안 하므로 더 놓치기 쉽다.
+- `modify`/`delete`/`get_components` 는 **비활성(`SetActive(false)`) 오브젝트를
+  못 찾는다** — `target` 이 이름이든 경로든 인스턴스ID든, `search_inactive: true`
+  를 줘도 마찬가지다(전부 "not found"). `find` 액션만 `search_inactive` 를
+  지킨다. 자식까지 다 배선한 뒤에 마지막으로 부모를 비활성화할 것 — 비활성화
+  먼저 하면 그 서브트리는 이 도구로 더 이상 못 건드리고, `.unity` 를 직접
+  텍스트로 고치는 수밖에 없다(RectTransform/Text 블록은 `m_GameObject:
+  {fileID: N}` 로 유일하게 식별된다 — 씬을 `Save` 한 뒤 고치고 `Load` 로
+  다시 읽어들인다).
+- 이 두 함정이 겹치면: 자식 오브젝트를 만들고 → `modify` 로 값 배선 시도 →
+  실패를 못 알아채고 부모를 비활성화 → 이제 그 값들을 고칠 방법이 도구
+  안에는 없다. **`create` 직후 반드시 `get_components` 로 실제 값이 들어갔는지
+  확인**하고 나서 다음 단계(특히 비활성화)로 넘어갈 것.
 
 ## 코드 규약
 

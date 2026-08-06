@@ -47,10 +47,10 @@ namespace Game.Gameplay
             DontDestroyOnLoad(gameObject);
         }
 
-        private void Start()
+        // Boot 시작 화면의 "시작하기" 버튼이 부른다. 자동 진입이던 걸 클릭
+        // 트리거로 바꿨다 - 타이틀 화면이 생겼으니 더는 즉시 넘어가면 안 된다.
+        public void BeginGame()
         {
-            // Boot 씬에는 매니저만 있다. 목장을 띄우지 않으면 런이 시작될 곳이
-            // 없어 게임이 빈 화면에서 멈춘다.
             if (string.IsNullOrEmpty(_activeContentScene))
             {
                 LoadContentScene(hubSceneName);
