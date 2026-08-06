@@ -1,0 +1,36 @@
+{
+  "group_id": "33bc8634-ceb0-42d2-926b-d198b4c785c4",
+  "states": [
+    {
+      "character": {
+        "id": "6cb4ba50-8ed1-4101-bea0-f70126dced38",
+        "name": "state of being attac",
+        "prompt": "cute anime girl, farmer, brown hair, minx",
+        "size": {
+          "width": 104,
+          "height": 104
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-08-06T11:18:23.177234+00:00"
+      },
+      "folder": "state_of_being_attac",
+      "frames": {
+        "rotations": {
+          "south": "state_of_being_attac/rotations/south.png",
+          "south-east": "state_of_being_attac/rotations/south-east.png",
+          "east": "state_of_being_attac/rotations/east.png",
+          "north-east": "state_of_being_attac/rotations/north-east.png",
+          "north": "state_of_being_attac/rotations/north.png",
+          "north-west": "state_of_being_attac/rotations/north-west.png",
+          "west": "state_of_being_attac/rotations/west.png",
+          "south-west": "state_of_being_attac/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-08-06T12:03:55.953977"
+}
