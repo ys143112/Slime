@@ -18,16 +18,16 @@ MonoBehaviour:
     sceneName: Biome
     speciesPool:
     - slime_basic
-    - slime_green
+    - slime_guard
   - biomeId: biome_marsh
     displayName: "\uB2AA\uC9C0"
     sceneName: BiomeMarsh
     speciesPool:
+    - slime_basic
     - slime_bog
-    - slime_toxic
   - biomeId: biome_ashfall
     displayName: "\uC7BF\uBC8C"
     sceneName: BiomeAshfall
     speciesPool:
-    - slime_ember
-    - slime_ash
+    - slime_basic
+    - slime_lava

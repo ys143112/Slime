@@ -40,10 +40,9 @@ namespace Game.Gameplay
                 int corruptionTier = BiomeStigmaManager.Instance != null
                     ? BiomeStigmaManager.Instance.GetCorruptionTier(biomeId)
                     : 0;
-                if (MutantRollService.TryRollMutant(corruptionTier))
-                {
-                    MutantRollService.ApplyReversal(agent.Instance);
-                }
+
+                // spec-005: 돌연변이가 뜨면 그 안에서 이로치를 다시 굴린다.
+                MutantRollService.RollMutantAndShiny(agent.Instance, corruptionTier, biomeId);
 
                 // spec-011: 런 중 포획은 곧바로 보유 목록에 들어가지 않는다.
                 // 추출에 성공해야 확정되고, 죽으면 몰수된다.
