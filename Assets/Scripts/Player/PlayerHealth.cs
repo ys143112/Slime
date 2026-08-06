@@ -11,6 +11,7 @@ namespace Game.Gameplay
 
         private int _currentHp;
         private bool _dead;
+        private ActorAnimation _animation;
 
         // 테스트가 체력을 읽을 자리. 지금까지 남은 체력을 밖에서 볼 방법이
         // 하나도 없어 spec-007 의 "피격 1프레임 안에 감소" 를 잴 수 없었다.
@@ -21,6 +22,7 @@ namespace Game.Gameplay
         private void Awake()
         {
             _currentHp = maxHp;
+            _animation = GetComponent<ActorAnimation>();
             UpdateHealthBar();
         }
 
@@ -39,11 +41,21 @@ namespace Game.Gameplay
                 damageFlash.Play();
             }
 
+            if (_animation != null)
+            {
+                _animation.PlayHit();
+            }
+
             UpdateHealthBar();
 
             if (_currentHp == 0)
             {
                 _dead = true;
+                if (_animation != null)
+                {
+                    _animation.PlayDeath();
+                }
+
                 if (GameManager.Instance == null)
                 {
                     Debug.LogError("PlayerHealth: GameManager 인스턴스가 없어 사망 처리를 알릴 수 없습니다.");

@@ -13,6 +13,7 @@ namespace Game.Gameplay
         public Vector2 LastDirection { get; private set; } = Vector2.down;
 
         private Rigidbody2D _body;
+        private ActorAnimation _animation;
 
         private void Awake()
         {
@@ -22,6 +23,9 @@ namespace Game.Gameplay
                 Debug.LogError("PlayerMovement: Rigidbody2D 컴포넌트가 없어 이동을 비활성화합니다.");
                 enabled = false;
             }
+
+            // 없어도 이동은 돌아야 한다 - 애니메이션은 표현이지 규칙이 아니다.
+            _animation = GetComponent<ActorAnimation>();
         }
 
         private void FixedUpdate()
@@ -41,6 +45,11 @@ namespace Game.Gameplay
             }
 
             _body.linearVelocity = input.normalized * moveSpeed;
+
+            if (_animation != null)
+            {
+                _animation.SetMovement(_body.linearVelocity);
+            }
         }
     }
 }

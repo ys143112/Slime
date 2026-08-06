@@ -46,7 +46,7 @@ namespace Game.Gameplay
             }
 
             _placed.Add(instance);
-            _placedObjects.Add(SpawnPlacedObject(_placed.Count - 1));
+            _placedObjects.Add(SpawnPlacedObject(_placed.Count - 1, instance));
 
             if (_placed.Count == Capacity)
             {
@@ -80,7 +80,7 @@ namespace Game.Gameplay
             return instance;
         }
 
-        private GameObject SpawnPlacedObject(int index)
+        private GameObject SpawnPlacedObject(int index, SlimeInstance instance)
         {
             if (placedSlimePrefab == null)
             {
@@ -91,7 +91,17 @@ namespace Game.Gameplay
             Transform slot = slots != null && index < slots.Length && slots[index] != null
                 ? slots[index]
                 : transform;
-            return Instantiate(placedSlimePrefab, slot.position, Quaternion.identity, transform);
+            GameObject spawned = Instantiate(placedSlimePrefab, slot.position, Quaternion.identity, transform);
+
+            // 교배장에 내놓은 것이 어느 개체인지 눈으로 구분돼야 한다 — 종도
+            // 이로치 색도 개체마다 다르므로 프리팹 기본 그림으로 두면 전부 같아 보인다.
+            SlimeAppearance appearance = spawned.GetComponentInChildren<SlimeAppearance>();
+            if (appearance != null)
+            {
+                appearance.Apply(instance);
+            }
+
+            return spawned;
         }
 
         private void DestroyPlacedObject(int index)
@@ -132,27 +142,31 @@ public void Breed(SlimeInstance parentA, SlimeInstance parentB)
             }
 
             SlimeStatBlock offspringStats = inheritanceTable.Blend(parentA.baseStats, parentB.baseStats);
-            var offspring = new SlimeInstance(parentA.speciesId, offspringStats)
+
+            // 외형(PNG)도 유전한다 — 종이 곧 그림이므로 부모 중 한쪽의 종을
+            // 물려받는다. parentA 로 고정하면 아빠 쪽만 계속 나와 "유전"이 아니다.
+            string inheritedSpecies = Random.value < 0.5f ? parentA.speciesId : parentB.speciesId;
+
+            var offspring = new SlimeInstance(inheritedSpecies, offspringStats)
             {
                 corruptedGeneFlag = parentA.corruptedGeneFlag || parentB.corruptedGeneFlag,
             };
+
+            string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
 
             // spec-005 acceptance: 부모 중 하나라도 MutantFlag 면 자손은 100% 상속한다.
             // 둘 다 아니면 그때만 바이옴 오염 티어를 반영한 낮은 확률로 새로 굴린다.
             if (parentA.mutantFlag || parentB.mutantFlag)
             {
                 MutantRollService.ApplyReversal(offspring);
+                MutantRollService.TryRollShiny(offspring, biomeId);
             }
             else
             {
-                string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
                 int corruptionTier = BiomeStigmaManager.Instance != null
                     ? BiomeStigmaManager.Instance.GetCorruptionTier(biomeId)
                     : 0;
-                if (MutantRollService.TryRollMutant(corruptionTier))
-                {
-                    MutantRollService.ApplyReversal(offspring);
-                }
+                MutantRollService.RollMutantAndShiny(offspring, corruptionTier, biomeId);
             }
 
             // spec-003: 자손은 즉시 로스터에 들어가지 않고 알로 감싸여 부화 시간만큼 기다린다.

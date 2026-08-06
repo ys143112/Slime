@@ -39,6 +39,70 @@ acceptanceCriteria 를 satchel 기준으로 고쳤다(원본:
 | 011 런 전리품 | `RunSatchel` `SatchelCounterUI` `SatchelSlotView` |
 | 012 야생 슬라임 AI | `WildSlimeAgent` |
 
+## 슬라임 종·이로치 (2026-08-06 신규)
+
+종 하나가 곧 그림 하나다. `SlimeSpecies`(ScriptableObject, `Assets/SO/Species/`)가
+그림·이로치 규칙·스탯 편향을 들고, `SlimeSpeciesCatalog`
+(`Assets/Resources/SlimeSpeciesCatalog.asset`)가 `speciesId` 로 그걸 찾는다.
+**Resources 에 두는 이유**: `SlimeInstance` 는 세이브로 오가는 순수 데이터라 씬
+참조를 못 들고, 교배·스폰·목록 UI 가 저마다 같은 표를 봐야 한다.
+
+| 종 | 등장 | 스탯 편향 | 이로치 |
+|---|---|---|---|
+| `slime_basic` 파란 | 전 바이옴 | 기본 | 늪지=초록, 용암지=빨강, **초원엔 없음** |
+| `slime_guard` 방어형 | 초원 | HP1.4 / **공격 0** / 방어 2.2 / 속도 0.8 | 지정 3색 중 랜덤 |
+| `slime_rainbow` 무지개 | **교배로만** | 전체 0.8~0.9 | **없음** (단일 개체) |
+| `slime_bog` 늪지대 | 늪지 | 기본 | 지정 3색 중 랜덤 |
+| `slime_lava` 용암 | 용암지(잿벌) | 전체 1.1~1.2 | 지정 3색 중 랜덤 |
+
+**이로치는 돌연변이의 하위 종류다** — `mutantFlag` 가 켜진 개체에서만 다시
+굴린다(`MutantRollService.TryRollShiny`, 돌연변이 안에서 25%). 그래서 이로치는
+항상 스탯 반전도 함께 갖는다(역은 아니다). `RollMutantAndShiny()` 가 두 굴림을
+묶어 두므로 포획·교배가 같은 순서를 밟는다.
+
+**색 규칙이 없는 바이옴에서는 이로치가 아예 안 뜬다**(`CanBeShinyIn`). 이 검사가
+없으면 파란 슬라임이 초원에서 "흰색 이로치"가 된다 — 플래그만 켜지고 눈으로는
+평범한 개체와 구분이 안 되는 상태다. 실측으로 잡아 막았다.
+
+**PNG 유전**: 교배 자손의 `speciesId` 를 부모 중 50:50 으로 고른다
+(`BreedingPen.Breed`). 종이 곧 그림이므로 이것이 PNG 유전이다. 실측 200회
+98:102. `SlimeEgg` 도 `shinyFlag`/`shinyTint` 를 실어 나른다 — 안 그러면 부화
+순간 색이 사라진다.
+
+**색은 `SpriteRenderer.color` 로만 건다**(`SlimeAppearance`). 이 값은 렌더러마다
+따로라 같은 프리팹에서 나온 다른 슬라임에 안 번진다. `sharedMaterial` 을
+건드리면 그 머티리얼을 쓰는 개체가 전부 같이 변하고 에디터에서는 자산 파일에까지
+남는다. 이로치 **전용 그림**이 있으면 색은 안 곱한다(두 번 어두워진다).
+
+**아직 안 만든 것**: 종별 패시브(방어형 도발, 무지개 범위 힐, 늪지대 둔화,
+용암 도트). 스탯 편향과 그림까지만 있고 스킬은 없다.
+
+## 애니메이션·효과음 (2026-08-06 신규)
+
+플레이어와 슬라임이 **같은** `ActorAnimation` 컴포넌트를 쓴다 — 둘 다 idle /
+8방향 이동 / 8방향 공격 / 피격이라는 같은 상태 집합이라 나눌 이유가 없다.
+
+- Animator 파라미터: `MoveX` `MoveY` `Speed`(float), `Attack` `Hit`(trigger), `Dead`(bool)
+- 컨트롤러: `Assets/Animations/{Player,Slime}Animator.controller` —
+  `Assets/Editor/ActorAnimatorGenerator.cs` 가 만든다
+  (메뉴 `SlimeRanch/Generate Actor Animators`). **이미 있으면 건너뛴다** —
+  사용자가 끼운 클립을 지우지 않기 위해서다. 다시 만들려면 파일을 먼저 지운다.
+- Idle 도 8방향이다. 정지할 때 `MoveX/MoveY` 를 0 으로 덮지 **않는다** — 덮으면
+  블렌드트리가 원점으로 돌아가 어느 쪽을 보고 섰는지 잃는다.
+- 8방향 블렌드트리의 Motion 칸은 **비어 있다.** 클립을 끼우면 바로 돈다.
+
+**효과음은 애니메이션 이벤트가 아니라 스크립트가 낸다** — 클립이 아직 없는
+상태에서도 배선이 성립해야 하고(이벤트는 클립에 붙는다), 클립을 갈아 끼워도
+효과음 배선이 안 날아간다. `ActorAnimation` 인스펙터에 idle/이동/공격/피격/사망
+칸이 있고 전부 `AudioManager.PlaySfx` 를 거친다 — 여기서 `AudioSource` 를 직접
+두면 그 개체만 설정 패널의 효과음 슬라이더를 무시하게 된다.
+
+`AudioManager`(Boot 영속 싱글턴)는 BGM/SFX `AudioSource` 두 개와 볼륨을 들고
+`PlayerPrefs` 에 저장한다. 배경음 칸은 타이틀/목장/바이옴 세 개이고
+`GameManager.LoadContentScene` 이 씬마다 `PlaySceneBgm` 을 부른다(같은 곡이면
+다시 시작하지 않는다 — 씬을 오갈 때마다 처음으로 튀면 끊긴 것처럼 들린다).
+**클립은 아직 하나도 없다.** 전부 null 이면 조용히 넘어간다.
+
 ## 조작
 
 WASD 이동, Space 근접공격, E 포획, I 인벤토리, Q/F/G 교배장, Z/X/C 목장 시설.
@@ -168,6 +232,24 @@ GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아�
   꼭 `Stop` 부터.
 - MCP 브리지가 가끔 "Unity not detected" 로 한 번씩 끊긴다(도메인 리로드
   타이밍 추정) — 재시도하면 대개 바로 붙는다.
+- **Play 중에 RunCommand 를 여러 번 부르면 `static` 이 조용히 날아간다.**
+  RunCommand 는 매번 코드를 컴파일하고, 그게 도메인 리로드를 부른다.
+  `DontDestroyOnLoad` 오브젝트는 살아남지만 `Awake` 는 다시 안 돌아서
+  `GameManager.Instance` 같은 static 싱글턴이 **전부 null 이 된다**
+  (2026-08-06 실측: 오브젝트는 DontDestroyOnLoad 씬에 멀쩡히 있는데
+  `Instance` 만 null). 증상이 "씬은 맞는데 매니저가 없다" 라서 씬 배선을
+  의심하게 되지만 배선 문제가 아니다. 긴 런타임 검증은 **호출 수를 줄이고**,
+  중간에 null 이 보이면 Stop→Play 로 다시 시작한다.
+- `AssetDatabase.DeleteAsset` 은 그 자산이 에디터에서 열려 있으면 대화상자를
+  띄우려다 `User interactions are not supported` 로 죽는다. 마찬가지로
+  `AnimatorController.CreateAnimatorControllerAtPath` 와
+  `CreateBlendTreeInController` 도 같은 이유로 MCP 경유로는 못 쓴다 —
+  이런 자산 생성은 `Assets/Editor/` 에 `[MenuItem]` 스크립트로 두고
+  `Unity_ManageMenuItem Action=Execute` 로 부른다(파일을 새로 만들었으면
+  컴파일이 끝나야 메뉴에 올라온다 — `IsCompiling` 이 false 가 될 때까지 기다릴 것).
+- `PrefabUtility.UnloadPrefabContents` 뒤에 그 프리팹 안의 오브젝트를 만지면
+  `MissingReferenceException` 이다. 로그에 쓸 이름 같은 값은 **언로드 전에**
+  문자열로 뽑아 둔다.
 - `Unity_ManageAsset Action=Move` 는 실패 응답(`MoveAsset call failed
   unexpectedly`)을 내고도 실제로는 이동에 성공하는 경우가 있었다 — 응답을
   못 믿겠으면 파일시스템으로 직접 확인.

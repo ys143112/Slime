@@ -430,6 +430,9 @@ GameObject:
   - component: {fileID: 7990269747631988482}
   - component: {fileID: 6875656010221766703}
   - component: {fileID: 6146538212130851589}
+  - component: {fileID: 6646633277273468196}
+  - component: {fileID: 940221802444005901}
+  - component: {fileID: 4639739233837591205}
   m_Layer: 0
   m_Name: WildSlime
   m_TagString: Untagged
@@ -499,6 +502,7 @@ MonoBehaviour:
   detectionRadius: 4
   healthBar: {fileID: 8179119795951989402}
   damageFlash: {fileID: 6146538212130851589}
+  appearance: {fileID: 4639739233837591205}
   weakenedIndicator: {fileID: 729235392794718176}
   alertIndicator: {fileID: 6496096030559658757}
 --- !u!212 &7990269747631988482
@@ -612,3 +616,57 @@ MonoBehaviour:
   target: {fileID: 0}
   flashColor: {r: 1, g: 0.35, b: 0.35, a: 1}
   duration: 0.12
+--- !u!95 &6646633277273468196
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581311421063347937}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: be33bfede4c63374e8d8daa2e37b046b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &940221802444005901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581311421063347937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f7a16d6c42e30b40a6a093b69fe49f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.ActorAnimation
+  animator: {fileID: 6646633277273468196}
+  idleSfx: {fileID: 0}
+  moveSfx: {fileID: 0}
+  attackSfx: {fileID: 0}
+  hitSfx: {fileID: 0}
+  deathSfx: {fileID: 0}
+  moveSfxInterval: 0.4
+--- !u!114 &4639739233837591205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581311421063347937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b38e81b282f3a0c4c908fe7c2f1a7759, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeAppearance
+  target: {fileID: 7990269747631988482}

@@ -16,11 +16,13 @@ namespace Game.Gameplay
         [SerializeField] private float swingVisibleSeconds = 0.12f;
 
         private PlayerMovement _movement;
+        private ActorAnimation _animation;
         private float _swingHideTime;
 
         private void Awake()
         {
             _movement = GetComponent<PlayerMovement>();
+            _animation = GetComponent<ActorAnimation>();
             if (swingArc != null)
             {
                 swingArc.SetActive(false);
@@ -86,6 +88,14 @@ namespace Game.Gameplay
             // 원이 대상에서 벗어나 피해가 0 이 된다.
             Vector2 origin = (Vector2)transform.position + facing * reachOffset;
             ShowSwingArc(facing);
+
+            // 공격 애니메이션과 효과음은 판정과 같은 프레임에 나가야 한다 —
+            // 늦으면 맞았는데 안 때린 것처럼 보인다.
+            if (_animation != null)
+            {
+                _animation.PlayAttack(facing);
+            }
+
             Collider2D[] hits = Physics2D.OverlapCircleAll(origin, hitboxRadius);
             int struck = 0;
             foreach (Collider2D hit in hits)

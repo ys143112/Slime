@@ -109,6 +109,13 @@ namespace Game.Gameplay
             // 씬이 0장일 것을 요구한다. 매니저는 DontDestroyOnLoad 라 살아남는다.
             SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
             _activeContentScene = sceneName;
+
+            // 목장과 바이옴의 배경음이 달라야 한다. 씬 전환이 유일한 전환점이라
+            // 여기서 알린다.
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySceneBgm(sceneName);
+            }
         }
     }
 }

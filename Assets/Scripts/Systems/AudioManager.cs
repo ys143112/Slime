@@ -14,6 +14,11 @@ namespace Game.Gameplay
         [SerializeField] private AudioSource bgmSource;
         [SerializeField] private AudioSource sfxSource;
 
+        [Header("배경음 — 클립을 끼우면 시작할 때 자동으로 재생된다")]
+        [SerializeField] private AudioClip titleBgm;
+        [SerializeField] private AudioClip hubBgm;
+        [SerializeField] private AudioClip biomeBgm;
+
         public float BgmVolume
         {
             get => bgmSource != null ? bgmSource.volume : PlayerPrefs.GetFloat(BgmVolumeKey, 1f);
@@ -55,6 +60,30 @@ namespace Game.Gameplay
 
             BgmVolume = PlayerPrefs.GetFloat(BgmVolumeKey, 1f);
             SfxVolume = PlayerPrefs.GetFloat(SfxVolumeKey, 1f);
+        }
+
+        private void Start()
+        {
+            // 클립이 없으면 조용히 넘어간다 — 아직 음원이 없어도 게임은 돈다.
+            PlayBgm(titleBgm);
+        }
+
+        /// <summary>
+        /// 씬 성격에 맞는 배경음으로 갈아탄다. 같은 곡이면 다시 시작하지 않는다 —
+        /// 씬을 오갈 때마다 곡이 처음으로 튀면 끊긴 것처럼 들린다.
+        /// </summary>
+        public void PlaySceneBgm(string sceneName)
+        {
+            AudioClip next = sceneName == "Boot" ? titleBgm
+                : sceneName == "Hub" ? hubBgm
+                : biomeBgm;
+
+            if (next == null || (bgmSource != null && bgmSource.clip == next && bgmSource.isPlaying))
+            {
+                return;
+            }
+
+            PlayBgm(next);
         }
 
         public void PlayBgm(AudioClip clip)
