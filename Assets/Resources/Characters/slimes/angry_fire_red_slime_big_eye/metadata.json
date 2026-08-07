@@ -1,0 +1,142 @@
+{
+  "group_id": "072af121-5d69-4f76-9680-5d4a06caac76",
+  "states": [
+    {
+      "character": {
+        "id": "a1501e0a-02e9-4cc6-9ec2-2f26cebc5569",
+        "name": "Idle",
+        "prompt": "angry fire red slime, big eye",
+        "size": {
+          "width": 172,
+          "height": 172
+        },
+        "template_id": "cat",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-08-06T11:38:03.206149+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "The_red_cyclops_slime_lunges_forward_its_body_comp": {
+            "east": [
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/east/frame_000.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/east/frame_001.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/east/frame_002.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/east/frame_003.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/east/frame_004.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/east/frame_005.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/east/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/north/frame_000.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/north/frame_001.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/north/frame_002.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/north/frame_003.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/north/frame_004.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/north/frame_005.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/north/frame_006.png"
+            ],
+            "west": [
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/west/frame_000.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/west/frame_001.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/west/frame_002.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/west/frame_003.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/west/frame_004.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/west/frame_005.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/west/frame_006.png"
+            ],
+            "south": [
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/south/frame_000.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/south/frame_001.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/south/frame_002.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/south/frame_003.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/south/frame_004.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/south/frame_005.png",
+              "Idle/animations/The_red_cyclops_slime_lunges_forward_its_body_comp/south/frame_006.png"
+            ]
+          },
+          "The_red_one-eyed_slime_creature_compresses_its_bod": {
+            "west": [
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/west/frame_000.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/west/frame_001.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/west/frame_002.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/west/frame_003.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/west/frame_004.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/west/frame_005.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/west/frame_006.png"
+            ],
+            "north": [
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/north/frame_000.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/north/frame_001.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/north/frame_002.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/north/frame_003.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/north/frame_004.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/north/frame_005.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/north/frame_006.png"
+            ],
+            "south": [
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/south/frame_000.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/south/frame_001.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/south/frame_002.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/south/frame_003.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/south/frame_004.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/south/frame_005.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/south/frame_006.png"
+            ],
+            "east": [
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/east/frame_000.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/east/frame_001.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/east/frame_002.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/east/frame_003.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/east/frame_004.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/east/frame_005.png",
+              "Idle/animations/The_red_one-eyed_slime_creature_compresses_its_bod/east/frame_006.png"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "character": {
+        "id": "7dcc18f6-18ec-4fe8-9a9d-e607c2eb0040",
+        "name": "getting attack",
+        "prompt": "angry fire red slime, big eye",
+        "size": {
+          "width": 172,
+          "height": 172
+        },
+        "template_id": "cat",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-08-06T12:14:49.894305+00:00"
+      },
+      "folder": "getting_attack",
+      "frames": {
+        "rotations": {
+          "south": "getting_attack/rotations/south.png",
+          "south-east": "getting_attack/rotations/south-east.png",
+          "east": "getting_attack/rotations/east.png",
+          "north-east": "getting_attack/rotations/north-east.png",
+          "north": "getting_attack/rotations/north.png",
+          "north-west": "getting_attack/rotations/north-west.png",
+          "west": "getting_attack/rotations/west.png",
+          "south-west": "getting_attack/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-08-06T12:29:23.328537"
+}
