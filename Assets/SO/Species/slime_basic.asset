@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_basic
   displayName: "\uD30C\uB780 \uC2AC\uB77C\uC784"
-  defaultSprite: {fileID: 0}
+  defaultSprite: {fileID: -8290264432739398848, guid: 739ccc1b78b2f0a4d8909cd09847e33d, type: 3}
   shinySprite: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: 57a3bd388d573ba40affa52c96ac6088, type: 2}
   canBeShiny: 1
   biomeShinyTints:
   - biomeId: biome_marsh

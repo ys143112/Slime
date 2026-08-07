@@ -89,7 +89,118 @@ acceptanceCriteria 를 satchel 기준으로 고쳤다(원본:
   사용자가 끼운 클립을 지우지 않기 위해서다. 다시 만들려면 파일을 먼저 지운다.
 - Idle 도 8방향이다. 정지할 때 `MoveX/MoveY` 를 0 으로 덮지 **않는다** — 덮으면
   블렌드트리가 원점으로 돌아가 어느 쪽을 보고 섰는지 잃는다.
-- 8방향 블렌드트리의 Motion 칸은 **비어 있다.** 클립을 끼우면 바로 돈다.
+- `Assets/Animations/{Player,Slime}Animator.controller` 의 Motion 칸은 **비어 있다.**
+  슬라임은 아래 종별 컨트롤러가 런타임에 이걸 덮으므로 실질 기본값일 뿐이다.
+
+## 배우 애니메이션 — 슬라임 5종 + 플레이어 (2026-08-07 신규)
+
+**Unity 의 GIF 임포터는 첫 프레임만 가져온다.** `Assets/Resources/Characters/`
+아래의 `.gif` 들은 그래서 그냥 두면 정지 그림이다(`.gif.meta` 의 spriteSheet 에
+`..._0` 하나만 있는 것이 그 증거). 프레임을 밖에서 펴야 한다:
+
+```bash
+python Tools/extract_slime_strips.py          # GIF → Assets/Art/SlimeStrips/*.png
+python Tools/extract_slime_strips.py --demo   # 스트립 규칙 자체 검사
+```
+그다음 Unity 메뉴 `SlimeRanch/Build Actor Animations`
+(`Assets/Editor/SlimeAnimationBuilder.cs`). **원본 GIF 을 새로 넣었으면 두 단계를
+순서대로 다시 밟는다** — 파이썬만 돌리면 클립이 삭제된 스프라이트를 가리킨다.
+
+### 플레이어
+
+`Idle_running-4-frames_*` = 이동, `Idle_cross-punch_*` = 공격,
+`cute_anime_girl_farmer_b-state_of_being_attac/.../rotations/*` = 피격,
+`pixellab-cute-anime-girl--farmer--brown-*.gif` = **대기**(64×64 8프레임,
+프레임 하나가 방향 하나).
+
+**대기 시트의 방향 순서는 파일명에 없어 그림에서 알아냈다.** 머리 영역의
+피부색 비율과 좌우 치우침을 재면 앞모습(피부 많고 중앙) → 옆모습(중간, 한쪽
+쏠림) → 뒷모습(거의 없음)이 단조롭게 이어진다. 방향이 이름에 박힌 달리기 GIF
+로 같은 값을 재서 대조해 8/8 일치를 확인했다:
+`south, south-east, east, north-east, north, north-west, west, south-west`
+(시계방향). 픽셀을 통째로 비교하는 방식은 포즈가 달라 안 통했다 — 8프레임 중
+4개가 north 로 몰렸다.
+
+**대기 시트만 캔버스가 64×64 이고 나머지는 104×104 인데, 인물의 픽셀 크기는
+둘이 같고(높이 50 안팎) 둘 다 캔버스 중앙에 놓여 있다.** 그래서 확대하지 않고
+104 캔버스 가운데에 그대로 붙인다 — 1.625배로 늘리면 픽셀이 뭉갠다. 한 배우의
+셀 크기가 섞이면 PPU 하나로 크기를 못 맞춰 상태가 바뀔 때마다 인물이 커졌다
+작아지므로, `--demo` 가 이 조건을 검사한다.
+
+**프레임 속도는 동작마다 다르다.** 원본 GIF 은 전부 5fps(프레임당 200ms)로
+나왔는데 슬라임이 통통 뛰는 데는 맞아도 사람이 달리고 주먹을 지르는 데 쓰면
+슬로모션이 된다. `SlimeAnimationBuilder.FrameRateFor` 가 정한다:
+
+| | fps | 길이 |
+|---|---|---|
+| 플레이어 공격 | 50 | 0.12초 |
+| 플레이어 이동 | 10 | 0.4초 |
+| 약화(Dead) | 8 | 0.6초 |
+| 나머지 | 5 | — |
+
+**공격 fps 는 상수가 아니라 계산된 값이다.** SwingArc 가 떠 있는 동안 클립이
+다 돌아야 하는데 그 시간은 `Player.prefab` 의
+`PlayerMeleeAttack.swingVisibleSeconds`(0.12초)가 정하므로, 빌더가 그 필드를
+직렬화 이름으로 찾아 읽어 `프레임 수 / 그 시간` 으로 낸다 — 둘 중 하나만
+바뀌어 어긋나는 일이 없게 하려는 것이다.
+
+공격 **전이**도 같이 손본다(`TuneAttackTransitions`): 들어가는 전이의 0.05초
+크로스페이드는 0.12초 클립의 절반 가까이를 이전 자세와 섞어 흐리게 만들므로
+0 으로, 나가는 전이의 `exitTime` 은 0.9 면 마지막 프레임이 뜨기 전에 빠져나가
+므로 1.0 으로 올린다. 이 조정은 **빌더가** 모든 컨트롤러에 건다 — 이미 있는
+`PlayerAnimator` 는 제자리에서 채워져 `ActorAnimatorGenerator` 를 안 거친다.
+
+플레이어 컨트롤러는 **`Assets/Animations/PlayerAnimator.controller` 를 제자리에서
+채운다.** 지웠다 다시 만들면 GUID 가 바뀌어 `Player.prefab` 의 Animator 배선이
+끊긴다. 슬라임 컨트롤러는 반대로 매번 지우고 다시 만든다(종 자산이 GUID 를
+다시 물어 준다).
+
+### 약화(포획 가능) 상태 = Dead
+
+`Dead` 의 Motion 을 비워 두면 애니메이터가 `m_Sprite` 를 아예 안 굴리고
+**프리팹에 저장된 값으로 되돌린다** — 슬라임이 약화되는 순간 예전 PNG 가
+튀어나오던 원인이 이것이다(2026-08-07 QA 로 드러남). 두 겹으로 막았다:
+
+1. `extract_slime_strips.py` 의 `melt_frames()` 가 피격 그림에서 **위에서 아래로
+   눌리며 검게 타는 5프레임**을 만들어 `{actor}__Dead__south.png` 로 낸다.
+   바닥은 셀 바닥이 아니라 **알파 경계의 바닥**에 고정한다 — 셀 바닥에 맞추면
+   그림이 원래 떠 있던 만큼 아래로 뚝 떨어진 뒤 눌리기 시작한다.
+   Dead 는 블렌드트리가 아니라 단일 상태라 방향이 하나면 된다. 반복 안 한다 —
+   마지막 프레임(눌려서 검게 탄 모습)으로 남아 있어야 잡을 수 있다.
+2. `SlimeAppearance.Apply` 가 컨트롤러를 걸면서 **정지 그림도 같이 깐다.**
+   되돌아갈 값 자체를 그 종의 그림으로 만들어 둔다.
+
+색을 커브로 넣지 않고 **그림에 구워 넣은** 이유: `SpriteRenderer.color` 는
+이로치 tint 와 `DamageFlash` 가 이미 쓰고 있어 서로 덮어쓴다.
+
+- 스트립 규칙은 파일 모양 하나로 끝난다: **셀 = 이미지 높이, 프레임 = 너비 / 높이.**
+  원본 GIF 이 전부 정사각(60/92/120/172)이라 별도 메타데이터가 필요 없다.
+- **PPU 는 셀 크기가 아니라 "보이는 실루엣 높이"로 정한다.** 파이썬이
+  `{배우}__Idle__south` 의 알파 경계 높이를 목표 유닛(슬라임 0.75 /
+  플레이어 1.875 — 둘 다 예전 그림의 실루엣 높이 그대로)으로 나눠
+  `Assets/Art/SlimeStrips/ppu.csv` 에 적고 빌더가 그걸 읽는다.
+  예전엔 PPU=셀 크기라 캔버스가 1×1 유닛이었는데, **캔버스 대비 실루엣 비율이
+  종마다 달라서**(파랑 30/60, 무지개 38/120) 무지개만 다른 종보다 36% 작게
+  나왔다. `--demo` 가 배우마다 실루엣이 목표 높이(±0.03)로 떨어지는지 검사한다.
+  배우 하나 안에서는 PPU 가 하나라 동작이 바뀌어도 크기·발 위치가 안 튄다.
+- 결과: `Assets/Animations/Species/{speciesId}.controller` 5개 + 클립 68개.
+  `SlimeSpecies.animatorController` 에 꽂히고 `SlimeAppearance.Apply` 가 런타임에
+  `Animator.runtimeAnimatorController` 로 건다(같은 컨트롤러면 다시 안 건다 —
+  재대입하면 재생이 처음으로 튄다). `defaultSprite` 는 남쪽 Idle 첫 프레임으로
+  자동 지정된다(인벤토리·교배 UI 용 정지 얼굴).
+
+**GIF 파일명을 믿지 마라 — 그림을 봐라.** 이름이 전부 `Idle_custom-` 으로 시작해
+동작 구분이 프롬프트 문구에만 남아 있고, 그 문구조차 그림과 어긋난다. 실제로
+세 건이 틀렸다: `The_creature_abruptly_leans_fo` 는 이름만 보면 늪지대인데
+그림은 무지개(120px 오렌지·초록)와 같은 캐릭터였고, 파란 슬라임의
+`compresses`(차분한 눈 깜빡임)와 `settles_slightly`(파란 폭발)는 Idle/Hit 가
+서로 뒤바뀌어 있었다. 매핑은 `extract_slime_strips.py` 의 `ACTION_MAP` 한 곳이다.
+
+**빈 칸은 이렇게 메운다**(`SlimeAnimationBuilder.Resolve`): 대각선 클립이 없으면
+가까운 가로 방향(NE/SE→E, NW/SW→W), 그래도 없으면 Idle. 그래서 4방향뿐인 용암
+슬라임도 8칸이 다 찬다. 슬라임은 Move 전용 그림이 없어 Idle 클립을 그대로 쓴다
+— 제자리에서 통통 뛰므로 이동 그림이 따로 필요 없다(플레이어는 달리기 그림이
+있어 Resolve 가 그걸 집는다). Hit/Dead 는 방향이 없어 south 클립 한 장씩만 쓴다.
 
 **효과음은 애니메이션 이벤트가 아니라 스크립트가 낸다** — 클립이 아직 없는
 상태에서도 배선이 성립해야 하고(이벤트는 클립에 붙는다), 클립을 갈아 끼워도
@@ -161,9 +272,21 @@ Image(`Background`), 실제 PNG 는 나중에 교체 예정.
 `transform.Find` 로 자식을 찾는다 — 위 MCP 함정(오브젝트 참조 필드 배선이
 안 먹힘) 때문에 고른 방식이다.
 
-캔버스는 **1920×1080 기준**이다: `CanvasScaler` 가 `ScaleWithScreenSize`,
+**게임 기준 해상도는 960×540 (16:9)** 이다 — `ProjectSettings` 의
+`defaultScreenWidth/Height`(및 Web) 가 그 값이고, `resizableWindow: 0` +
+`fullscreenMode: 3`(Windowed) 이라 창 크기가 고정된다(2026-08-07).
+
+캔버스는 그와 별개로 **1920×1080 기준**이다: `CanvasScaler` 가 `ScaleWithScreenSize`,
 reference resolution 1920×1080, match 0.5. UI 좌표는 전부 이 해상도 기준의
 픽셀값으로 넣는다 — 예전에 800×600 짜리 `ConstantPixelSize` 였던 걸 바꿨다.
+기준 해상도가 960×540 이어도 `ScaleWithScreenSize` 라 비율이 그대로 나오므로
+둘이 달라도 된다. **다만 Boot 씬의 `PersistentUICanvas` 만 아직 800×600 기준이다**
+— 같은 화면의 다른 캔버스보다 2.4배 크게 잡히므로 `BreedingUIPanel` 크기가
+어긋나 보이면 여기다.
+
+카메라 orthographic size 는 5 그대로다. **픽셀 퍼펙트는 지금 구조로 불가능하다** —
+타일이 PPU 32, 슬라임 스트립이 PPU 60~172 로 섞여 있어 어떤 ortho 값도 전부를
+정수 배율로 못 맞춘다. 맞추려면 PPU 를 하나로 통일하는 게 먼저다.
 
 `AudioManager`(Boot 씬 영속 싱글턴)가 BGM/SFX `AudioSource` 두 개와 볼륨을
 들고 있고 `PlayerPrefs` 에 저장한다. **실제 클립은 아직 하나도 없다** —
@@ -186,6 +309,45 @@ EventSystem 은 씬마다 하나씩 필요(uGUI 버튼 클릭용) — Hub, Biome
 두면 커밋에서 빠져 다른 사람 클론에서 참조가 깨진다. 반드시
 `AssetDatabase.MoveAsset` 으로 `Assets/Resources/{Icons,Tiles,Decor,UI}/` 로
 옮긴 뒤 커밋한다(GUID 보존되어 참조 안 깨짐).
+
+## 바이옴 바닥 타일 (wang 4-corner, 2026-08-07 교체)
+
+바닥은 **16장짜리 wang 타일셋**이다. 인덱스 규칙은
+`index = NW*8 + NE*4 + SW*2 + SE*1`, 비트 1 = `upper`(두 지형 중 두 번째).
+그래서 0 = 전부 lower(바닥), 15 = 전부 upper(얼룩). 근거는
+`Assets/Resources/Tiles/marsh/tileset.json` 의 `corners` 필드다.
+
+| 폴더 | 씬 | 씬이 실제로 쓰는 타일 |
+|---|---|---|
+| `hub` | Hub (로비) | `Tile_GroundBlend_*` |
+| `biome` | Biome (초원) | `Tile_GroundBlend_*` |
+| `ashfall` | BiomeAshfall (화산재) | `Tile_GroundBlend_*` |
+| `marsh` | BiomeMarsh (늪지대) | **`MarshTile_*` → `wang_*.png`** |
+
+**늪지대만 파일 이름이 다르다.** `GroundBlend_*` 만 갈면 늪지대는 안 바뀐다 —
+Ground 타일맵 384칸이 전부 `MarshTile_0` 이고 그건 `wang_0.png` 를 가리킨다.
+
+새 시트를 받았으면:
+```bash
+python Tools/apply_tile_sheets.py          # 256×256 시트 → 각 폴더의 16장
+python Tools/apply_tile_sheets.py --demo   # 크기·PPU·0/15 구분 자체 검사
+```
+
+- 시트는 64px 칸 4×4 이고 **칸 순서가 `[13,10,4,12,6,8,0,1,11,3,2,5,15,14,9,7]`
+  로 고정**돼 있다(스크립트의 `SHEET_ORDER`). 늪지대 시트의 모서리 색을
+  클러스터링해 뽑은 인덱스가 위 json 의 `tiles` 배열 순서와 16/16 일치해서
+  알아냈다. 색으로 자동 판정하려 들지 말 것 — 용암 시트는 바위 위로 용암이
+  쏟아지는 칸이 있어 모서리 색이 거짓말을 한다.
+- **PPU 는 반드시 셀 크기(64)로 고친다.** 예전 타일이 32px/PPU 32 였는데 PPU 를
+  안 고치고 64px 그림만 덮으면 타일 하나가 Grid 의 2×2 칸을 먹어 지도가 깨진다.
+- **화산재 시트만 인덱스를 뒤집어 넣는다**(`invert=True`). 네 씬 모두 인덱스 0 을
+  바닥으로 깔았는데(384칸 중 250~308칸) 화산재 시트의 인덱스 0 만 용암이라,
+  그대로 넣으면 바닥 전체가 용암이 된다.
+- 같이 오는 `*-wang*.png`(320×256, 빈 칸 3개)는 데모 배치라 안 쓴다. 원본 시트는
+  `Assets/Art/TileSheets/` 로 옮긴다 — Resources 에 두면 잘라낸 타일과 함께
+  빌드에 두 번 들어간다.
+- 충돌은 바닥이 아니라 **별도 `Walls`/`Collision` 타일맵**이 담당한다. 그래서
+  인덱스를 뒤집어도 걸어다닐 수 있는 범위는 안 변한다.
 
 Import 직후 `.meta` 기본값이 프로젝트 관례와 다르다 — 고쳐야 하는 필드:
 `filterMode: 1`→`0`(Point), `spriteMode: 2`→`1`(Single),

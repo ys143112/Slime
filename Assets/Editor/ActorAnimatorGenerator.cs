@@ -22,7 +22,7 @@ namespace Game.EditorTools
 
         // 8방향의 이름과 좌표를 한 곳에서 정한다. 둘이 어긋나면 사용자가 클립을
         // 엉뚱한 칸에 끼우게 된다.
-        private static readonly (string Name, Vector2 Position)[] Directions =
+        internal static readonly (string Name, Vector2 Position)[] Directions =
         {
             ("S", new Vector2(0f, -1f)),
             ("SW", new Vector2(-0.7071f, -0.7071f)),
@@ -62,6 +62,18 @@ namespace Game.EditorTools
                 return;
             }
 
+            CreateController(path);
+        }
+
+        /// <summary>
+        /// 같은 그래프(파라미터·상태·전이)를 가진 컨트롤러를 만들어 돌려준다.
+        /// Motion 칸은 비어 있다 — 클립을 아는 쪽(<c>SlimeAnimationBuilder</c>)이 채운다.
+        /// 덮어쓰기 판단은 부르는 쪽 몫이다.
+        /// </summary>
+        internal static AnimatorController CreateController(string path)
+        {
+            path = path.Replace('\\', '/');
+
             var controller = new AnimatorController { name = Path.GetFileNameWithoutExtension(path) };
             AssetDatabase.CreateAsset(controller, path);
 
@@ -93,6 +105,9 @@ namespace Game.EditorTools
             Connect(idle, move, "Speed", AnimatorConditionMode.Greater, 0.01f);
             Connect(move, idle, "Speed", AnimatorConditionMode.Less, 0.01f);
 
+            // 공격 전이의 블렌드 시간과 exitTime 은 SlimeAnimationBuilder 가
+            // 클립 길이에 맞춰 다시 손본다 — 이미 있는 PlayerAnimator.controller
+            // 는 여기를 안 거치고 그쪽에서 제자리로 채워지기 때문이다.
             Connect(idle, attack, "Attack", AnimatorConditionMode.If, 0f);
             Connect(move, attack, "Attack", AnimatorConditionMode.If, 0f);
 
@@ -123,6 +138,7 @@ namespace Game.EditorTools
 
             EditorUtility.SetDirty(controller);
             Debug.Log($"actor_animator_built: {path} params={controller.parameters.Length} states={root.states.Length}");
+            return controller;
         }
 
         private static void Connect(

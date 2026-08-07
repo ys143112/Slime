@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_guard
   displayName: "\uBC29\uC5B4\uD615 \uD30C\uB780 \uC2AC\uB77C\uC784"
-  defaultSprite: {fileID: 0}
+  defaultSprite: {fileID: 1843758491302937760, guid: 0468bf721347e8d4bb8f6c6d7c962a7d, type: 3}
   shinySprite: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: b769dca9a21c57d4aaa1b906b54cc127, type: 2}
   canBeShiny: 1
   biomeShinyTints: []
   shinyTints:

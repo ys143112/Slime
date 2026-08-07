@@ -31,6 +31,9 @@ namespace Game.Gameplay
         [Tooltip("이로치 전용 그림이 따로 있으면 여기. 비우면 defaultSprite 에 색만 입힌다.")]
         public Sprite shinySprite;
 
+        [Tooltip("종 전용 애니메이터. 있으면 이쪽이 그림을 굴리고 defaultSprite 는 미리보기용으로만 남는다.")]
+        public RuntimeAnimatorController animatorController;
+
         [Header("이로치")]
         [Tooltip("끄면 이 종은 이로치가 나오지 않는다 (무지개 슬라임처럼 단일 개체인 종).")]
         public bool canBeShiny = true;

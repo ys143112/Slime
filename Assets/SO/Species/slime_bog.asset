@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_bog
   displayName: "\uB2AA\uC9C0\uB300 \uC2AC\uB77C\uC784"
-  defaultSprite: {fileID: 0}
+  defaultSprite: {fileID: -3604789384580770694, guid: b61a5e4dd0843634dbadb5077a6f33da, type: 3}
   shinySprite: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: a78a04124af357b4b96511fd2df531f4, type: 2}
   canBeShiny: 1
   biomeShinyTints: []
   shinyTints:

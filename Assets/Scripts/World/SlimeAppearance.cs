@@ -13,10 +13,12 @@ namespace Game.Gameplay
     public sealed class SlimeAppearance : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer target;
+        [SerializeField] private Animator animator;
 
         private void Reset()
         {
             target = GetComponent<SpriteRenderer>();
+            animator = GetComponent<Animator>();
         }
 
         private void Awake()
@@ -24,6 +26,11 @@ namespace Game.Gameplay
             if (target == null)
             {
                 target = GetComponent<SpriteRenderer>();
+            }
+
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
             }
         }
 
@@ -35,9 +42,27 @@ namespace Game.Gameplay
                 return;
             }
 
+            // Awake 에만 기대면 프리팹 인스펙터에 배선이 없는 채로 에디터에서
+            // 부를 때(스폰 미리보기 등) 조용히 애니메이터를 못 찾는다.
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+            }
+
             SlimeSpecies species = SlimeSpeciesCatalog.Lookup(instance.speciesId);
             if (species != null)
             {
+                // 종 전용 애니메이터가 있으면 그림은 그쪽이 굴린다.
+                // 같은 컨트롤러를 다시 넣으면 재생 상태가 처음으로 튀므로 비교한다.
+                if (species.animatorController != null && animator != null
+                    && animator.runtimeAnimatorController != species.animatorController)
+                {
+                    animator.runtimeAnimatorController = species.animatorController;
+                }
+
+                // 애니메이터가 있어도 정지 그림을 같이 깔아 둔다. Motion 이 빈 상태에
+                // 들어가면 애니메이터가 m_Sprite 를 안 굴리고 **프리팹에 저장된 값으로
+                // 되돌리기** 때문이다 — 그 값이 예전 PNG 면 그게 그대로 튀어나온다.
                 Sprite sprite = species.ResolveSprite(instance.shinyFlag);
                 if (sprite != null)
                 {

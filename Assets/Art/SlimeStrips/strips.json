@@ -1,0 +1,856 @@
+{
+  "player__Attack__east.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Attack__north-east.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Attack__north-west.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Attack__north.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Attack__south-east.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Attack__south-west.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Attack__south.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Attack__west.png": {
+    "action": "Attack",
+    "cell": 104,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 6,
+    "species": "player"
+  },
+  "player__Dead__south.png": {
+    "action": "Dead",
+    "cell": 104,
+    "direction": "south",
+    "frameMs": 120,
+    "frames": 5,
+    "meltedFrom": "player__Hit__south.png",
+    "species": "player"
+  },
+  "player__Hit__east.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Hit__north-east.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "north-east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Hit__north-west.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "north-west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Hit__north.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "north",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Hit__south-east.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "south-east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Hit__south-west.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "south-west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Hit__south.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "south",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Hit__west.png": {
+    "action": "Hit",
+    "cell": 104,
+    "direction": "west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__east.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__north-east.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "north-east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__north-west.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "north-west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__north.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "north",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__south-east.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "south-east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__south-west.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "south-west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__south.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "south",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Idle__west.png": {
+    "action": "Idle",
+    "cell": 104,
+    "direction": "west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "player"
+  },
+  "player__Move__east.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "player__Move__north-east.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "player__Move__north-west.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "player__Move__north.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "player__Move__south-east.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "player__Move__south-west.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "player__Move__south.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "player__Move__west.png": {
+    "action": "Move",
+    "cell": 104,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 4,
+    "species": "player"
+  },
+  "slime_basic__Dead__south.png": {
+    "action": "Dead",
+    "cell": 60,
+    "direction": "south",
+    "frameMs": 120,
+    "frames": 5,
+    "meltedFrom": "slime_basic__Hit__south.png",
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__east.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__north-east.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__north-west.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__north.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__south-east.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__south-west.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__south.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Hit__west.png": {
+    "action": "Hit",
+    "cell": 60,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__east.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__north-east.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__north-west.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__north.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__south-east.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__south-west.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__south.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_basic__Idle__west.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_basic"
+  },
+  "slime_bog__Dead__south.png": {
+    "action": "Dead",
+    "cell": 92,
+    "direction": "south",
+    "frameMs": 120,
+    "frames": 5,
+    "meltedFrom": "slime_bog__Hit__south.png",
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__east.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__north-east.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__north-west.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__north.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__south-east.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__south-west.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__south.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Hit__west.png": {
+    "action": "Hit",
+    "cell": 92,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__east.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__north-east.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__north-west.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__north.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__south-east.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__south-west.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__south.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Idle__west.png": {
+    "action": "Idle",
+    "cell": 92,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_guard__Dead__south.png": {
+    "action": "Dead",
+    "cell": 60,
+    "direction": "south",
+    "frameMs": 120,
+    "frames": 5,
+    "meltedFrom": "slime_guard__Idle__south.png",
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__east.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__north-east.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__north-west.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__north.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__south-east.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__south-west.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__south.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_guard__Idle__west.png": {
+    "action": "Idle",
+    "cell": 60,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 9,
+    "species": "slime_guard"
+  },
+  "slime_lava__Attack__east.png": {
+    "action": "Attack",
+    "cell": 172,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_lava__Attack__north.png": {
+    "action": "Attack",
+    "cell": 172,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_lava__Attack__south.png": {
+    "action": "Attack",
+    "cell": 172,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_lava__Attack__west.png": {
+    "action": "Attack",
+    "cell": 172,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_lava__Dead__south.png": {
+    "action": "Dead",
+    "cell": 172,
+    "direction": "south",
+    "frameMs": 120,
+    "frames": 5,
+    "meltedFrom": "slime_lava__Idle__south.png",
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__east.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__north-east.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "north-east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__north-west.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "north-west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__north.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__south-east.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "south-east",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__south-west.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "south-west",
+    "frameMs": 100,
+    "frames": 1,
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__south.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_lava__Idle__west.png": {
+    "action": "Idle",
+    "cell": 172,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_lava"
+  },
+  "slime_rainbow__Attack__east.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Attack__north-east.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Attack__north-west.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Attack__north.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Attack__south-east.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Attack__south-west.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Attack__south.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Attack__west.png": {
+    "action": "Attack",
+    "cell": 120,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Dead__south.png": {
+    "action": "Dead",
+    "cell": 120,
+    "direction": "south",
+    "frameMs": 120,
+    "frames": 5,
+    "meltedFrom": "slime_rainbow__Idle__south.png",
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__east.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__north-east.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "north-east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__north-west.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "north-west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__north.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "north",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__south-east.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "south-east",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__south-west.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "south-west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__south.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "south",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  },
+  "slime_rainbow__Idle__west.png": {
+    "action": "Idle",
+    "cell": 120,
+    "direction": "west",
+    "frameMs": 200,
+    "frames": 7,
+    "species": "slime_rainbow"
+  }
+}
