@@ -20,6 +20,10 @@ namespace Game.Gameplay
         // 하나로 둔다 — 슬라임 하나가 동시에 둘을 물고 있는 경우가 드물다.
         // ponytail: 전역 쿨다운. 다대일 상황이 흔해지면 대상별로 나눈다.
         [SerializeField] private float contactDamageInterval = 1.2f;
+
+        // 이 거리 안이면 추격을 멈춘다. 충돌체 반지름이 서로 0.5 라 중심거리 1.0
+        // 이 곧 맞닿은 상태다 — 조금 여유를 준 값이다.
+        [SerializeField] private float contactStopDistance = 1.05f;
         [SerializeField] private HealthBar healthBar;
         [SerializeField] private DamageFlash damageFlash;
         [SerializeField] private SlimeAppearance appearance;
@@ -183,7 +187,22 @@ namespace Game.Gameplay
                 return;
             }
 
-            Vector2 direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
+            // 닿을 만큼 붙었으면 멈춘다. 계속 밀고 들어가면 상대(플레이어·동행)를
+            // 밀어내며 둘 다 미끄러진다 — 접촉 피해는 붙어만 있어도 들어가므로
+            // 밀어붙일 이유가 없다.
+            Vector2 offset = (Vector2)target.position - (Vector2)transform.position;
+            if (offset.magnitude <= contactStopDistance)
+            {
+                _body.linearVelocity = Vector2.zero;
+                if (_animation != null)
+                {
+                    _animation.SetMovement(Vector2.zero);
+                }
+
+                return;
+            }
+
+            Vector2 direction = offset.normalized;
             _body.linearVelocity = direction * (Instance.baseStats.speed * UnitsPerSpeedPoint);
 
             if (_animation != null)

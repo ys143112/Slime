@@ -28,10 +28,6 @@ namespace Game.Gameplay
         [SerializeField] private float followSpeed = 6.5f;
         [SerializeField] private float followDistance = 1.6f;
 
-        // 멈추는 거리와 다시 출발하는 거리를 벌린다(히스테리시스). 같은 값이면
-        // 플레이어가 조금만 움직여도 정지↔이동이 매 프레임 뒤집히고, 그때마다
-        // 애니메이터가 클립을 처음으로 되감아 "멈춘 채 미끄러지는" 그림이 된다.
-        [SerializeField] private float followResumeDistance = 2.6f;
 
         // 씬이 바뀌거나 벽에 끼면 영영 못 따라온다. 이 거리를 넘으면 순간이동한다.
         [SerializeField] private float teleportDistance = 14f;
@@ -57,7 +53,6 @@ namespace Game.Gameplay
         private Transform _player;
         private float _nextAttackTime;
         private bool _dead;
-        private bool _following;
 
         /// <summary>
         /// 로스터의 개체를 동행으로 내보낸다. 이미 나가 있으면 그 개체를 먼저
@@ -171,10 +166,28 @@ namespace Game.Gameplay
             Follow(player.position, toPlayer);
         }
 
-        private void Follow(Vector2 destination, float distance)
+        // 거리로 "멈춤/출발"을 나누지 않는다. 그 방식은 문턱을 아무리 벌려도
+        // 걷다-서다를 반복해 애니메이션이 툭툭 끊긴다(히스테리시스로도 주기만
+        // 길어질 뿐 없어지지 않았다).
+        //
+        // 대신 플레이어에서 followDistance 만큼 떨어진 자리를 목표로 두고, 그
+        // 자리까지의 오차에 비례해 속도를 낸다. 목표 자리가 플레이어를 따라 계속
+        // 움직이므로 플레이어가 걷는 동안에는 속도도 끊기지 않는다. 플레이어가
+        // 서면 오차가 0 으로 줄어 자연히 멈춘다.
+        private void Follow(Vector2 playerPosition, float distance)
         {
-            _following = _following ? distance > followDistance : distance >= followResumeDistance;
-            if (!_following)
+            Vector2 self = transform.position;
+
+            // 플레이어에서 동행 쪽으로 followDistance 떨어진 점. 뒤로 돌아 들어가지
+            // 않고 지금 서 있는 방향을 그대로 지킨다.
+            Vector2 away = distance > 0.01f ? (self - playerPosition) / distance : Vector2.down;
+            Vector2 anchor = playerPosition + away * followDistance;
+
+            Vector2 error = anchor - self;
+            float gap = error.magnitude;
+
+            // 딱 붙어 서 있을 때 미세한 오차로 떠는 걸 막는다.
+            if (gap < 0.12f)
             {
                 _body.linearVelocity = Vector2.zero;
                 if (_animation != null)
@@ -185,11 +198,7 @@ namespace Game.Gameplay
                 return;
             }
 
-            // 가까워질수록 늦춘다. 플레이어(5)보다 빠른 속도로 끝까지 달리면
-            // 정지거리를 지나쳐 들어왔다 나갔다 한다.
-            float speed = Mathf.Min(followSpeed, distance * 3f);
-            Vector2 direction = (destination - (Vector2)transform.position).normalized;
-            _body.linearVelocity = direction * speed;
+            _body.linearVelocity = error.normalized * Mathf.Min(followSpeed, gap * 6f);
             if (_animation != null)
             {
                 _animation.SetMovement(_body.linearVelocity);
