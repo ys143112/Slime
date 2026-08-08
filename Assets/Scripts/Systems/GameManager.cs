@@ -72,6 +72,21 @@ namespace Game.Gameplay
             RunLogWriter.AppendLine($"RunStarted biome={biomeId}");
         }
 
+        // STAGE_A_DESIGN.md §3-2: 스테이지 안에 바이옴이 섞여 있어서 "지금 밟고
+        // 있는 구역" 이 씬 하나로는 안 정해진다. StartRun 은 어느 씬을 열지
+        // 고르고, 이건 그 씬 안에서 낙인·오염 티어가 읽을 구역을 고른다.
+        // 방 트리거(StageRegionTrigger)가 부른다.
+        public void SetCurrentBiome(string biomeId)
+        {
+            if (string.IsNullOrEmpty(biomeId) || biomeId == CurrentBiomeId)
+            {
+                return;
+            }
+
+            CurrentBiomeId = biomeId;
+            Debug.Log($"region_entered biome={biomeId}");
+        }
+
         public string SceneNameFor(string biomeId)
         {
             BiomeEntry entry = biomeCatalog != null ? biomeCatalog.Find(biomeId) : null;

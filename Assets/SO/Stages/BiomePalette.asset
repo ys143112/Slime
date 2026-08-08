@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07e5c617b47e4e545886544adb5dedf4, type: 3}
+  m_Name: BiomePalette
+  m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.StagePalette
+  biomeId: biome_default
+  floorTile: {fileID: 11400000, guid: a23ac7c6ec69eb34f8cd75c5bf0089e4, type: 2}
+  wallTile: {fileID: 11400000, guid: f64e6e2a8faf23008c54aa7585689da8, type: 2}
+  fogLevels:
+  - {fileID: 11400000, guid: 0d4bae9be30ef454a925e6039abbea84, type: 2}
+  - {fileID: 11400000, guid: f7f47a9c2d48bf34289744bddafdb613, type: 2}
+  - {fileID: 11400000, guid: e0db9c9ce27688148a09d2245b961947, type: 2}
+  - {fileID: 11400000, guid: e32930da5203cab469d0d7c720df5559, type: 2}
+  - {fileID: 11400000, guid: 7c311922c062a184787864a838b06c41, type: 2}
