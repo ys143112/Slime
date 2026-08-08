@@ -15,6 +15,9 @@ namespace Game.Gameplay
         [SerializeField] private float hatchDurationSeconds = 30f;
         [SerializeField] private string hatchConditionLabel = "부화 시간 경과";
 
+        // 서로 다른 종을 붙였을 때 교배 전용 종(무지개)이 나올 확률.
+        [SerializeField] [Range(0f, 1f)] private float crossSpeciesChance = 0.12f;
+
 
         private readonly List<SlimeInstance> _placed = new List<SlimeInstance>(Capacity);
         private readonly List<GameObject> _placedObjects = new List<GameObject>(Capacity);
@@ -165,6 +168,20 @@ public void Breed(SlimeInstance parentA, SlimeInstance parentB)
             // 물려받는다. parentA 로 고정하면 아빠 쪽만 계속 나와 "유전"이 아니다.
             string inheritedSpecies = Random.value < 0.5f ? parentA.speciesId : parentB.speciesId;
 
+            // 다른 종끼리 붙이면 낮은 확률로 교배 전용 종이 나온다. 이 갈래가
+            // 없으면 breedingOnly 종(무지개)은 **생길 경로가 아예 없다** — 야생에
+            // 안 나오고, 자손 종은 부모 둘 중 하나라 부모에 없으면 영영 안 나온다.
+            // 실제로 선언만 있고 읽는 코드가 0곳이었다(2026-08-08).
+            if (parentA.speciesId != parentB.speciesId && Random.value < crossSpeciesChance)
+            {
+                string special = PickBreedingOnlySpecies();
+                if (!string.IsNullOrEmpty(special))
+                {
+                    inheritedSpecies = special;
+                    Debug.Log($"breeding_special species={special}");
+                }
+            }
+
             // 부모 편향을 벗기고 섞은 뒤 자손 종의 편향을 입힌다. 그냥 섞으면
             // 방어형 부모의 2.2배 방어가 자손 종과 무관하게 흘러들어가, 종은
             // 용암인데 성격은 부모 평균인 개체가 나온다. 순서를 지켜야 "종이
@@ -209,6 +226,27 @@ public void Breed(SlimeInstance parentA, SlimeInstance parentB)
 
             EggIncubator.Instance.AddEgg(offspring, hatchDurationSeconds, hatchConditionLabel);
             RunLogWriter.AppendLine($"BreedingProducedEgg species={offspring.speciesId}");
+        }
+
+        // 교배 전용 종이 여럿이면 그중 하나를 고른다. 지금은 무지개뿐이다.
+        private static string PickBreedingOnlySpecies()
+        {
+            SlimeSpeciesCatalog catalog = SlimeSpeciesCatalog.Instance;
+            if (catalog == null)
+            {
+                return null;
+            }
+
+            var candidates = new List<SlimeSpecies>();
+            foreach (SlimeSpecies entry in catalog.Species)
+            {
+                if (entry != null && entry.breedingOnly)
+                {
+                    candidates.Add(entry);
+                }
+            }
+
+            return candidates.Count == 0 ? null : candidates[Random.Range(0, candidates.Count)].speciesId;
         }
 
         // 표에 없는 종은 편향이 걸린 적도 없으므로 그대로 쓴다.

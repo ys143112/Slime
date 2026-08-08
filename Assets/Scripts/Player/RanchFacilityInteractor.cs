@@ -91,9 +91,19 @@ namespace Game.Gameplay
             return PlayerRoster.Instance != null ? PlayerRoster.Instance.Roster.Count : 0;
         }
 
-        // 배치 수·산출량 표시는 매 프레임 실제 값을 그대로 읽는다.
+        // 매 프레임 실제 값을 그대로 읽는다.
+        //
+        // 표시를 시설의 이름표로 보내는 이유: statusText 는 씬에서 배선해야 하는데
+        // 지금 어느 씬에도 안 꽂혀 있어, Z 를 눌러도 무엇이 골렸는지 화면에 아무
+        // 표시가 없었다 — 작동 확인이 불가능했다(2026-08-08). 이름표는 시설이
+        // 스스로 만들므로 배선이 필요 없다.
         private void Refresh(RanchFacility facility)
         {
+            if (facility != null)
+            {
+                facility.ShowSelection(SelectedSpeciesId(), RosterCount());
+            }
+
             if (statusText == null)
             {
                 return;
@@ -105,14 +115,21 @@ namespace Game.Gameplay
                 return;
             }
 
-            int count = RosterCount();
-            string selected = count > 0
-                ? PlayerRoster.Instance.Roster[Mathf.Clamp(_selectedIndex, 0, count - 1)].speciesId
-                : "없음";
-            string assigned = facility.Assigned != null ? facility.Assigned.speciesId : "비어 있음";
             statusText.text =
-                $"작업장: {assigned} | 산출 {facility.OutputPerTick}/틱 (누적 {facility.TotalProduced}) | " +
-                $"선택: {selected} ({count}마리) | Z 전환 X 배치 C 회수";
+                $"휴식소: {(facility.Assigned != null ? facility.Assigned.speciesId : "비어 있음")} | " +
+                $"선택: {SelectedSpeciesId()} ({RosterCount()}마리) | Z 전환 X 눕히기 C 회수";
+        }
+
+        private string SelectedSpeciesId()
+        {
+            int count = RosterCount();
+            if (count == 0)
+            {
+                return "없음";
+            }
+
+            SlimeInstance selected = PlayerRoster.Instance.Roster[Mathf.Clamp(_selectedIndex, 0, count - 1)];
+            return $"{selected.speciesId} (HP {selected.currentHp}/{selected.baseStats.maxHp})";
         }
     }
 }
