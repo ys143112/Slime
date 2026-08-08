@@ -401,77 +401,77 @@
     "frames": 5,
     "species": "slime_basic"
   },
-  "slime_bog__Dead__south.png": {
-    "action": "Dead",
-    "cell": 92,
-    "direction": "south",
-    "frameMs": 120,
-    "frames": 5,
-    "meltedFrom": "slime_bog__Hit__south.png",
-    "species": "slime_bog"
-  },
-  "slime_bog__Hit__east.png": {
-    "action": "Hit",
+  "slime_bog__Attack__east.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "east",
     "frameMs": 200,
     "frames": 5,
     "species": "slime_bog"
   },
-  "slime_bog__Hit__north-east.png": {
-    "action": "Hit",
+  "slime_bog__Attack__north-east.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "north-east",
     "frameMs": 200,
     "frames": 5,
     "species": "slime_bog"
   },
-  "slime_bog__Hit__north-west.png": {
-    "action": "Hit",
+  "slime_bog__Attack__north-west.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "north-west",
     "frameMs": 200,
     "frames": 5,
     "species": "slime_bog"
   },
-  "slime_bog__Hit__north.png": {
-    "action": "Hit",
+  "slime_bog__Attack__north.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "north",
     "frameMs": 200,
     "frames": 5,
     "species": "slime_bog"
   },
-  "slime_bog__Hit__south-east.png": {
-    "action": "Hit",
+  "slime_bog__Attack__south-east.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "south-east",
     "frameMs": 200,
     "frames": 5,
     "species": "slime_bog"
   },
-  "slime_bog__Hit__south-west.png": {
-    "action": "Hit",
+  "slime_bog__Attack__south-west.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "south-west",
     "frameMs": 200,
     "frames": 5,
     "species": "slime_bog"
   },
-  "slime_bog__Hit__south.png": {
-    "action": "Hit",
+  "slime_bog__Attack__south.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "south",
     "frameMs": 200,
     "frames": 5,
     "species": "slime_bog"
   },
-  "slime_bog__Hit__west.png": {
-    "action": "Hit",
+  "slime_bog__Attack__west.png": {
+    "action": "Attack",
     "cell": 92,
     "direction": "west",
     "frameMs": 200,
     "frames": 5,
+    "species": "slime_bog"
+  },
+  "slime_bog__Dead__south.png": {
+    "action": "Dead",
+    "cell": 92,
+    "direction": "south",
+    "frameMs": 120,
+    "frames": 5,
+    "meltedFrom": "slime_bog__Idle__south.png",
     "species": "slime_bog"
   },
   "slime_bog__Idle__east.png": {

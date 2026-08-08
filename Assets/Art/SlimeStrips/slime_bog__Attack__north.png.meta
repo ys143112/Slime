@@ -1,28 +1,64 @@
 fileFormatVersion: 2
-guid: 17ac11af5bf0deb4fa2ba67797c0b58d
+guid: 056ddf313d460214b9cf89a5fc55c832
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 393258358088695538
-    second: slime_bog__Hit__south_0
+      213: 2452168697605698808
+    second: slime_bog__Attack__north_0
   - first:
-      213: -8996641429325282241
-    second: slime_bog__Hit__south_1
+      213: -166919804693105586
+    second: slime_bog__Attack__north_1
   - first:
-      213: -8502263188226267027
-    second: slime_bog__Hit__south_2
+      213: -5313080984025322829
+    second: slime_bog__Attack__north_2
   - first:
-      213: 6220390353316692214
-    second: slime_bog__Hit__south_3
+      213: 5395507723891464029
+    second: slime_bog__Attack__north_3
   - first:
-      213: -3453759559790618417
-    second: slime_bog__Hit__south_4
+      213: 8839433222842901245
+    second: slime_bog__Attack__north_4
   - first:
-      213: 2078263680990961415
-    second: slime_bog__Hit__south_5
+      213: 7755171664935285230
+    second: slime_bog__Attack__north_5
   - first:
-      213: 601129706921521204
-    second: slime_bog__Hit__south_6
+      213: -9217987782889065205
+    second: slime_bog__Attack__north_6
+  - first:
+      213: -1581128022193447021
+    second: slime_bog__Attack__north_7
+  - first:
+      213: 4222508159329944841
+    second: slime_bog__Attack__north_8
+  - first:
+      213: 4603489232840912692
+    second: slime_bog__Attack__north_9
+  - first:
+      213: 1486188372742995742
+    second: slime_bog__Attack__north_10
+  - first:
+      213: -1879586212526523781
+    second: slime_bog__Attack__north_11
+  - first:
+      213: 52433467342322971
+    second: slime_bog__Attack__north_12
+  - first:
+      213: -371124694775741726
+    second: slime_bog__Attack__north_13
+  - first:
+      213: 8091295033778764478
+    second: slime_bog__Attack__north_14
+  - first:
+      213: -366775169827038253
+    second: slime_bog__Attack__north_15
+  - first:
+      213: 4154139703094969674
+    second: slime_bog__Attack__north_16
+  - first:
+      213: 1522320261262702910
+    second: slime_bog__Attack__north_17
+  - first:
+      213: 8423668279987936681
+    second: slime_bog__Attack__north_18
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -114,24 +150,11 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: slime_bog__Hit__south_0
+      name: slime_bog__Attack__north_0
       rect:
         serializedVersion: 2
         x: 0
@@ -146,14 +169,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2fe74d2a462257500800000000000000
-      internalID: 393258358088695538
+      spriteID: 8f4be16307ad70220800000000000000
+      internalID: 2452168697605698808
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south_1
+      name: slime_bog__Attack__north_1
       rect:
         serializedVersion: 2
         x: 92
@@ -168,14 +191,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f3401894942852380800000000000000
-      internalID: -8996641429325282241
+      spriteID: e443a4f625bfeadf0800000000000000
+      internalID: -166919804693105586
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south_2
+      name: slime_bog__Attack__north_2
       rect:
         serializedVersion: 2
         x: 184
@@ -190,14 +213,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d68a4ee5da4e10a80800000000000000
-      internalID: -8502263188226267027
+      spriteID: 3baa944bef42446b0800000000000000
+      internalID: -5313080984025322829
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south_3
+      name: slime_bog__Attack__north_3
       rect:
         serializedVersion: 2
         x: 276
@@ -212,14 +235,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6f045bdb114435650800000000000000
-      internalID: 6220390353316692214
+      spriteID: d575d6130b1b0ea40800000000000000
+      internalID: 5395507723891464029
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south_4
+      name: slime_bog__Attack__north_4
       rect:
         serializedVersion: 2
         x: 368
@@ -234,8 +257,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fc8121baaf7c110d0800000000000000
-      internalID: -3453759559790618417
+      spriteID: df2665fcea9fbaa70800000000000000
+      internalID: 8839433222842901245
       vertices: []
       indices: 
       edges: []
@@ -254,13 +277,25 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      slime_bog__Hit__south_0: 393258358088695538
-      slime_bog__Hit__south_1: -8996641429325282241
-      slime_bog__Hit__south_2: -8502263188226267027
-      slime_bog__Hit__south_3: 6220390353316692214
-      slime_bog__Hit__south_4: -3453759559790618417
-      slime_bog__Hit__south_5: 2078263680990961415
-      slime_bog__Hit__south_6: 601129706921521204
+      slime_bog__Attack__north_0: 2452168697605698808
+      slime_bog__Attack__north_1: -166919804693105586
+      slime_bog__Attack__north_10: 1486188372742995742
+      slime_bog__Attack__north_11: -1879586212526523781
+      slime_bog__Attack__north_12: 52433467342322971
+      slime_bog__Attack__north_13: -371124694775741726
+      slime_bog__Attack__north_14: 8091295033778764478
+      slime_bog__Attack__north_15: -366775169827038253
+      slime_bog__Attack__north_16: 4154139703094969674
+      slime_bog__Attack__north_17: 1522320261262702910
+      slime_bog__Attack__north_18: 8423668279987936681
+      slime_bog__Attack__north_2: -5313080984025322829
+      slime_bog__Attack__north_3: 5395507723891464029
+      slime_bog__Attack__north_4: 8839433222842901245
+      slime_bog__Attack__north_5: 7755171664935285230
+      slime_bog__Attack__north_6: -9217987782889065205
+      slime_bog__Attack__north_7: -1581128022193447021
+      slime_bog__Attack__north_8: 4222508159329944841
+      slime_bog__Attack__north_9: 4603489232840912692
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

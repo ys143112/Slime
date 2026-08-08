@@ -1,22 +1,22 @@
 fileFormatVersion: 2
-guid: aa37cb821abfaaa44ae95bd18e43af61
+guid: ddd69f711e6850d4496c9fd20aaba676
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3634832524130011700
-    second: slime_bog__Hit__north-west_0
+      213: 6378600771645847657
+    second: slime_bog__Attack__south-west_0
   - first:
-      213: 5625848307850974689
-    second: slime_bog__Hit__north-west_1
+      213: 2540103011568311391
+    second: slime_bog__Attack__south-west_1
   - first:
-      213: -1459789734338836183
-    second: slime_bog__Hit__north-west_2
+      213: -5001783638415063461
+    second: slime_bog__Attack__south-west_2
   - first:
-      213: -3655493678435735261
-    second: slime_bog__Hit__north-west_3
+      213: -6740661347251558378
+    second: slime_bog__Attack__south-west_3
   - first:
-      213: -380090569299404996
-    second: slime_bog__Hit__north-west_4
+      213: 5498344592470316142
+    second: slime_bog__Attack__south-west_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -108,24 +108,11 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: slime_bog__Hit__north-west_0
+      name: slime_bog__Attack__south-west_0
       rect:
         serializedVersion: 2
         x: 0
@@ -140,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 43a4eca2ce4817230800000000000000
-      internalID: 3634832524130011700
+      spriteID: 968bbf54b97558850800000000000000
+      internalID: 6378600771645847657
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__north-west_1
+      name: slime_bog__Attack__south-west_1
       rect:
         serializedVersion: 2
         x: 92
@@ -162,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1e590bd9a37031e40800000000000000
-      internalID: 5625848307850974689
+      spriteID: f5cdd612b32404320800000000000000
+      internalID: 2540103011568311391
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__north-west_2
+      name: slime_bog__Attack__south-west_2
       rect:
         serializedVersion: 2
         x: 184
@@ -184,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 929c8fd88f8cdbbe0800000000000000
-      internalID: -1459789734338836183
+      spriteID: b56c8ec0848169ab0800000000000000
+      internalID: -5001783638415063461
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__north-west_3
+      name: slime_bog__Attack__south-west_3
       rect:
         serializedVersion: 2
         x: 276
@@ -206,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 329e62afdd3154dc0800000000000000
-      internalID: -3655493678435735261
+      spriteID: 6186dddd73c5472a0800000000000000
+      internalID: -6740661347251558378
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__north-west_4
+      name: slime_bog__Attack__south-west_4
       rect:
         serializedVersion: 2
         x: 368
@@ -228,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c37de6a14a5a9baf0800000000000000
-      internalID: -380090569299404996
+      spriteID: e6412ee764b0e4c40800000000000000
+      internalID: 5498344592470316142
       vertices: []
       indices: 
       edges: []
@@ -248,11 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      slime_bog__Hit__north-west_0: 3634832524130011700
-      slime_bog__Hit__north-west_1: 5625848307850974689
-      slime_bog__Hit__north-west_2: -1459789734338836183
-      slime_bog__Hit__north-west_3: -3655493678435735261
-      slime_bog__Hit__north-west_4: -380090569299404996
+      slime_bog__Attack__south-west_0: 6378600771645847657
+      slime_bog__Attack__south-west_1: 2540103011568311391
+      slime_bog__Attack__south-west_2: -5001783638415063461
+      slime_bog__Attack__south-west_3: -6740661347251558378
+      slime_bog__Attack__south-west_4: 5498344592470316142
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

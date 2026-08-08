@@ -1,28 +1,22 @@
 fileFormatVersion: 2
-guid: 19a52a8e4949ce046891ba2c72351f1f
+guid: 13aeb98167f6e604b83bdb872e108336
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6014538554585189286
-    second: slime_bog__Hit__south-west_0
+      213: -7135483484126373686
+    second: slime_bog__Attack__south-east_0
   - first:
-      213: -193840443100197886
-    second: slime_bog__Hit__south-west_1
+      213: 8295571956580419346
+    second: slime_bog__Attack__south-east_1
   - first:
-      213: -8581287343383920895
-    second: slime_bog__Hit__south-west_2
+      213: -28937701945765563
+    second: slime_bog__Attack__south-east_2
   - first:
-      213: 4108845877242400476
-    second: slime_bog__Hit__south-west_3
+      213: -6451755796452444492
+    second: slime_bog__Attack__south-east_3
   - first:
-      213: -344102024327189694
-    second: slime_bog__Hit__south-west_4
-  - first:
-      213: 2066765901577758448
-    second: slime_bog__Hit__south-west_5
-  - first:
-      213: -4303508923674301455
-    second: slime_bog__Hit__south-west_6
+      213: -5804359486297290322
+    second: slime_bog__Attack__south-east_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -114,24 +108,11 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: slime_bog__Hit__south-west_0
+      name: slime_bog__Attack__south-east_0
       rect:
         serializedVersion: 2
         x: 0
@@ -146,14 +127,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a54fe0e0d01188ca0800000000000000
-      internalID: -6014538554585189286
+      spriteID: ac81bfb939ba9fc90800000000000000
+      internalID: -7135483484126373686
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south-west_1
+      name: slime_bog__Attack__south-east_1
       rect:
         serializedVersion: 2
         x: 92
@@ -168,14 +149,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 20c88edd4275f4df0800000000000000
-      internalID: -193840443100197886
+      spriteID: 2170ba02ebacf1370800000000000000
+      internalID: 8295571956580419346
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south-west_2
+      name: slime_bog__Attack__south-east_2
       rect:
         serializedVersion: 2
         x: 184
@@ -190,14 +171,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 10fbb0670a429e880800000000000000
-      internalID: -8581287343383920895
+      spriteID: 54118ea3051399ff0800000000000000
+      internalID: -28937701945765563
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south-west_3
+      name: slime_bog__Attack__south-east_3
       rect:
         serializedVersion: 2
         x: 276
@@ -212,14 +193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cde8cd54e8d850930800000000000000
-      internalID: 4108845877242400476
+      spriteID: 4b672e63942c676a0800000000000000
+      internalID: -6451755796452444492
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: slime_bog__Hit__south-west_4
+      name: slime_bog__Attack__south-east_4
       rect:
         serializedVersion: 2
         x: 368
@@ -234,8 +215,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 24b2c713801893bf0800000000000000
-      internalID: -344102024327189694
+      spriteID: ea9c49eccc5c27fa0800000000000000
+      internalID: -5804359486297290322
       vertices: []
       indices: 
       edges: []
@@ -254,13 +235,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      slime_bog__Hit__south-west_0: -6014538554585189286
-      slime_bog__Hit__south-west_1: -193840443100197886
-      slime_bog__Hit__south-west_2: -8581287343383920895
-      slime_bog__Hit__south-west_3: 4108845877242400476
-      slime_bog__Hit__south-west_4: -344102024327189694
-      slime_bog__Hit__south-west_5: 2066765901577758448
-      slime_bog__Hit__south-west_6: -4303508923674301455
+      slime_bog__Attack__south-east_0: -7135483484126373686
+      slime_bog__Attack__south-east_1: 8295571956580419346
+      slime_bog__Attack__south-east_2: -28937701945765563
+      slime_bog__Attack__south-east_3: -6451755796452444492
+      slime_bog__Attack__south-east_4: -5804359486297290322
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

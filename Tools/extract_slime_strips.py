@@ -40,8 +40,12 @@ ACTION_MAP: dict[str, tuple[str, str]] = {
     # 120px 오렌지·초록 개체. 이름의 "creature" 만 보면 늪지대 같지만 그림은
     # colorful 과 같은 캐릭터다 — 늪지대(92px 이끼 녹색)와 다르다.
     "Idle_custom-The_creature_abruptly_leans_fo": ("slime_rainbow", "Attack"),
-    "Idle_custom-The_creature_shifts_its_weight": ("slime_bog", "Idle"),
-    "Idle_custom-The_swamp_creature_compresses": ("slime_bog", "Hit"),
+    # 늪지대도 이름과 그림이 어긋나 있었다(2026-08-08 QA). `shifts_its_weight`
+    # 는 3프레임째에 노란 촉수를 양옆으로 뻗는 공격 동작이고, `compresses` 쪽이
+    # 잔잔하게 눌렸다 펴지는 대기 동작이다. 파란 슬라임에서 `compresses` 를
+    # 대기로 잡아 놓고 늪지대만 피격으로 잡았던 것부터 앞뒤가 안 맞았다.
+    "Idle_custom-The_creature_shifts_its_weight": ("slime_bog", "Attack"),
+    "Idle_custom-The_swamp_creature_compresses": ("slime_bog", "Idle"),
     "Idle_custom-The_red_cyclops_slime_lunges_f": ("slime_lava", "Attack"),
     "Idle_custom-The_red_one-eyed_slime_creatu": ("slime_lava", "Idle"),
 }
