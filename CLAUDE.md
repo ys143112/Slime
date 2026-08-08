@@ -319,8 +319,10 @@ reference resolution 1920×1080, match 0.5. UI 좌표는 전부 이 해상도 �
 `PlayBgm`/`PlaySfx` 와 `BootMenuUI.clickSfx` 는 클립을 꽂으면 바로 도는
 빈 틀이다(클립이 null 이면 조용히 무시).
 
-EventSystem 은 씬마다 하나씩 필요(uGUI 버튼 클릭용) — Hub, Biome 3종 전부
-갖고 있음. 새 씬 만들면 빠뜨리기 쉬움, 확인할 것.
+EventSystem 은 씬마다 하나씩 필요(uGUI 버튼 클릭용) — 다섯 씬 전부 갖고 있다.
+Hub 만 없어서 Esc 메뉴 버튼이 목장에서 안 눌렸는데 2026-08-08 에 넣었다.
+모듈은 `InputSystemUIInputModule` 이다(레거시 모듈은 새 Input System 과
+같이 쓰면 예외를 던진다). 새 씬 만들면 빠뜨리기 쉬움, 확인할 것.
 
 세이브 파일: `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Slime\Saves\
 {biome_stigma,player_roster}.json`. 런타임 검증하다 낙인/로스터에 테스트
@@ -360,6 +362,20 @@ EventSystem 은 씬마다 하나씩 필요(uGUI 버튼 클릭용) — Hub, Biome
 **늪지대만 파일 이름이 다르다.** `GroundBlend_*` 만 갈면 늪지대는 안 바뀐다 —
 Ground 타일맵 384칸이 전부 `MarshTile_0` 이고 그건 `wang_0.png` 를 가리킨다.
 
+**어느 지형이 upper 인지는 시트마다 다르고, 그게 벽이 어떻게 보이는지를
+정한다**(2026-08-08). 시트 파일 이름이 `A ↗ B` 꼴로 그 둘을 적어 둔다
+(`Assets/Art/TileSheets/`) — `B` 가 upper 다.
+
+| 폴더 | lower | upper |
+|---|---|---|
+| `hub` | 어두운 잡초밭 | **꽃 핀 밝은 초지** |
+| `biome` | 밝은 풀밭 | **나무 캐노피** ← 벽이 둔덕이 아니라 덤불로 보인다 |
+| `marsh` | 흙탕물 | 진흙 둔덕 |
+| `ashfall` | 용암 | 잿빛 바위 (그래서 이 시트만 `invert=True`) |
+
+로비는 **안마당을 upper 로** 칠한다 — 반대로 하면 못 가는 바깥이 환하고
+정작 목장이 어두침침해진다. 바이옴 셋은 벽이 upper 다.
+
 새 시트를 받았으면:
 ```bash
 python Tools/apply_tile_sheets.py          # 256×256 시트 → 각 폴더의 16장
@@ -388,6 +404,53 @@ Import 직후 `.meta` 기본값이 프로젝트 관례와 다르다 — 고쳐�
 `spritePixelsToUnits: 100`→ 생성 시 넘긴 `size` 값과 동일하게(예: 32px 요청
 → PPU 32, 128px 아이콘 → PPU 128) — 안 맞추면 씬에서 크기가 어긋난다.
 고친 뒤 `Unity_ManageAsset Action=Import` 로 강제 재임포트.
+
+## Hub 안마당 (2026-08-08 재시공)
+
+바이옴 셋은 `StageMapGenerator` 가 런타임에 그리지만 **Hub 는 손배치다** —
+생성기가 안 붙어 있으니 씬을 직접 고쳐야 한다.
+
+- 걸어다니는 안마당은 셀 `x ∈ [-11, 10]`, `y ∈ [-6, 5]` (22×12).
+- **Ground 는 그보다 훨씬 넓게 칠한다**: `x ∈ [-21, 20]`, `y ∈ [-12, 11]`.
+  카메라가 ortho 5 / 16:9 라 반폭 8.9 인데, 안마당 끝에 서면 그만큼 더
+  보인다 — 안 넓히면 화면에 아무것도 없는 회색이 든다.
+- `Walls` 타일맵은 **충돌 전용**이다: `TilemapRenderer.enabled = false`,
+  타일은 그림 없는 `Tiles/hub/Tile_HubCollision.asset`(`colliderType = Grid`).
+  경계 그림은 Ground 의 wang 이 그린다. 확인은 `CompositeCollider2D.pathCount`
+  가 2(바깥 테두리 + 안마당 구멍)인지와 `OverlapPoint` 몇 점으로 한다.
+- **예전에 콜라이더가 아예 없었던 이유**: `Tile_HubWall_*` 자산이 지워졌는데
+  타일맵이 그걸 계속 가리켜 76칸이 빈 참조가 됐다. 빈 참조는 그림도
+  콜라이더도 안 낸다 — 씬은 멀쩡해 보이고 밖으로 걸어 나가진다.
+- 휴식소(`RanchFacility`) 4개가 `Props/hub_decor/{1,2,3,4}.png` 를 쓴다
+  (잿벌·늪지대·정비수조·초원 순서로 골랐다). 늘릴 때는 **씬의 것을 복제**할 것
+  — `outputTable` 인스펙터 참조를 다시 꽂지 않아도 된다. `facilityId` 는
+  로그에만 쓰이지만 겹치면 어느 웅덩이인지 못 읽는다.
+- 바닥에 눕는 그림(웅덩이·포털)은 `sortingOrder = -5`. Y 정렬이 커스텀 축
+  이라 같은 order 끼리만 겨루므로, 0 에 두면 플레이어가 웅덩이 뒤로 들어간다.
+
+**장식은 벽 덩어리 안쪽에만 놓는다**(`StageMapGenerator`). 나무(`PaintTreeProps`)
+와 돌·풀(`PaintDecor`) 둘 다 `SurroundedByWall`(8방향 전부 벽) 을 통과해야 한다
+— 걸어다니는 바닥에 그림이 얹히면 밟고 지나갈 수 있는지 막힌 곳인지 구분이
+안 된다. 벽 안쪽은 칸 수가 적어 `decorDensity` 를 5배 해서 쓴다.
+
+## GitHub Pages 배포
+
+`https://ys143112.github.io/Slime/` — `gh-pages` 브랜치 루트를 그대로 서빙한다.
+
+**Brotli 를 켠 채로 Pages 에서 도는 이유는 `decompressionFallback` 이다.**
+Pages 는 `Content-Encoding: br` 헤더를 못 붙이는데, 이 옵션을 켜면 로더가
+브라우저에서 직접 푼다(파일 확장자가 `.br` 이 아니라 `.unityweb` 인 것이
+그 흔적). 끄면 Pages 에서 로딩 중에 멈춘다.
+
+```bash
+# Unity 에서 Build/WebGL 로 빌드한 뒤
+git worktree add --orphan -B gh-pages ../slime-pages
+cp -r Build/WebGL/. ../slime-pages/ && touch ../slime-pages/.nojekyll
+cd ../slime-pages && git add -A && git commit -m "chore: WebGL 빌드" && git push -f origin gh-pages
+```
+
+`Build/` 는 `.gitignore` 대상이라 본체 브랜치는 안 더러워진다. 매번 orphan
+으로 다시 만들어 force push 하면 15MB 짜리 빌드가 히스토리에 쌓이지 않는다.
 
 ## ExtractionPoint 는 벽 안쪽에 있어야 한다
 
