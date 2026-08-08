@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: slime_basic
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_basic
-  displayName: "\uD30C\uB780 \uC2AC\uB77C\uC784"
+  displayName: Blue Slime
   defaultSprite: {fileID: -8290264432739398848, guid: 739ccc1b78b2f0a4d8909cd09847e33d, type: 3}
   shinySprite: {fileID: 0}
   animatorController: {fileID: 9100000, guid: 57a3bd388d573ba40affa52c96ac6088, type: 2}
@@ -28,4 +28,8 @@ MonoBehaviour:
   attackMultiplier: 1
   defenseMultiplier: 1
   speedMultiplier: 1
+  passive: 0
+  passiveRadius: 3
+  passiveInterval: 1.5
+  passiveAmount: 2
   breedingOnly: 0

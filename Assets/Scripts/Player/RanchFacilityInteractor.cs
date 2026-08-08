@@ -116,7 +116,7 @@ namespace Game.Gameplay
             }
 
             statusText.text =
-                $"휴식소: {(facility.Assigned != null ? facility.Assigned.speciesId : "비어 있음")} | " +
+                $"휴식소: {(facility.Assigned != null ? SlimeSpeciesCatalog.DisplayName(facility.Assigned.speciesId) : "비어 있음")} | " +
                 $"선택: {SelectedSpeciesId()} ({RosterCount()}마리) | Z 전환 X 눕히기 C 회수";
         }
 
@@ -129,7 +129,7 @@ namespace Game.Gameplay
             }
 
             SlimeInstance selected = PlayerRoster.Instance.Roster[Mathf.Clamp(_selectedIndex, 0, count - 1)];
-            return $"{selected.speciesId} (HP {selected.currentHp}/{selected.baseStats.maxHp})";
+            return $"{SlimeSpeciesCatalog.DisplayName(selected.speciesId)} (HP {selected.currentHp}/{selected.baseStats.maxHp})";
         }
     }
 }

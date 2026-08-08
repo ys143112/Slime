@@ -64,5 +64,19 @@ namespace Game.Gameplay
             SlimeSpeciesCatalog catalog = Instance;
             return catalog != null ? catalog.Find(speciesId) : null;
         }
+
+        /// <summary>화면에 쓸 이름. 표에 없으면 speciesId 를 그대로 돌려준다.</summary>
+        /// <remarks>
+        /// UI 일곱 군데가 저마다 <c>instance.speciesId</c> 를 그대로 찍고 있어
+        /// "slime_bog" 같은 내부 식별자가 그대로 보였다. 이름을 바꾸려면 일곱
+        /// 군데를 다 고쳐야 했다 — 해석을 여기 한 곳으로 모은다.
+        /// </remarks>
+        public static string DisplayName(string speciesId)
+        {
+            SlimeSpecies species = Lookup(speciesId);
+            return species != null && !string.IsNullOrEmpty(species.displayName)
+                ? species.displayName
+                : speciesId;
+        }
     }
 }

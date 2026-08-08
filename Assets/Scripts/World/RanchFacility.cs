@@ -73,7 +73,7 @@ namespace Game.Gameplay
             }
 
             bool full = Assigned.currentHp >= Assigned.baseStats.maxHp;
-            _label.text = $"휴식소: {Assigned.speciesId}\n" +
+            _label.text = $"휴식소: {SlimeSpeciesCatalog.DisplayName(Assigned.speciesId)}\n" +
                 $"HP {Assigned.currentHp}/{Assigned.baseStats.maxHp}{(full ? " (다 나음)" : "")}  C 회수";
         }
 

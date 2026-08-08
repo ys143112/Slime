@@ -38,7 +38,7 @@ namespace Game.Gameplay
                 // 스탯을 안 보여주면 교배 결과를 확인할 방법이 없다 — 종 편향이
                 // 걸렸는지, 좋은 개체가 나왔는지가 전부 이 숫자에 있다.
                 SlimeStatBlock stats = instance.baseStats;
-                label.text = $"{(isCompanion ? "★ " : "")}{instance.speciesId}{tag}\n" +
+                label.text = $"{(isCompanion ? "★ " : "")}{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tag}\n" +
                     $"HP {instance.currentHp}/{stats.maxHp}\n" +
                     $"공 {stats.attack} 방 {stats.defense} 속 {stats.speed}";
             }

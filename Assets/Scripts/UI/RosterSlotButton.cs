@@ -75,7 +75,7 @@ namespace Game.Gameplay
             _onClicked = onClicked;
 
             string tag = instance.mutantFlag ? " [돌연변이]" : instance.corruptedGeneFlag ? " [오염]" : "";
-            _baseLabel = $"{instance.speciesId}{tag}\nHP {instance.currentHp}/{instance.baseStats.maxHp}";
+            _baseLabel = $"{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tag}\nHP {instance.currentHp}/{instance.baseStats.maxHp}";
 
             if (icon != null)
             {

@@ -26,7 +26,7 @@ namespace Game.Gameplay
 
             string tag = _egg.mutantFlag ? " [돌연변이]" : _egg.corruptedGeneFlag ? " [오염]" : "";
             float remaining = _egg.RemainingSeconds(nowUtc);
-            label.text = $"{_egg.speciesId}{tag}\n{_egg.hatchConditionLabel} ({remaining:0.0}초)";
+            label.text = $"{SlimeSpeciesCatalog.DisplayName(_egg.speciesId)}{tag}\n{_egg.hatchConditionLabel} ({remaining:0.0}초)";
         }
     }
 }

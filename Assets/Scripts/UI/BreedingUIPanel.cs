@@ -193,12 +193,12 @@ namespace Game.Gameplay
         {
             if (slotAText != null)
             {
-                slotAText.text = _slotA != null ? _slotA.speciesId : "선택 안 됨";
+                slotAText.text = _slotA != null ? SlimeSpeciesCatalog.DisplayName(_slotA.speciesId) : "선택 안 됨";
             }
 
             if (slotBText != null)
             {
-                slotBText.text = _slotB != null ? _slotB.speciesId : "선택 안 됨";
+                slotBText.text = _slotB != null ? SlimeSpeciesCatalog.DisplayName(_slotB.speciesId) : "선택 안 됨";
             }
 
             if (breedButton != null)
