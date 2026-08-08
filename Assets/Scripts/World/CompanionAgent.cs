@@ -13,7 +13,7 @@ namespace Game.Gameplay
     /// 죽음이고, 쫓아갈 대상(플레이어)과 때릴 대상(야생)이 갈린다.
     /// </remarks>
     [RequireComponent(typeof(Rigidbody2D))]
-    public sealed class CompanionAgent : MonoBehaviour, IDamageable
+    public sealed class CompanionAgent : MonoBehaviour, IDamageable, ISlowable
     {
         // 상한 1마리. 정적 참조 하나가 곧 그 규칙이다 — 세는 코드가 따로 없다.
         public static CompanionAgent Active { get; private set; }
@@ -53,6 +53,7 @@ namespace Game.Gameplay
         private Transform _player;
         private float _nextAttackTime;
         private bool _dead;
+        private SlowTimer _slow;
 
         /// <summary>
         /// 로스터의 개체를 동행으로 내보낸다. 이미 나가 있으면 그 개체를 먼저
@@ -132,6 +133,7 @@ namespace Game.Gameplay
                 appearance.Apply(Instance);
             }
 
+            SpeciesPassive.Attach(gameObject, Instance);
             UpdateHealthBar();
             CompanionHudBar.Show(this);
         }
@@ -209,7 +211,7 @@ namespace Game.Gameplay
                 return;
             }
 
-            _body.linearVelocity = error.normalized * Mathf.Min(followSpeed, gap * 6f);
+            _body.linearVelocity = error.normalized * (Mathf.Min(followSpeed, gap * 6f) * _slow.Scale);
             if (_animation != null)
             {
                 _animation.SetMovement(_body.linearVelocity);
@@ -230,7 +232,7 @@ namespace Game.Gameplay
                 return;
             }
 
-            _body.linearVelocity = offset.normalized * speed;
+            _body.linearVelocity = offset.normalized * (speed * _slow.Scale);
             if (_animation != null)
             {
                 _animation.SetMovement(_body.linearVelocity);
@@ -391,6 +393,22 @@ namespace Game.Gameplay
             {
                 Active = null;
             }
+        }
+
+        public void Heal(int amount)
+        {
+            if (_dead || Instance == null || amount <= 0 || Instance.currentHp >= Instance.baseStats.maxHp)
+            {
+                return;
+            }
+
+            Instance.currentHp = Mathf.Min(Instance.baseStats.maxHp, Instance.currentHp + amount);
+            UpdateHealthBar();
+        }
+
+        public void ApplySlow(float scale, float seconds)
+        {
+            _slow.Apply(scale, seconds);
         }
 
         private void UpdateHealthBar()

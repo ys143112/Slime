@@ -14,9 +14,12 @@ namespace Game.Gameplay
 
         private Rigidbody2D _body;
         private ActorAnimation _animation;
+        private PlayerHealth _health;
 
         private void Awake()
         {
+            // 둔화(늪지대 슬라임 패시브)는 PlayerHealth 가 세고 있다.
+            _health = GetComponent<PlayerHealth>();
             _body = GetComponent<Rigidbody2D>();
             if (_body == null)
             {
@@ -44,7 +47,8 @@ namespace Game.Gameplay
                 LastDirection = input.normalized;
             }
 
-            _body.linearVelocity = input.normalized * moveSpeed;
+            float scale = _health != null ? _health.SpeedScale : 1f;
+            _body.linearVelocity = input.normalized * (moveSpeed * scale);
 
             if (_animation != null)
             {

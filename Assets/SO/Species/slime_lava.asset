@@ -27,4 +27,8 @@ MonoBehaviour:
   attackMultiplier: 1.2
   defenseMultiplier: 1.1
   speedMultiplier: 1.1
+  passive: 4
+  passiveRadius: 2.5
+  passiveInterval: 1.5
+  passiveAmount: 2
   breedingOnly: 0

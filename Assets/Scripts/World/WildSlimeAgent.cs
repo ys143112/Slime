@@ -10,7 +10,7 @@ namespace Game.Gameplay
     }
 
     // 기능: spec-007 (바이옴별 종 추첨은 spec-009, 추격은 spec-012)
-    public sealed class WildSlimeAgent : MonoBehaviour, IDamageable
+    public sealed class WildSlimeAgent : MonoBehaviour, IDamageable, ISlowable
     {
         [SerializeField] private string speciesId = "slime_basic";
         [SerializeField] private int attackDamage = 5;
@@ -58,6 +58,7 @@ namespace Game.Gameplay
         private Transform _player;
         private ActorAnimation _animation;
         private float _nextContactDamageTime;
+        private SlowTimer _slow;
 
         private void Awake()
         {
@@ -110,6 +111,7 @@ namespace Game.Gameplay
 
             Instance = instance;
             speciesId = instance.speciesId;
+            SpeciesPassive.Attach(gameObject, Instance);
 
             // 종마다 그림이 다르다. 야생 개체는 아직 돌연변이 판정 전이라
             // (포획 시점에 굴린다) 평상시 그림이 걸린다.
@@ -207,7 +209,7 @@ namespace Game.Gameplay
             }
 
             Vector2 direction = offset.normalized;
-            _body.linearVelocity = direction * (Instance.baseStats.speed * UnitsPerSpeedPoint);
+            _body.linearVelocity = direction * (Instance.baseStats.speed * UnitsPerSpeedPoint * _slow.Scale);
 
             if (_animation != null)
             {
@@ -221,6 +223,14 @@ namespace Game.Gameplay
         // 대상을 계속 쫓는 일은 없다.
         private Transform FindTarget()
         {
+            // 도발(방어형 패시브)이 최우선이다. 방어형은 공격을 아예 못 하므로
+            // 어그로를 끌지 못하면 전장에서 아무 역할이 없다.
+            Transform taunt = SpeciesPassive.FindTauntTarget(Faction, transform.position);
+            if (taunt != null)
+            {
+                return taunt;
+            }
+
             Transform player = FindPlayer();
             CompanionAgent companion = CompanionAgent.Active;
             if (companion == null)
@@ -321,6 +331,24 @@ namespace Game.Gameplay
                     weakenedIndicator.SetActive(true);
                 }
             }
+        }
+
+        public void Heal(int amount)
+        {
+            // 약화된 개체는 안 낫는다. 무지개 슬라임이 옆에 있다고 잡아둔 사냥감이
+            // 도로 일어나면 포획이 성립하지 않는다.
+            if (Instance.weakened || amount <= 0 || Instance.currentHp >= Instance.baseStats.maxHp)
+            {
+                return;
+            }
+
+            Instance.currentHp = Mathf.Min(Instance.baseStats.maxHp, Instance.currentHp + amount);
+            UpdateHealthBar();
+        }
+
+        public void ApplySlow(float scale, float seconds)
+        {
+            _slow.Apply(scale, seconds);
         }
 
         private void UpdateHealthBar()

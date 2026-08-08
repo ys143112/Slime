@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game.Gameplay
 {
     // 기능: spec-007
-    public sealed class PlayerHealth : MonoBehaviour, IDamageable
+    public sealed class PlayerHealth : MonoBehaviour, IDamageable, ISlowable
     {
         [SerializeField] private int maxHp = 30;
         [SerializeField] private HealthBar healthBar;
@@ -11,6 +11,7 @@ namespace Game.Gameplay
 
         private int _currentHp;
         private bool _dead;
+        private SlowTimer _slow;
         private ActorAnimation _animation;
 
         // 테스트가 체력을 읽을 자리. 지금까지 남은 체력을 밖에서 볼 방법이
@@ -67,6 +68,27 @@ namespace Game.Gameplay
                 GameManager.Instance.EndRun(RunEndCause.Death);
             }
         }
+
+        public void Heal(int amount)
+        {
+            // 죽은 뒤에 무지개 슬라임이 살려내면 안 된다.
+            if (_dead || amount <= 0 || _currentHp >= maxHp)
+            {
+                return;
+            }
+
+            _currentHp = Mathf.Min(maxHp, _currentHp + amount);
+            UpdateHealthBar();
+        }
+
+        // 둔화는 체력이 들고 있다가 이동이 읽어 간다. 둘을 한 컴포넌트에 두면
+        // 이동 스크립트가 없는 개체(교배장에 세워 둔 슬라임 등)에서 깨진다.
+        public void ApplySlow(float scale, float seconds)
+        {
+            _slow.Apply(scale, seconds);
+        }
+
+        public float SpeedScale => _slow.Scale;
 
         private void UpdateHealthBar()
         {

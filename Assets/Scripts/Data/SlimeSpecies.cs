@@ -50,6 +50,18 @@ namespace Game.Gameplay
         [Range(0.1f, 3f)] public float defenseMultiplier = 1f;
         [Range(0.1f, 3f)] public float speedMultiplier = 1f;
 
+        [Header("패시브 — 종의 특수 능력")]
+        public SpeciesPassiveKind passive = SpeciesPassiveKind.None;
+
+        [Tooltip("패시브가 닿는 반경(유닛).")]
+        [Range(0.5f, 8f)] public float passiveRadius = 3f;
+
+        [Tooltip("패시브가 도는 간격(초).")]
+        [Range(0.2f, 5f)] public float passiveInterval = 1.5f;
+
+        [Tooltip("회복량·피해량. 둔화는 이 값을 이동 배율로 쓴다(0.5 면 절반 속도).")]
+        public float passiveAmount = 2f;
+
         [Header("등장 규칙")]
         [Tooltip("켜면 야생에 스폰되지 않고 교배로만 나온다.")]
         public bool breedingOnly;

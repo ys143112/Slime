@@ -19,6 +19,13 @@ namespace Game.Gameplay
     public interface IDamageable : IFactionMember
     {
         void ApplyDamage(int amount, object source);
+
+        /// <summary>체력을 되돌린다. 무지개 슬라임의 범위 회복이 쓴다.</summary>
+        /// <remarks>
+        /// 피해와 짝이라 같은 인터페이스에 둔다. 회복을 받을 수 있는 것과 피해를
+        /// 받을 수 있는 것이 갈린 적이 없다 — 갈릴 일이 생기면 그때 나눈다.
+        /// </remarks>
+        void Heal(int amount);
     }
 
     public static class Factions
