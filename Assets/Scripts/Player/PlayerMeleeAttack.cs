@@ -28,10 +28,15 @@ namespace Game.Gameplay
         private float _swingHideTime;
         private float _nextAttackTime;
 
+        /// <summary>0 = 방금 때림, 1 = 때릴 수 있음. 쿨다운 표시가 읽는다.</summary>
+        public float CooldownRatio =>
+            attackCooldown <= 0f ? 1f : Mathf.Clamp01(1f - (_nextAttackTime - Time.time) / attackCooldown);
+
         private void Awake()
         {
             _movement = GetComponent<PlayerMovement>();
             _animation = GetComponent<ActorAnimation>();
+            AttackCooldownBar.Show(this);
             if (swingArc != null)
             {
                 swingArc.SetActive(false);
