@@ -13,11 +13,56 @@ MonoBehaviour:
   m_Name: BiomePalette
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.StagePalette
   biomeId: biome_default
-  floorTile: {fileID: 11400000, guid: a23ac7c6ec69eb34f8cd75c5bf0089e4, type: 2}
-  wallTile: {fileID: 11400000, guid: f64e6e2a8faf23008c54aa7585689da8, type: 2}
+  wangBlend:
+  - {fileID: 11400000, guid: a23ac7c6ec69eb34f8cd75c5bf0089e4, type: 2}
+  - {fileID: 11400000, guid: 81106a8c2db3bb4428705dcabd5840fc, type: 2}
+  - {fileID: 11400000, guid: 1f5ae6495d17ffa46a498532e8d82b89, type: 2}
+  - {fileID: 11400000, guid: cbc586dac716fe04097b7da3a046aa29, type: 2}
+  - {fileID: 11400000, guid: 7a96890f35df3af469512115e2e1aa83, type: 2}
+  - {fileID: 11400000, guid: b545292b841c863448c1b8ef72f914c4, type: 2}
+  - {fileID: 11400000, guid: f50a51faa3467c84ba5edefe2335ba7a, type: 2}
+  - {fileID: 11400000, guid: 6c2eff588ed14914d9e57ad3ae3eae2c, type: 2}
+  - {fileID: 11400000, guid: d8ee7d1b2b6d0a84989ea61a69bfbb54, type: 2}
+  - {fileID: 11400000, guid: fffb8b83ede47c847bbaef9363f72987, type: 2}
+  - {fileID: 11400000, guid: 633f226a3a655364f86f5692ddab92c5, type: 2}
+  - {fileID: 11400000, guid: 0440f7dda606c9c41861c7864d81c7cc, type: 2}
+  - {fileID: 11400000, guid: 0bd1150ed0e8e624eb826ced28bcdb01, type: 2}
+  - {fileID: 11400000, guid: 5007b09e224904e409168e4f1c940899, type: 2}
+  - {fileID: 11400000, guid: 22c324ebe0ecf8e469e0de73b310faeb, type: 2}
+  - {fileID: 11400000, guid: 9c8d202374aa45b40b4168aff4aa3d01, type: 2}
+  wangBlendCollidable:
+  - {fileID: 11400000, guid: 2c7ab464e595c9b47a28b79a9e16a1ea, type: 2}
+  - {fileID: 11400000, guid: 7916cffe4716ff946ad6157dc5b37c92, type: 2}
+  - {fileID: 11400000, guid: 33f87f905d9165942a2d2568675c04bb, type: 2}
+  - {fileID: 11400000, guid: 2efbf9eb4ee7ac545a5abee57fe2d065, type: 2}
+  - {fileID: 11400000, guid: ca23cf87c9d396e4b8447c2a9d13a5de, type: 2}
+  - {fileID: 11400000, guid: d6b5afa71763ee449bcaa00d28dfc943, type: 2}
+  - {fileID: 11400000, guid: 20e1df0a2c690c24bba4a84e70975643, type: 2}
+  - {fileID: 11400000, guid: bb6bf3db246c367429b246106e64f268, type: 2}
+  - {fileID: 11400000, guid: 12d89118f89968d4e82ef55514935894, type: 2}
+  - {fileID: 11400000, guid: 7b756445309618c4a9da65cc143475ae, type: 2}
+  - {fileID: 11400000, guid: 2a1b62354cb769b49a8f596b4ede65cf, type: 2}
+  - {fileID: 11400000, guid: 41da4bb7c194eb64bb11a828e8cfcd74, type: 2}
+  - {fileID: 11400000, guid: 570c0920c3988144982f068bcb8fd1b5, type: 2}
+  - {fileID: 11400000, guid: 249b8781441c91f4a9438b5f58b4e3bc, type: 2}
+  - {fileID: 11400000, guid: cd1e015d79a015c4398e70d69df59d73, type: 2}
+  - {fileID: 11400000, guid: 7b1a537b0fa334942a21d44896a24704, type: 2}
+  wallShadow: {fileID: 11400000, guid: e70f54deb8bc5a74f91a9a6da86104ae, type: 2}
   fogLevels:
-  - {fileID: 11400000, guid: 0d4bae9be30ef454a925e6039abbea84, type: 2}
-  - {fileID: 11400000, guid: f7f47a9c2d48bf34289744bddafdb613, type: 2}
-  - {fileID: 11400000, guid: e0db9c9ce27688148a09d2245b961947, type: 2}
-  - {fileID: 11400000, guid: e32930da5203cab469d0d7c720df5559, type: 2}
-  - {fileID: 11400000, guid: 7c311922c062a184787864a838b06c41, type: 2}
+  - {fileID: 11400000, guid: 9b50e2c69bab5314b9d05eb75766becf, type: 2}
+  - {fileID: 11400000, guid: 4b427c1d2c6005d458cdf99ef02bb42a, type: 2}
+  - {fileID: 11400000, guid: c554e54f101a02f4e91f40f906ef3517, type: 2}
+  - {fileID: 11400000, guid: e6cba39eff38acb4f9af6dbf746f4c00, type: 2}
+  - {fileID: 11400000, guid: a0fe5ee35e9c3f44fbc33d854f90189d, type: 2}
+  decorTiles:
+  - {fileID: 11400000, guid: 2242ad97fa80ca8c2de629b315d83b34, type: 2}
+  - {fileID: 11400000, guid: dfbc7ec28024dfb53d2ec74237cc4493, type: 2}
+  - {fileID: 11400000, guid: 08a956d49bcee5442a548ac649ebfd52, type: 2}
+  - {fileID: 11400000, guid: fad2edd74ea8f1d4486ca02a85e824cc, type: 2}
+  - {fileID: 11400000, guid: aa5f0562d68e4074b81189741dd8d973, type: 2}
+  - {fileID: 11400000, guid: ba65f486ff2e332488910064e32ff88b, type: 2}
+  treeProps:
+  - {fileID: 11400000, guid: 22f2675cc6407454dbca99253a95d6da, type: 2}
+  - {fileID: 11400000, guid: 2849fd6630a2cc24082d62d8a4366a5c, type: 2}
+  - {fileID: 11400000, guid: 14218438004fd8c459b94a8f3e35a34e, type: 2}
+  - {fileID: 11400000, guid: 5d85cc238a4a8d24398851e547134bfe, type: 2}

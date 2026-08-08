@@ -13,11 +13,48 @@ MonoBehaviour:
   m_Name: AshfallPalette
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.StagePalette
   biomeId: biome_ashfall
-  floorTile: {fileID: 11400000, guid: 8453fc6dfad6e614d82f557cd2a9b118, type: 2}
-  wallTile: {fileID: 11400000, guid: a5f4730ba25c1010af9ee283991fe150, type: 2}
+  wangBlend:
+  - {fileID: 11400000, guid: 8453fc6dfad6e614d82f557cd2a9b118, type: 2}
+  - {fileID: 11400000, guid: 0ff7aca8c67175c4d936d46a1fcb9d2f, type: 2}
+  - {fileID: 11400000, guid: 21ea0b8e6cfb36345aba4d2f44699b60, type: 2}
+  - {fileID: 11400000, guid: 0e248386ee9897d4191e07c892e4e3c6, type: 2}
+  - {fileID: 11400000, guid: d900d537d6bbe7e4ca8116deaf0c8c5f, type: 2}
+  - {fileID: 11400000, guid: 65adaa6198ba7f742867781439b4973b, type: 2}
+  - {fileID: 11400000, guid: 22ef5facbb38eb849b5524674dcf32b1, type: 2}
+  - {fileID: 11400000, guid: 55829ac1000e85d438082ed4ccf82503, type: 2}
+  - {fileID: 11400000, guid: 1ed9dbd4054677a4484b9ea4e9a0bfc8, type: 2}
+  - {fileID: 11400000, guid: d7db52a7bfdfa794f80f71c15ba7c4de, type: 2}
+  - {fileID: 11400000, guid: da82d2fbf492eca40bdef09b31e02deb, type: 2}
+  - {fileID: 11400000, guid: f95b42cfb67dbe7478507840cda0c4fd, type: 2}
+  - {fileID: 11400000, guid: 25384a3f113838a459fe184f988f9219, type: 2}
+  - {fileID: 11400000, guid: 39ca965b4768693429b3bbfe32f577e0, type: 2}
+  - {fileID: 11400000, guid: fcb66e4e39c1cb04eb03399b5afd9eda, type: 2}
+  - {fileID: 11400000, guid: 7a2836f41bc8a7c489543567aa29ceae, type: 2}
+  wangBlendCollidable:
+  - {fileID: 11400000, guid: f08f0575623f7314899d98466d7294c6, type: 2}
+  - {fileID: 11400000, guid: 00da7df18da89194284bfb3a565afee8, type: 2}
+  - {fileID: 11400000, guid: a30a7f9a3bda80d4dacad3b12ccb62a7, type: 2}
+  - {fileID: 11400000, guid: 71fbb2b683f392e4ba3ac032dfd24f8f, type: 2}
+  - {fileID: 11400000, guid: ee3fabfd96025c44caa2b63ea47f882f, type: 2}
+  - {fileID: 11400000, guid: df5cb494f7efe8c4aa427bfcee207490, type: 2}
+  - {fileID: 11400000, guid: a91b6a600123d014aa9fea7e2fb0dca2, type: 2}
+  - {fileID: 11400000, guid: 8e9bf91052738434982e130da15c7a4e, type: 2}
+  - {fileID: 11400000, guid: 0220e29cb4a9a994da60c9d583ca1b77, type: 2}
+  - {fileID: 11400000, guid: a4b91e910f4b551438fffa070d78b2ce, type: 2}
+  - {fileID: 11400000, guid: 4accc42602b8b25428357095ec2c6528, type: 2}
+  - {fileID: 11400000, guid: 4ad8986f0b4293846bb189b9489ee3fd, type: 2}
+  - {fileID: 11400000, guid: 401dfb52ecf510c48a0eb59069efb570, type: 2}
+  - {fileID: 11400000, guid: ca86595d113b1314e9954967377ecfaf, type: 2}
+  - {fileID: 11400000, guid: 8497b8715816f9b43ad692aa4100e95c, type: 2}
+  - {fileID: 11400000, guid: a0b23aec562396e4291d97935421fedb, type: 2}
+  wallShadow: {fileID: 11400000, guid: e33cd50708418d44a90205d77168a773, type: 2}
   fogLevels:
-  - {fileID: 11400000, guid: 0d4bae9be30ef454a925e6039abbea84, type: 2}
-  - {fileID: 11400000, guid: f7f47a9c2d48bf34289744bddafdb613, type: 2}
-  - {fileID: 11400000, guid: e0db9c9ce27688148a09d2245b961947, type: 2}
-  - {fileID: 11400000, guid: e32930da5203cab469d0d7c720df5559, type: 2}
-  - {fileID: 11400000, guid: 7c311922c062a184787864a838b06c41, type: 2}
+  - {fileID: 11400000, guid: c556e5d88053ed848b3c2127d7065a2c, type: 2}
+  - {fileID: 11400000, guid: d40aede5625bbba498447721ea5067fc, type: 2}
+  - {fileID: 11400000, guid: 5c43a461d186c554e902e758df192330, type: 2}
+  - {fileID: 11400000, guid: 0c533f8d5443b4b4d89c8e9ffd417619, type: 2}
+  - {fileID: 11400000, guid: e4223e7b270201f4dbc4e9d08062ddb6, type: 2}
+  decorTiles:
+  - {fileID: 11400000, guid: 4fe44b9c52585328540e5481ae3ef4e9, type: 2}
+  - {fileID: 11400000, guid: be7c728e4e3fcd7a495f0b9462cb4daa, type: 2}
+  treeProps: []

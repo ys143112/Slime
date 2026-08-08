@@ -85,8 +85,8 @@ def set_ppu(meta: Path, ppu: int) -> bool:
 
 def main() -> int:
     sheets = find_sheets()
-    if len(sheets) != len(SHEETS):
-        print(f"sheets_unexpected: {len(sheets)}장 찾음, {len(SHEETS)}장 기대")
+    if not sheets:
+        print(f"sheets_missing: 0장 찾음, {len(SHEETS)}장 중 매칭되는 게 없다")
         return 1
 
     SHEET_ARCHIVE.mkdir(parents=True, exist_ok=True)
