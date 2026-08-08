@@ -12,6 +12,11 @@ namespace Game.Gameplay
         [SerializeField] private LaborOutputTable outputTable;
         [SerializeField] private float tickSeconds = 2f;
 
+        // 틱마다 최대 체력의 이 비율만큼 회복한다. 0.1 이면 10틱 = 20초에 완치다.
+        // 고정값이 아니라 비율인 이유: 종마다 최대 체력이 16~28 로 달라, 고정값이면
+        // 튼튼한 슬라임만 훨씬 오래 걸린다.
+        [SerializeField] [Range(0f, 1f)] private float healPercentPerTick = 0.1f;
+
         public SlimeInstance Assigned { get; private set; }
 
         public int TotalProduced { get; private set; }
@@ -37,9 +42,39 @@ namespace Game.Gameplay
                 return;
             }
 
-            _label.text = Assigned == null
-                ? "작업장\nZ 선택  X 배치"
-                : $"작업장: {Assigned.speciesId}\n산출 {OutputPerTick}/틱  C 회수";
+            if (Assigned == null)
+            {
+                _label.text = "휴식소\nZ 선택  X 눕히기";
+                return;
+            }
+
+            bool full = Assigned.currentHp >= Assigned.baseStats.maxHp;
+            _label.text = $"휴식소: {Assigned.speciesId}\n" +
+                $"HP {Assigned.currentHp}/{Assigned.baseStats.maxHp}{(full ? " (다 나음)" : "")}  C 회수";
+        }
+
+        // 눕혀 둔 슬라임이 틱마다 회복한다. 이것이 게임에 있는 유일한 회복
+        // 수단이다 — 산출량(TotalProduced)은 아직 아무도 안 읽는 죽은 숫자라,
+        // 여기에 슬라임을 넣을 이유가 실질적으로 이쪽뿐이다.
+        private void Rest()
+        {
+            if (Assigned == null)
+            {
+                return;
+            }
+
+            int max = Assigned.baseStats.maxHp;
+            if (Assigned.currentHp >= max)
+            {
+                return;
+            }
+
+            // 최소 1 은 올린다. 비율이 작고 최대 체력이 낮으면 반올림으로 0 이 되어
+            // 영영 안 낫는다.
+            int heal = Mathf.Max(1, Mathf.RoundToInt(max * healPercentPerTick));
+            Assigned.currentHp = Mathf.Min(max, Assigned.currentHp + heal);
+            Assigned.weakened = false;
+            RefreshLabel();
         }
 
         public bool TryAssign(SlimeInstance instance)
@@ -101,6 +136,8 @@ namespace Game.Gameplay
             TotalProduced += amount;
             Debug.Log($"labor_output facility={facilityId} amount={amount}");
             RunLogWriter.AppendLine($"LaborOutput facility={facilityId} amount={amount}");
+
+            Rest();
         }
     }
 }

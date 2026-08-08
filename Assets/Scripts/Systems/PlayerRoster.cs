@@ -32,13 +32,16 @@ namespace Game.Gameplay
             _roster.AddRange(SaveSystem.Load(SaveKey, new List<SlimeInstance>()));
         }
 
-        // 목록에 들어오는 순간 한 번만 체력을 정상화한다. 포획된 개체는 약화
-        // 상태(HP 0)로 들어오므로 어디선가는 되돌려야 하는데, 그 자리를 동행
-        // 배치 쪽에 두면 슬롯을 다시 누를 때마다 풀피가 되는 무한 회복이 된다
-        // (2026-08-08 실측). 들어올 때 한 번이면 그 구멍이 없다.
+        // 약화된 개체만 정상화한다. 포획은 HP 0·약화 상태로 들어오므로 어디선가는
+        // 되돌려야 하고, 그 자리를 동행 배치 쪽에 두면 슬롯을 누를 때마다 풀피가
+        // 되는 무한 회복이 된다(2026-08-08 실측).
+        //
+        // 다친 개체(약화 아님)는 손대지 않는다. 다치기만 한 슬라임까지 여기서
+        // 채우면 교배장에 잠깐 넣었다 빼거나 휴식소에서 바로 회수하는 것만으로
+        // 즉시 완치돼, 휴식소의 회복 시간이 아무 의미가 없어진다.
         public void Add(SlimeInstance instance)
         {
-            if (instance != null)
+            if (instance != null && instance.weakened)
             {
                 instance.weakened = false;
                 instance.currentHp = Mathf.Max(1, instance.baseStats.maxHp);
