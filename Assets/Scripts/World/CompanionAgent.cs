@@ -28,6 +28,11 @@ namespace Game.Gameplay
         [SerializeField] private float followSpeed = 6.5f;
         [SerializeField] private float followDistance = 1.6f;
 
+        // 멈추는 거리와 다시 출발하는 거리를 벌린다(히스테리시스). 같은 값이면
+        // 플레이어가 조금만 움직여도 정지↔이동이 매 프레임 뒤집히고, 그때마다
+        // 애니메이터가 클립을 처음으로 되감아 "멈춘 채 미끄러지는" 그림이 된다.
+        [SerializeField] private float followResumeDistance = 2.6f;
+
         // 씬이 바뀌거나 벽에 끼면 영영 못 따라온다. 이 거리를 넘으면 순간이동한다.
         [SerializeField] private float teleportDistance = 14f;
 
@@ -52,6 +57,7 @@ namespace Game.Gameplay
         private Transform _player;
         private float _nextAttackTime;
         private bool _dead;
+        private bool _following;
 
         /// <summary>
         /// 로스터의 개체를 동행으로 내보낸다. 이미 나가 있으면 그 개체를 먼저
@@ -162,7 +168,32 @@ namespace Game.Gameplay
                 return;
             }
 
-            MoveToward(player.position, followSpeed, followDistance);
+            Follow(player.position, toPlayer);
+        }
+
+        private void Follow(Vector2 destination, float distance)
+        {
+            _following = _following ? distance > followDistance : distance >= followResumeDistance;
+            if (!_following)
+            {
+                _body.linearVelocity = Vector2.zero;
+                if (_animation != null)
+                {
+                    _animation.SetMovement(Vector2.zero);
+                }
+
+                return;
+            }
+
+            // 가까워질수록 늦춘다. 플레이어(5)보다 빠른 속도로 끝까지 달리면
+            // 정지거리를 지나쳐 들어왔다 나갔다 한다.
+            float speed = Mathf.Min(followSpeed, distance * 3f);
+            Vector2 direction = (destination - (Vector2)transform.position).normalized;
+            _body.linearVelocity = direction * speed;
+            if (_animation != null)
+            {
+                _animation.SetMovement(_body.linearVelocity);
+            }
         }
 
         private void MoveToward(Vector2 destination, float speed, float stopDistance)

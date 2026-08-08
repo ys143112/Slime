@@ -502,6 +502,7 @@ MonoBehaviour:
   appearance: {fileID: 4639739233837591205}
   followSpeed: 6.5
   followDistance: 1.6
+  followResumeDistance: 2.6
   teleportDistance: 14
   detectionRadius: 4.5
   attackRange: 1.2
