@@ -338,7 +338,9 @@ namespace Game.Gameplay
                 return;
             }
 
-            Instance.currentHp = Mathf.Max(0, Instance.currentHp - Instance.baseStats.Mitigate(amount));
+            int dealt = Instance.baseStats.Mitigate(amount);
+            Instance.currentHp = Mathf.Max(0, Instance.currentHp - dealt);
+            FloatingText.Damage(transform.position, dealt);
             Debug.Log($"companion_damaged species={Instance.speciesId} hp={Instance.currentHp}/{Instance.baseStats.maxHp}");
 
             if (damageFlash != null)
@@ -402,7 +404,9 @@ namespace Game.Gameplay
                 return;
             }
 
+            int before = Instance.currentHp;
             Instance.currentHp = Mathf.Min(Instance.baseStats.maxHp, Instance.currentHp + amount);
+            FloatingText.Heal(transform.position, Instance.currentHp - before);
             UpdateHealthBar();
         }
 

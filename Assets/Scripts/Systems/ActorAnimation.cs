@@ -48,6 +48,14 @@ namespace Game.Gameplay
             {
                 animator = GetComponentInChildren<Animator>();
             }
+
+            // 시작 방향을 남쪽으로 못박는다. MoveX/MoveY 기본값 0,0 은 블렌드트리의
+            // 원점이라 8방향이 한꺼번에 섞인다 — 한 번도 안 움직인 개체가 어느 쪽도
+            // 아닌 상태로 서 있게 되고, 대각선 칸이 1프레임짜리 정지 그림인 종
+            // (용암 슬라임은 원본 GIF 이 4방향뿐이다)은 그 뭉갬이 "멈춘 그림"으로
+            // 보인다. 정지 시 방향을 안 덮는 규칙과도 어긋나지 않는다 — 여기서
+            // 정하는 건 최초 1회뿐이다.
+            SetFacing(Vector2.down);
         }
 
         /// <summary>

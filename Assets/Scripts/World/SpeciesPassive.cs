@@ -41,7 +41,21 @@ namespace Game.Gameplay
 
         private IFactionMember _owner;
         private SlimeSpecies _species;
+        private PassiveRangeRing _ring;
         private float _nextTick;
+
+        // 무슨 패시브인지 색으로 구분한다 — 회복은 초록, 지속 피해는 주황,
+        // 둔화는 보라, 도발은 파랑.
+        private static Color RingColorFor(SpeciesPassiveKind kind)
+        {
+            switch (kind)
+            {
+                case SpeciesPassiveKind.AreaHeal: return new Color(0.45f, 0.95f, 0.45f);
+                case SpeciesPassiveKind.Burn: return new Color(1f, 0.55f, 0.2f);
+                case SpeciesPassiveKind.Slow: return new Color(0.65f, 0.5f, 0.95f);
+                default: return new Color(0.4f, 0.7f, 1f);
+            }
+        }
 
         public static void Attach(GameObject host, SlimeInstance instance)
         {
@@ -69,6 +83,7 @@ namespace Game.Gameplay
             passive._species = species;
             passive._owner = host.GetComponent<IFactionMember>();
             passive.RegisterTaunt();
+            passive._ring = PassiveRangeRing.Attach(host, species.passiveRadius, RingColorFor(species.passive));
         }
 
         /// <summary>
@@ -185,6 +200,11 @@ namespace Game.Gameplay
 
             if (affected > 0)
             {
+                if (_ring != null)
+                {
+                    _ring.Pulse();
+                }
+
                 Debug.Log($"species_passive kind={_species.passive} species={_species.speciesId} targets={affected}");
             }
         }

@@ -37,6 +37,7 @@ namespace Game.Gameplay
             }
 
             _currentHp = Mathf.Max(0, _currentHp - amount);
+            FloatingText.Damage(transform.position, amount);
             Debug.Log($"player_damaged hp={_currentHp}/{maxHp}");
 
             if (damageFlash != null)
@@ -77,7 +78,9 @@ namespace Game.Gameplay
                 return;
             }
 
+            int before = _currentHp;
             _currentHp = Mathf.Min(maxHp, _currentHp + amount);
+            FloatingText.Heal(transform.position, _currentHp - before);
             UpdateHealthBar();
         }
 
