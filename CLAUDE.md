@@ -216,7 +216,10 @@ python Tools/extract_slime_strips.py --demo   # 스트립 규칙 자체 검사
 
 ## 조작
 
-WASD 이동, Space 근접공격, E 포획, I 인벤토리, Q/F/G 교배장, Z/X/C 목장 시설.
+WASD 이동, **마우스 좌클릭** 근접공격(2026-08-08, 예전 Space — 이동이 WASD 라
+왼손만 바빴다), E 포획, I 인벤토리, Q/F/G 교배장, Z/X/C 목장 시설.
+좌클릭은 `EventSystem.current.IsPointerOverGameObject()` 로 UI 위를 걸러낸다 —
+안 걸면 인벤토리 슬롯을 누를 때마다 뒤에서 칼을 휘두른다.
 spec-001 다이브 트리거는 키 없음 (`OnTriggerEnter2D` + `CompareTag("Player")`).
 
 ## 전투 수치
@@ -319,10 +322,14 @@ reference resolution 1920×1080, match 0.5. UI 좌표는 전부 이 해상도 �
 `PlayBgm`/`PlaySfx` 와 `BootMenuUI.clickSfx` 는 클립을 꽂으면 바로 도는
 빈 틀이다(클립이 null 이면 조용히 무시).
 
-EventSystem 은 씬마다 하나씩 필요(uGUI 버튼 클릭용) — 다섯 씬 전부 갖고 있다.
-Hub 만 없어서 Esc 메뉴 버튼이 목장에서 안 눌렸는데 2026-08-08 에 넣었다.
-모듈은 `InputSystemUIInputModule` 이다(레거시 모듈은 새 Input System 과
-같이 쓰면 예외를 던진다). 새 씬 만들면 빠뜨리기 쉬움, 확인할 것.
+**EventSystem 은 Boot 에 하나뿐이다**(2026-08-08 정리). `PersistentRoot` 가
+붙어 씬을 넘어가도 살아남으므로 다른 씬은 갖지 않는다 — 각자 하나씩 두면
+런타임에 둘이 되고, uGUI 는 "정확히 하나" 를 요구해 입력을 한쪽만 처리한다
+(버튼이 씹힌다). 모듈은 `InputSystemUIInputModule` 이다(레거시 모듈은 새
+Input System 과 같이 쓰면 예외를 던진다).
+
+**새 씬에는 EventSystem 을 넣지 말 것.** Boot 을 거치지 않고 바로 Play 하면
+없지만, 그 경로는 `GameManager` 싱글턴도 없어 어차피 성립하지 않는다.
 
 세이브 파일: `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Slime\Saves\
 {biome_stigma,player_roster}.json`. 런타임 검증하다 낙인/로스터에 테스트

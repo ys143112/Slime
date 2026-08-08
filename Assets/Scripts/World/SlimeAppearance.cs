@@ -73,7 +73,31 @@ namespace Game.Gameplay
             // 이로치 전용 그림이 따로 있으면 색까지 덧입힐 이유가 없다 — 그림이
             // 이미 그 색이므로 곱하면 두 번 어두워진다.
             bool hasDedicatedShinySprite = species != null && instance.shinyFlag && species.shinySprite != null;
-            target.color = instance.shinyFlag && !hasDedicatedShinySprite ? instance.shinyTint : Color.white;
+            if (instance.shinyFlag)
+            {
+                target.color = hasDedicatedShinySprite ? Color.white : instance.shinyTint;
+            }
+            else
+            {
+                // 평상시 개체는 있던 바이옴의 색을 띤다 — 늪지의 파란 슬라임이
+                // 초원과 똑같이 파랗면 어디서 잡은 건지 그림으로 안 읽힌다
+                // (팀 QA, 2026-08-08). 잡은 뒤에는 capturedBiomeId 를 쓰므로
+                // 목장에 데려와도 그 색을 유지한다.
+                target.color = species != null ? species.ResolveBiomeTint(HomeBiomeOf(instance)) : Color.white;
+            }
+
+            ShinyGlow.Apply(target, instance.shinyFlag);
+        }
+
+        // 잡히기 전에는 지금 서 있는 바이옴이 곧 고향이다.
+        private static string HomeBiomeOf(SlimeInstance instance)
+        {
+            if (!string.IsNullOrEmpty(instance.capturedBiomeId))
+            {
+                return instance.capturedBiomeId;
+            }
+
+            return GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
         }
     }
 }

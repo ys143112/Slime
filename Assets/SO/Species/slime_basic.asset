@@ -33,3 +33,9 @@ MonoBehaviour:
   passiveInterval: 1.5
   passiveAmount: 2
   breedingOnly: 0
+  breedingChance: 0
+  biomeTints:
+  - biomeId: biome_marsh
+    tint: {r: 0.35, g: 0.85, b: 0.35, a: 1}
+  - biomeId: biome_ashfall
+    tint: {r: 0.9, g: 0.25, b: 0.2, a: 1}

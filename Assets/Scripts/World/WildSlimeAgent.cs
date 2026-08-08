@@ -55,6 +55,7 @@ namespace Game.Gameplay
         public WildSlimeState State { get; private set; } = WildSlimeState.Resting;
 
         private Rigidbody2D _body;
+        private Collider2D _collider;
         private Transform _player;
         private ActorAnimation _animation;
         private float _nextContactDamageTime;
@@ -64,6 +65,7 @@ namespace Game.Gameplay
         {
             _animation = GetComponent<ActorAnimation>();
             _body = GetComponent<Rigidbody2D>();
+            _collider = GetComponent<Collider2D>();
             if (_body == null)
             {
                 Debug.LogError("WildSlimeAgent: Rigidbody2D 컴포넌트가 없어 추격을 비활성화합니다.");
@@ -142,13 +144,13 @@ namespace Game.Gameplay
                 return speciesId;
             }
 
-            BiomeEntry entry = catalog.Find(GameManager.Instance.CurrentBiomeId);
-            if (entry == null || entry.speciesPool == null || entry.speciesPool.Length == 0)
+            string[] pool = catalog.WildSpeciesPool(GameManager.Instance.CurrentBiomeId);
+            if (pool.Length == 0)
             {
                 return speciesId;
             }
 
-            return entry.speciesPool[Random.Range(0, entry.speciesPool.Length)];
+            return pool[Random.Range(0, pool.Length)];
         }
 
         // spec-012: 플레이어가 감지 범위 안에 있으면 쫓고, 아니면 쉰다. 약화된
@@ -209,7 +211,8 @@ namespace Game.Gameplay
             }
 
             Vector2 direction = offset.normalized;
-            _body.linearVelocity = direction * (Instance.baseStats.speed * UnitsPerSpeedPoint * _slow.Scale);
+            _body.linearVelocity = Steering.SlideAlongWalls(
+                _collider, direction * (Instance.baseStats.speed * UnitsPerSpeedPoint * _slow.Scale));
 
             if (_animation != null)
             {

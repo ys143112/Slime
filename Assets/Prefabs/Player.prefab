@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f65b518338c0d7e48aa960d96051782a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.PlayerMeleeAttack
-  attackDamage: 8
+  attackDamage: 12
   hitboxRadius: 0.6
   reachOffset: 0.9
   swingArc: {fileID: 7403404119394370327}
@@ -509,8 +509,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.ActorAnimation
   animator: {fileID: 6542374784859213240}
   idleSfx: {fileID: 0}
-  moveSfx: {fileID: 0}
-  attackSfx: {fileID: 0}
+  moveSfx: {fileID: 8300000, guid: 50ab40dd06ed3a64495e96c99bee8d67, type: 3}
+  attackSfx: {fileID: 8300000, guid: 302b6f636996e5746a8266a2a5ddafbf, type: 3}
   hitSfx: {fileID: 0}
   deathSfx: {fileID: 0}
   moveSfxInterval: 0.4

@@ -31,4 +31,7 @@ MonoBehaviour:
   passiveRadius: 2.5
   passiveInterval: 1.5
   passiveAmount: 2
+  passiveSfx: {fileID: 8300000, guid: 2f90ac2489cc61c44b828f157c67abb3, type: 3}
   breedingOnly: 0
+  breedingChance: 0
+  biomeTints: []

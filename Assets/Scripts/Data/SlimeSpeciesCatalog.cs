@@ -78,5 +78,21 @@ namespace Game.Gameplay
                 ? species.displayName
                 : speciesId;
         }
+
+        /// <summary>목록 UI 에 쓸 정지 그림. 표에 없거나 그림이 안 꽂혔으면 null.</summary>
+        /// <remarks>
+        /// 이름 해석과 같은 이유로 여기 모은다 — 인벤토리·교배창·배낭이 저마다
+        /// 종을 찾아 그림을 꺼내면 이로치 전용 그림 규칙이 세 곳에 복사된다.
+        /// </remarks>
+        public static Sprite Portrait(SlimeInstance instance)
+        {
+            if (instance == null)
+            {
+                return null;
+            }
+
+            SlimeSpecies species = Lookup(instance.speciesId);
+            return species != null ? species.ResolveSprite(instance.shinyFlag) : null;
+        }
     }
 }

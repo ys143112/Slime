@@ -138,8 +138,20 @@ namespace Game.Gameplay
         {
             PlayClick();
             _inGame = true;
-            ShowMenu(false);
+
+            // 시작 화면을 **지금** 치우지 않는다. 예전엔 여기서 바로 껐는데,
+            // 화면 전환이 아직 덮기 전이라 그 사이에 배경 그림이 사라진 빈 화면
+            // (카메라 클리어 = 파란색)이 그라데이션 틈으로 비쳤다 — 부트에서
+            // 목장으로 넘어갈 때만 파랗게 보인 원인이다(사용자 신고, 2026-08-08).
+            // 완전히 덮인 뒤에 치우면 무엇이 사라지든 안 보인다.
+            ScreenWipe.Instance.Covered += HideOnceCovered;
             GameManager.Instance.BeginGame();
+        }
+
+        private void HideOnceCovered()
+        {
+            ScreenWipe.Instance.Covered -= HideOnceCovered;
+            ShowMenu(false);
         }
 
         // 두 패널은 같은 자리를 쓴다. 서로 닫아 주지 않으면 겹쳐서 뜬다.

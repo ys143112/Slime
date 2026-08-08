@@ -16,6 +16,12 @@ namespace Game.Gameplay
         public RosterSlotButton gridSlotTemplate;
         public Text slotAText;
         public Text slotBText;
+
+        // 고른 두 마리를 그림으로 보여준다. 예전에는 종 이름만 글자로 떠 있어
+        // 로스터에서 그림으로 고른 것과 교배기에 들어간 것이 눈으로 안 이어졌다
+        // (사용자, 2026-08-08).
+        public Image slotAIcon;
+        public Image slotBIcon;
         public Button breedButton;
         public RectTransform eggListContent;
         public EggSlotView eggSlotTemplate;
@@ -85,20 +91,7 @@ namespace Game.Gameplay
         {
             if (Keyboard.current != null && Keyboard.current.uKey.wasPressedThisFrame)
             {
-                // spec-003: 패널은 씬을 넘나드는 영구 오브젝트라 Hub 밖에서는
-                // BreedingPen 이 없다 - 그럴 땐 U 를 눌러도 열리지 않는다.
-                if (_visible || ResolvePen() != null)
-                {
-                    bool next = !_visible;
-                    if (next)
-                    {
-                        // U 로 교배 UI 를 열 때 인벤토리(I)가 떠 있으면 같이 닫는다 -
-                        // 두 창이 동시에 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
-                        InventoryUI.Instance?.Close();
-                    }
-
-                    SetVisible(next);
-                }
+                Toggle();
             }
 
             DateTime now = DateTime.UtcNow;
@@ -109,6 +102,29 @@ namespace Game.Gameplay
                     slot.Tick(now);
                 }
             }
+        }
+
+        /// <summary>U 키와 교배장 클릭이 같이 부르는 자리.</summary>
+        /// <remarks>
+        /// spec-003: 패널은 씬을 넘나드는 영구 오브젝트라 Hub 밖에서는
+        /// <see cref="BreedingPen"/> 이 없다 — 그럴 땐 열리지 않는다.
+        /// </remarks>
+        public void Toggle()
+        {
+            if (!_visible && ResolvePen() == null)
+            {
+                return;
+            }
+
+            bool next = !_visible;
+            if (next)
+            {
+                // 교배 UI 를 열 때 인벤토리(I)가 떠 있으면 같이 닫는다 — 두 창이
+                // 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
+                InventoryUI.Instance?.Close();
+            }
+
+            SetVisible(next);
         }
 
         // spec-003: U 키로 패널을 켜고 끈다. 이 오브젝트 자체는 계속 활성 상태로
@@ -191,19 +207,35 @@ namespace Game.Gameplay
 
         private void RefreshSlots()
         {
-            if (slotAText != null)
-            {
-                slotAText.text = _slotA != null ? SlimeSpeciesCatalog.DisplayName(_slotA.speciesId) : "None selected";
-            }
-
-            if (slotBText != null)
-            {
-                slotBText.text = _slotB != null ? SlimeSpeciesCatalog.DisplayName(_slotB.speciesId) : "None selected";
-            }
+            ShowSlot(slotAIcon, slotAText, _slotA);
+            ShowSlot(slotBIcon, slotBText, _slotB);
 
             if (breedButton != null)
             {
                 breedButton.interactable = _slotA != null && _slotB != null;
+            }
+        }
+
+        // 빈 칸일 때만 글자를 쓴다("Empty"). 채워지면 그림만 남기고 글자는 지운다
+        // — 63px 칸에 둘을 같이 넣으면 글자가 그림을 덮는다.
+        private static void ShowSlot(Image icon, Text label, SlimeInstance instance)
+        {
+            Sprite portrait = instance != null ? SlimeSpeciesCatalog.Portrait(instance) : null;
+
+            if (icon != null)
+            {
+                icon.sprite = portrait;
+                icon.preserveAspect = true;
+                icon.color = instance != null && instance.shinyFlag ? instance.shinyTint : Color.white;
+                icon.enabled = portrait != null;
+            }
+
+            if (label != null)
+            {
+                // 그림을 못 찾은 종은 이름이라도 보여야 빈 칸과 구분된다.
+                label.text = instance == null ? "Empty"
+                    : portrait != null ? string.Empty
+                    : SlimeSpeciesCatalog.DisplayName(instance.speciesId);
             }
         }
 

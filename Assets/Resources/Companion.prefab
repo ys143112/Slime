@@ -653,11 +653,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.ActorAnimation
   animator: {fileID: 6646633277273468196}
   idleSfx: {fileID: 0}
-  moveSfx: {fileID: 0}
+  moveSfx: {fileID: 8300000, guid: 1c1ba266653ccaa4aba43c72051569fd, type: 3}
   attackSfx: {fileID: 0}
   hitSfx: {fileID: 0}
-  deathSfx: {fileID: 0}
-  moveSfxInterval: 0.4
+  deathSfx: {fileID: 8300000, guid: 425c0392ce8f75149931d099ef9f6b77, type: 3}
+  moveSfxInterval: 1
 --- !u!114 &4639739233837591205
 MonoBehaviour:
   m_ObjectHideFlags: 0

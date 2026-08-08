@@ -62,9 +62,40 @@ namespace Game.Gameplay
         [Tooltip("회복량·피해량. 둔화는 이 값을 이동 배율로 쓴다(0.5 면 절반 속도).")]
         public float passiveAmount = 2f;
 
+        // 패시브가 실제로 누군가에게 걸린 순간 한 번. 종마다 다른 소리를 내야
+        // 하므로 프리팹이 아니라 종이 들고 있다 — 야생·동행이 같은 프리팹을 쓴다.
+        [Tooltip("패시브가 발동할 때 나는 소리. 용암 슬라임의 불길 소리 같은 것.")]
+        public AudioClip passiveSfx;
+
         [Header("등장 규칙")]
         [Tooltip("켜면 야생에 스폰되지 않고 교배로만 나온다.")]
         public bool breedingOnly;
+
+        // 교배 한 번마다 이 확률로 이 종이 나온다. 확률이 종마다 다르므로
+        // (방패 25%, 무지개 5%) 후보를 균등 추첨하면 안 된다 — 흔한 쪽과
+        // 귀한 쪽이 같은 빈도가 된다.
+        [Tooltip("교배 한 번당 이 종이 나올 확률. breedingOnly 종에만 의미가 있다.")]
+        [Range(0f, 1f)] public float breedingChance;
+
+        // 바이옴마다 몸 색이 다른 종. 이로치와 달리 **평상시 개체 전부**에
+        // 걸린다 — 늪지의 파란 슬라임이 늪지 색이 아니면 어느 바이옴인지
+        // 그림으로 안 읽힌다(팀 QA, 2026-08-08).
+        [Tooltip("바이옴별 평상시 몸 색. 이로치가 아닌 개체에도 걸린다.")]
+        public BiomeShinyTint[] biomeTints = Array.Empty<BiomeShinyTint>();
+
+        /// <summary>이 바이옴에서 이 종이 평상시에 띠는 색. 규칙이 없으면 흰색(=원본 그대로).</summary>
+        public Color ResolveBiomeTint(string biomeId)
+        {
+            foreach (BiomeShinyTint entry in biomeTints)
+            {
+                if (entry != null && entry.biomeId == biomeId)
+                {
+                    return entry.tint;
+                }
+            }
+
+            return Color.white;
+        }
 
         /// <summary>
         /// 이 종이 <b>이 바이옴에서</b> 이로치가 될 수 있는가.

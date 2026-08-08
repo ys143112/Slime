@@ -74,13 +74,27 @@ namespace Game.Gameplay
             _instance = instance;
             _onClicked = onClicked;
 
-            string tag = instance.mutantFlag ? " [MUTANT]" : instance.corruptedGeneFlag ? " [CORRUPT]" : "";
-            _baseLabel = $"{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tag}\nHP {instance.currentHp}/{instance.baseStats.maxHp}";
+            // 글자는 안 쓴다. 64px 남짓한 칸에 종 이름과 HP 를 겹쳐 찍으니 그림
+            // 위에 글자가 포개져 둘 다 안 읽혔다(사용자, 2026-08-08). 어느
+            // 슬라임인지는 그림이, 고른 것은 확대·표식이 말한다.
+            _baseLabel = string.Empty;
 
             if (icon != null)
             {
-                icon.color = instance.corruptedGeneFlag ? new Color(0.6f, 0.4f, 0.9f) :
-                    instance.mutantFlag ? new Color(0.95f, 0.55f, 0.2f) : Color.white;
+                // 종 그림을 띄운다. 예전에는 절차적으로 만든 흰 원뿐이라 어느
+                // 슬라임인지 글자로만 읽어야 했다(팀 QA, 2026-08-08: "교배창
+                // 가독성"). 그림이 없는 종만 원으로 남는다.
+                Sprite portrait = SlimeSpeciesCatalog.Portrait(instance);
+                icon.sprite = portrait != null ? portrait : GetCircleSprite();
+                icon.preserveAspect = true;
+
+                // 그림이 붙으면 색은 태그 표시가 아니라 그림 자체를 물들인다 —
+                // 이로치 색이 이미 그림에 실려 있어 두 번 겹치면 알아볼 수 없다.
+                // 태그는 라벨의 [MUTANT]/[CORRUPT] 가 이미 말하고 있다.
+                icon.color = portrait != null
+                    ? (instance.shinyFlag ? instance.shinyTint : Color.white)
+                    : instance.corruptedGeneFlag ? new Color(0.6f, 0.4f, 0.9f)
+                    : instance.mutantFlag ? new Color(0.95f, 0.55f, 0.2f) : Color.white;
             }
 
             if (button != null)
@@ -100,10 +114,10 @@ namespace Game.Gameplay
             if (label != null)
             {
                 // Kenney Pixel 에 없는 글자는 빈칸으로 나온다 — 선택 표시는 ASCII 로.
-                label.text = selected ? $"> {_baseLabel}" : _baseLabel;
+                label.text = selected ? ">" : _baseLabel;
             }
 
-            transform.localScale = selected ? Vector3.one * 1.1f : Vector3.one;
+            transform.localScale = selected ? Vector3.one * 1.15f : Vector3.one;
         }
     }
 }

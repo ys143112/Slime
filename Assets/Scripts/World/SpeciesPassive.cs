@@ -207,6 +207,13 @@ namespace Game.Gameplay
                     _ring.Pulse();
                 }
 
+                // 실제로 걸렸을 때만 낸다. 주기마다 무조건 내면 아무도 없는 곳에
+                // 서 있는 슬라임이 계속 소리를 낸다.
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlaySfx(_species.passiveSfx);
+                }
+
                 Debug.Log($"species_passive kind={_species.passive} species={_species.speciesId} targets={affected}");
             }
         }

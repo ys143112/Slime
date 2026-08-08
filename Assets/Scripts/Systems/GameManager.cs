@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -117,8 +118,18 @@ namespace Game.Gameplay
             CurrentState = RunState.Hub;
         }
 
+        // 시작하기·다이브·사망 복귀가 전부 이 자리를 지난다. 화면 전환을 여기
+        // 하나에 걸면 세 경우가 저절로 같은 연출을 쓴다 — 호출부마다 걸면
+        // 새 전환이 생길 때 빠뜨린다.
         private void LoadContentScene(string sceneName)
         {
+            StartCoroutine(LoadContentSceneRoutine(sceneName));
+        }
+
+        private IEnumerator LoadContentSceneRoutine(string sceneName)
+        {
+            yield return ScreenWipe.Instance.Cover();
+
             // Single 로 연다. Additive + UnloadSceneAsync 은 언로드가 끝나기 전에
             // 다음 씬이 올라와 바이옴 씬이 두 장 겹쳤다 — spec-009 는 다른 바이옴
             // 씬이 0장일 것을 요구한다. 매니저는 DontDestroyOnLoad 라 살아남는다.
@@ -131,6 +142,14 @@ namespace Game.Gameplay
             {
                 AudioManager.Instance.PlaySceneBgm(sceneName);
             }
+
+            // LoadScene 은 이 프레임 끝에 실제로 바뀐다. 한 프레임 더 기다려야
+            // 새 씬이 그려진 뒤에 화면이 열린다 — 바로 열면 옛 씬의 마지막
+            // 프레임이 한 번 비친다.
+            yield return null;
+            yield return null;
+
+            yield return ScreenWipe.Instance.Reveal();
         }
     }
 }

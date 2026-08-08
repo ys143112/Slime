@@ -46,15 +46,24 @@ namespace Game.Gameplay
         // 자글거림 대신 굴곡이 되게 한다.
         [Range(0f, 1f)] public float edgeErosion = 0.4f;
 
-        // 침식 결과를 다듬는 횟수. 2 회면 대개 매끄러워진다.
-        public int erosionSmoothPasses = 2;
+        // 침식 결과를 다듬는 횟수. 다수결 규칙으로 바꾼 뒤에는 3 회쯤에서
+        // 경계가 더 안 움직인다(2 회는 긴 변에 돌기가 몇 개 남았다).
+        public int erosionSmoothPasses = 3;
 
         // 벽 밴드 두께가 흔들리는 폭(±칸). 0 이면 어디나 균일한 wallBand.
-        public int wallBandJitter = 2;
+        //
+        // 0 으로 둔다(사용자, 2026-08-08). 두께를 흔들면 숲 바깥선이 덜 인공적
+        // 이지만, 실제로는 "어떤 데는 너무 두껍고 어떤 데는 적당" 으로 읽혔다 —
+        // 밴드가 곧 콜라이더라 두께가 들쭉날쭉하면 막히는 느낌도 같이 흔들린다.
+        public int wallBandJitter;
 
         // 바닥에서 이만큼까지만 벽을 깐다. 나머지는 타일 없음(=배경 검정).
         // 1 칸이면 카메라가 지도 밖을 봐서 "잘렸다" 로 읽힌다.
-        public int wallBand = 2;
+        //
+        // 지터를 뺀 만큼 3 으로 올린다. 예전 2 는 지터가 얹혀 2~4 로 나왔는데,
+        // 균일하게 2 만 남기면 §5-3 의 "3칸" 보장이 깨져 플레이어가 벽에 붙었을
+        // 때 카메라가 지도 밖 빈 공간을 본다.
+        public int wallBand = 3;
 
         // 트리 연결만 쓰면 막다른 길뿐인 지도가 된다.
         public int extraConnections = 3;
@@ -304,10 +313,14 @@ namespace Game.Gameplay
             int previousOffset = 0;
             while (true)
             {
-                // 진행 방향(가로/세로)의 직각으로 민다.
-                int t = stepX != 0 ? cursor.x : cursor.y;
+                // 노이즈에 커서의 **두 좌표를 다** 넣는다. 예전엔 진행축 하나를
+                // 두 번 넣어서(CoarseNoise(t, t, ...)) 사행 프로파일이 x 하나의
+                // 함수였다 — 서로 다른 y 에 있는 가로 복도가 전부 똑같이 꿈틀대
+                // 지도를 넓게 보면 복도들이 동기화되어 물결쳤다. 자연스럽게
+                // 만들려던 장치가 "기계가 그렸다" 는 신호를 냈다
+                // (팀 리뷰 STAGE_MAP_REVIEW.md C1, 2026-08-08).
                 int rawOffset = Mathf.RoundToInt(
-                    (CoarseNoise(t, t, _settings.corridorMeanderScale, 5501) - 0.5f) * 2f
+                    (CoarseNoise(cursor.x, cursor.y, _settings.corridorMeanderScale, 5501) - 0.5f) * 2f
                     * _settings.corridorMeander);
 
                 // 한 걸음에 1칸 넘게 못 뛰게 묶는다 — 뛰면 칠한 사각형이 끊긴다.
@@ -315,7 +328,7 @@ namespace Game.Gameplay
                 previousOffset = offset;
 
                 int width = _settings.corridorWidth +
-                    (CoarseNoise(t, t, _settings.corridorMeanderScale, 9203) < 0.35f ? -1 : 0);
+                    (CoarseNoise(cursor.x, cursor.y, _settings.corridorMeanderScale, 9203) < 0.35f ? -1 : 0);
                 width = Mathf.Max(2, width);
                 int half = width / 2;
 
@@ -722,16 +735,20 @@ namespace Game.Gameplay
                         continue;
                     }
 
+                    // 다수결(4-5 규칙). 예전엔 3 이하만 깎고 6 이상만 메워서
+                    // 이웃이 4~5인 칸이 손도 안 닿은 채 남았다 — 그 칸들이
+                    // 경계에 한 칸씩 튀어나와 벽 테두리가 사방으로 들쭉날쭉해
+                    // 보였다(팀 QA, 2026-08-08: "여러 방향과 타일이 섞였음").
+                    // 빈 구간 없이 이웃 수만으로 가르면 경계가 직선이나 완만한
+                    // 곡선으로 수렴한다. 면적은 거의 안 변한다(대칭 규칙).
                     int neighbours = CountFloorNeighbours(x, y);
                     if (IsFloor(x, y))
                     {
-                        // 사방이 거의 비었는데 혼자 남은 칸 = 튀어나온 돌기.
-                        if (neighbours <= 3) toWall.Add(new Vector2Int(x, y));
+                        if (neighbours <= 4) toWall.Add(new Vector2Int(x, y));
                     }
                     else
                     {
-                        // 거의 둘러싸인 구멍 = 한 칸짜리 흠집. 메운다.
-                        if (neighbours >= 6) toFloor.Add(new Vector2Int(x, y));
+                        if (neighbours >= 5) toFloor.Add(new Vector2Int(x, y));
                     }
                 }
             }

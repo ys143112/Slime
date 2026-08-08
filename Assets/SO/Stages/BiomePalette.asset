@@ -48,6 +48,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cd1e015d79a015c4398e70d69df59d73, type: 2}
   - {fileID: 11400000, guid: 7b1a537b0fa334942a21d44896a24704, type: 2}
   wallShadow: {fileID: 11400000, guid: e70f54deb8bc5a74f91a9a6da86104ae, type: 2}
+  invisibleWall: {fileID: 11400000, guid: e70f54deb8bc5a74f91a9a6da86104ae, type: 2}
   fogLevels:
   - {fileID: 11400000, guid: 9b50e2c69bab5314b9d05eb75766becf, type: 2}
   - {fileID: 11400000, guid: 4b427c1d2c6005d458cdf99ef02bb42a, type: 2}
@@ -66,3 +67,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2849fd6630a2cc24082d62d8a4366a5c, type: 2}
   - {fileID: 11400000, guid: 14218438004fd8c459b94a8f3e35a34e, type: 2}
   - {fileID: 11400000, guid: 5d85cc238a4a8d24398851e547134bfe, type: 2}
+  - {fileID: 11400000, guid: bcde7d942f511c8498b2df899d7df891, type: 2}
+  - {fileID: 11400000, guid: 3ceaed1f4ca1d774e93e2b4937731c78, type: 2}
+  - {fileID: 11400000, guid: c75cd627050107b439091dd4e302fd8f, type: 2}
+  - {fileID: 11400000, guid: ff6d7a8b51290f14eb10937b4e5370c1, type: 2}
+  - {fileID: 11400000, guid: 0df5544f1476eb74d9c95460535d1a02, type: 2}
+  - {fileID: 11400000, guid: 7a845b0a3c009ff488a7ab284b36813a, type: 2}
+  - {fileID: 11400000, guid: 148fc02f639df98428e8cbe435e22a67, type: 2}
+  - {fileID: 11400000, guid: 04a9037d98bf75c4da4fa4abc11cb289, type: 2}
+  - {fileID: 11400000, guid: 6bd0be9130cf10c44ae1a968dfb56ca0, type: 2}
+  - {fileID: 11400000, guid: 69e540a0794151740ac6ec291f5de590, type: 2}
+  - {fileID: 11400000, guid: 1aa55988483862a43a3782eb3610ce95, type: 2}
+  - {fileID: 11400000, guid: bd5227e663e6fd549a3f9ecb077216aa, type: 2}

@@ -9,6 +9,15 @@ namespace Game.Gameplay
     public sealed class RanchFacility : MonoBehaviour
     {
         [SerializeField] private string facilityId = "facility_1";
+
+        [Tooltip("이 웅덩이가 받는 바이옴. 그 바이옴 야생 풀의 종만 눕힐 수 있다. 비우면 아무 종이나.")]
+        [SerializeField] private string acceptedBiomeId;
+
+        [Tooltip("켜면 교배 전용 종(방패·무지개)만 받는다. acceptedBiomeId 보다 우선한다.")]
+        [SerializeField] private bool specialOnly;
+
+        [Tooltip("이름표에 쓸 이름. 비우면 Rest Area.")]
+        [SerializeField] private string displayName = "Rest Area";
         [SerializeField] private LaborOutputTable outputTable;
         [SerializeField] private float tickSeconds = 2f;
 
@@ -53,7 +62,9 @@ namespace Game.Gameplay
         // 전용 그림이 생기기 전까지는 글자가 그 역할을 한다.
         private void Awake()
         {
-            _label = WorldLabel.Attach(transform, string.Empty, 0.7f);
+            // 웅덩이 그림이 2유닛이라 반지름 1. 그 위로 올려야 명패가 웅덩이를
+            // 안 덮는다.
+            _label = WorldLabel.Attach(transform, string.Empty, 1.3f);
             RefreshLabel();
         }
 
@@ -64,17 +75,22 @@ namespace Game.Gameplay
                 return;
             }
 
+            // 이름과 상태만. 조작키 안내(Z/X/C)는 게임 설명 패널이 이미 적고
+            // 있어서 뺐다 — 세 줄짜리 안내가 웅덩이 넷에 동시에 떠 있으면
+            // 목장이 글자로 뒤덮인다(사용자, 2026-08-08).
+            string title = string.IsNullOrEmpty(displayName) ? "Rest Area" : displayName;
+
             if (Assigned == null)
             {
-                _label.text = _nearby
-                    ? $"Rest Area (empty)\nSelected: {_selectionText}\nZ switch  X assign"
-                    : "Rest Area\nStep closer to use";
+                // 가까이 갔을 때만 지금 고른 슬라임을 보여준다. 그게 X 를 누르면
+                // 무엇이 들어가는지 알 수 있는 유일한 자리다.
+                _label.text = _nearby && _selectionText != "None" ? $"{title}\n{_selectionText}" : title;
                 return;
             }
 
             bool full = Assigned.currentHp >= Assigned.baseStats.maxHp;
-            _label.text = $"Rest Area: {SlimeSpeciesCatalog.DisplayName(Assigned.speciesId)}\n" +
-                $"HP {Assigned.currentHp}/{Assigned.baseStats.maxHp}{(full ? " (full)" : "")}  C collect";
+            _label.text = $"{title}\n{SlimeSpeciesCatalog.DisplayName(Assigned.speciesId)} " +
+                $"{Assigned.currentHp}/{Assigned.baseStats.maxHp}{(full ? " OK" : "")}";
         }
 
         // 눕혀 둔 슬라임이 틱마다 회복한다. 이것이 게임에 있는 유일한 회복
@@ -101,11 +117,62 @@ namespace Game.Gameplay
             RefreshLabel();
         }
 
+        /// <summary>이 휴식소가 받아 주는 종인가.</summary>
+        /// <remarks>
+        /// 웅덩이 넷이 바이옴별로 생김새가 다르다 — 아무 슬라임이나 아무 데나
+        /// 눕힐 수 있으면 그림이 넷인 이유가 없다(사용자, 2026-08-08).
+        /// 종 목록을 여기 적지 않고 <see cref="BiomeCatalog"/> 를 되읽는 이유:
+        /// 바이옴에 종을 하나 더 넣을 때 씬의 웅덩이까지 고치게 하지 않으려는 것.
+        /// </remarks>
+        public bool Accepts(SlimeInstance instance)
+        {
+            if (instance == null)
+            {
+                return false;
+            }
+
+            SlimeSpecies species = SlimeSpeciesCatalog.Lookup(instance.speciesId);
+
+            // 특수 수조는 야생에 안 나오는 종(방패·무지개) 전용이다. 그 종들은
+            // 어느 바이옴 풀에도 없어서 다른 웅덩이가 받아 줄 수 없다.
+            if (specialOnly)
+            {
+                return species != null && species.breedingOnly;
+            }
+
+            if (species != null && species.breedingOnly)
+            {
+                return false;
+            }
+
+            BiomeCatalog catalog = GameManager.Instance != null ? GameManager.Instance.Catalog : null;
+            if (catalog == null || string.IsNullOrEmpty(acceptedBiomeId))
+            {
+                return true; // 표가 없으면 막지 않는다 — 회복 수단이 이것뿐이다.
+            }
+
+            foreach (string allowed in catalog.WildSpeciesPool(acceptedBiomeId))
+            {
+                if (allowed == instance.speciesId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool TryAssign(SlimeInstance instance)
         {
             if (instance == null || Assigned != null)
             {
                 Debug.Log("labor_assign_failed: 이미 배치된 슬라임이 있습니다.");
+                return false;
+            }
+
+            if (!Accepts(instance))
+            {
+                Debug.Log($"labor_assign_failed: {facilityId} 는 {instance.speciesId} 를 받지 않습니다.");
                 return false;
             }
 

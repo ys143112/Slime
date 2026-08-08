@@ -54,6 +54,16 @@ namespace Game.Gameplay
 
         public StageLayout Layout { get; private set; }
 
+        /// <summary>지도를 다 그린 뒤에 한 번. 스포너가 이걸 듣는다.</summary>
+        /// <remarks>
+        /// 예전엔 <c>SlimeSpawner.Start()</c> 가 "생성기 Start 가 먼저 돌았겠지"
+        /// 하고 <c>Layout</c> 을 읽었다. Unity 는 다른 GameObject 의 Start 순서를
+        /// 보장하지 않으므로, 뒤집히면 에러 한 줄 남기고 슬라임이 0마리가 된다
+        /// (팀 리뷰 STAGE_MAP_REVIEW.md D7, 2026-08-08). 구독은 Awake 에서 하고
+        /// 발행은 Start 에서 하므로 순서가 보장된다.
+        /// </remarks>
+        public event Action MapGenerated;
+
         // SlimeSpawner 가 셀 좌표를 월드 좌표로 바꿀 때 쓴다. PlaceActors 가
         // 플레이어·추출구를 놓을 때 쓰는 것과 같은 API 로 통일한다.
         public Tilemap GroundTilemap => groundTilemap;
@@ -114,6 +124,7 @@ namespace Game.Gameplay
             PlaceRegionTriggers();
 
             Debug.Log($"stage_generated seed={seed} rooms={Layout.Rooms.Count}");
+            MapGenerated?.Invoke();
         }
 
         private void BuildPaletteLookup()
@@ -160,9 +171,21 @@ namespace Game.Gameplay
         }
 
         // wang 코너 인덱스: index = NW*8 + NE*4 + SW*2 + SE*1, 비트 1 = upper(둔덕).
-        // 코너 하나는 그 코너에 닿는 네 칸 중 하나라도 벽이면 upper 로 본다.
-        // "전부 벽일 때만" 으로 잡으면 그림이 충돌 범위보다 안쪽으로 물러나
-        // 아무것도 없어 보이는 곳에서 막힌다.
+        //
+        // 코너 하나는 그 코너에 닿는 **네 칸이 전부** 벽일 때만 upper 다.
+        //
+        // 4코너 wang 은 그림 경계가 충돌 경계와 반 칸 어긋나는 것이 구조적이라,
+        // 어느 쪽으로 어긋나게 할지만 고를 수 있다. 두 선택지를 다 만들어 보고
+        // 사용자가 이쪽을 골랐다(2026-08-08):
+        //
+        // - "하나라도 벽": 그림이 바닥 쪽으로 번진다 → 벽 그림 안으로 반 칸
+        //   걸어 들어가진다. 오목한 모서리에서 특히 심해 "벽에 파고든다" 로 보인다.
+        // - "네 칸 전부"(지금): 그림이 벽 쪽으로 물러난다 → 벽 앞에서 반 칸
+        //   못 미쳐 멈춘다. 걸을 수 있어 보이는 곳이 안 걸릴 뿐, 벽 속에 들어가진
+        //   않는다.
+        //
+        // 두께 1칸짜리 벽은 어느 코너도 네 칸을 못 채워 바닥으로 그려진다 —
+        // 그 칸은 PaintWalls 가 wallShadow 로 따로 덮는다.
         private int WangIndexAt(int x, int y)
         {
             int nw = CornerUpper(x, y + 1) ? 8 : 0;
@@ -174,11 +197,24 @@ namespace Game.Gameplay
 
         private bool CornerUpper(int cx, int cy)
         {
-            return CellUpper(cx - 1, cy - 1) || CellUpper(cx, cy - 1) ||
-                CellUpper(cx - 1, cy) || CellUpper(cx, cy);
+            return CellUpper(cx - 1, cy - 1) && CellUpper(cx, cy - 1) &&
+                CellUpper(cx - 1, cy) && CellUpper(cx, cy);
         }
 
         // 지도 밖은 둔덕으로 친다 — 그래야 바깥 테두리가 열린 채로 끝나지 않는다.
+        //
+        // **`IsWall` 이 아니라 `IsFloor` 를 본다.** `_wall` 은 성능 때문에 바닥
+        // 둘레 3칸만 채운 *띠* 라서, 띠 바깥 칸은 바닥도 벽도 아니다. 그 칸을
+        // "안 막힘" 으로 읽으면 wang 인덱스 0 이 나오고, 인덱스 0 은 걸어다니는
+        // 바닥과 **정확히 같은 그림**이다 — 갈 수 없는 곳이 갈 수 있는 풀밭으로
+        // 보였다(팀 리뷰 STAGE_MAP_REVIEW.md A1, 2026-08-08).
+        //
+        // 걸을 수 있는가만 보면 띠 바깥이 전부 막힌 그림이 된다. 콜라이더는
+        // 그대로 띠에만 있지만, 그 칸들은 띠 **뒤**라 애초에 도달할 수 없다 —
+        // 플레이어가 갈 수 있는 모든 자리에서 "보이는 대로 막힌다" 가 유지된다.
+        //
+        // 프롭 후보(SurroundedByWall)도 같이 넓어진다. 예전엔 후보가 띠 두께에
+        // 묶여 폭 1~3칸짜리 리본이었다(같은 문서 B1).
         private bool CellUpper(int x, int y)
         {
             if (x < 0 || y < 0 || x >= Layout.Width || y >= Layout.Height)
@@ -186,31 +222,92 @@ namespace Game.Gameplay
                 return true;
             }
 
-            return Layout.IsWall(x, y);
+            return !Layout.IsFloor(x, y);
         }
 
         private void PaintWalls()
         {
-            // Walls 타일맵은 이제 충돌만 담당한다. 그림은 Ground 의 wang 이 다
-            // 그리므로, 여기까지 보이면 둔덕 위에 단색 사각형이 겹쳐 찍힌다.
+            // 벽 그림은 대부분 Ground 의 wang 이 그린다. 이 타일맵은 충돌을 맡고,
+            // **wang 이 못 덮은 칸에서만** 그림도 맡는다 — 그래서 렌더러를 켜 둔다.
             var renderer = wallsTilemap.GetComponent<TilemapRenderer>();
             if (renderer != null)
             {
-                renderer.enabled = false;
+                renderer.enabled = true;
             }
 
+            // **콜라이더를 그림에 맞춘다.** 기준은 `_wall`(콜라이더용 밴드)이
+            // 아니라 "이 칸이 벽으로 그려졌는가"(wang 인덱스 != 0)다.
+            //
+            // 코너 규칙이 "네 칸 전부" 라 벽 그림은 벽 영역보다 한 칸 안쪽에서
+            // 시작한다. 예전처럼 바닥에 맞닿은 겹에 콜라이더를 깔면 그 한 겹이
+            // **아무것도 안 그려진 채 막는** 투명한 벽 링이 된다 — 빈 잔디에서
+            // 부딪혀 죽었다는 신고가 이것이다(2026-08-08).
+            //
+            // 그림 기준으로 깔면 플레이어는 벽 영역 첫 칸까지 걸어 들어간 뒤
+            // 보이는 벽에서 멈춘다. 걸을 수 있어 보이는 곳은 전부 걸어진다.
+            int cells = 0;
             for (int x = 0; x < Layout.Width; x++)
             {
                 for (int y = 0; y < Layout.Height; y++)
                 {
-                    if (!Layout.IsWall(x, y))
+                    // **완전히 벽으로 그려진 칸(인덱스 15)만** 막는다.
+                    //
+                    // 인덱스 1~14 는 코너 한두 개만 벽인 블렌드 칸이라 그림의
+                    // 대부분이 바닥이다. 거기에 콜라이더를 깔면 칸 전체가 막혀
+                    // "빈 잔디에서 부딪힌다" 가 된다 — 콜라이더는 칸 단위인데
+                    // 그림은 칸보다 잘게 갈리는 것이 원인이라, 어느 쪽으로 반올림
+                    // 할지만 고를 수 있다. 안 막는 쪽으로 반올림하면 블렌드 띠는
+                    // 걸어 들어갈 수 있는 비탈이 되고, 멈추는 자리는 그림이 온통
+                    // 벽인 곳이다(사용자 신고 두 번 끝에 정한 규칙, 2026-08-08).
+                    bool solid = WangIndexAt(x, y) == 15;
+                    bool pillar = Layout.IsWall(x, y) && NeedsShadow(x, y);
+                    if (!solid && !pillar)
                     {
                         continue;
                     }
 
-                    wallsTilemap.SetTile(new Vector3Int(x, y, 0), WallTileAt(x, y));
+                    wallsTilemap.SetTile(new Vector3Int(x, y, 0),
+                        pillar ? WallTileAt(x, y) : InvisibleTileAt(x, y));
+                    cells++;
                 }
             }
+
+            Debug.Log($"stage_walls collider_cells={cells}");
+        }
+
+        /// <summary>이 벽 칸에 그림자를 따로 깔아야 하는가.</summary>
+        /// <remarks>
+        /// 조건이 예전엔 "이 칸의 wang 인덱스가 0" 이었다. 코너 규칙을 "네 칸
+        /// 전부" 로 바꾼 뒤로는 <b>바닥과 맞닿은 벽 칸이 전부 인덱스 0</b> 이 되고,
+        /// 콜라이더도 그 한 겹만 깐다 — 두 조건이 겹쳐 <b>경계 전체에 그림자
+        /// 사각형이 줄줄이 찍혔다</b>(잿벌 스크린샷의 주황 네모들, 2026-08-08).
+        ///
+        /// 진짜로 필요한 경우는 "그려진 벽이 근처에 아예 없는 칸" — 두께 1칸짜리
+        /// 기둥이다. 이웃에 인덱스가 0 이 아닌 칸이 하나라도 있으면 그쪽 그림이
+        /// 이 자리를 벽으로 읽히게 해 주므로 그림자가 필요 없다.
+        /// </remarks>
+        private bool NeedsShadow(int x, int y)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    if (WangIndexAt(x + dx, y + dy) != 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        // 충돌만 내고 그림은 없는 타일. 팔레트에 없으면 그림자를 그대로 쓴다 —
+        // 겹쳐 보이더라도 못 지나간다는 사실이 안 보이는 것보다 낫다.
+        private TileBase InvisibleTileAt(int x, int y)
+        {
+            StagePalette palette = PaletteAt(x, y);
+            return palette.invisibleWall != null ? palette.invisibleWall : palette.wallShadow;
         }
 
         // 벽은 코너마다 그림을 바꾸지 않는다 — 진짜 바깥 모서리 칸(방마다 4개)이
@@ -254,9 +351,10 @@ namespace Game.Gameplay
                         continue;
                     }
 
-                    // 벽 안쪽은 방 바닥보다 칸 수가 훨씬 적다. 예전 밀도(0.06)를
-                    // 그대로 쓰면 벽이 거의 비어 보이므로 넉넉하게 곱한다.
-                    if (CellNoise(x, y, _currentSeed + 7717) >= decorDensity * 5f)
+                    // ×5 배수는 후보가 벽 띠 중심선뿐이던 시절의 보정이었다.
+                    // CellUpper 를 IsFloor 기준으로 바꾸면서 후보가 면(面)이 됐으니
+                    // 같이 뺀다 — 안 빼면 장식이 폭발한다(팀 리뷰 B6).
+                    if (CellNoise(x, y, _currentSeed + 7717) >= decorDensity)
                     {
                         continue;
                     }
@@ -325,6 +423,24 @@ namespace Game.Gameplay
             }
         }
 
+        // 8방향 이웃 중 하나라도 바닥인가. 대각까지 보는 이유는 대각으로 빠져나가는
+        // 경로를 막기 위해서다 — 직교 4방향만 보면 벽 모서리에 1칸짜리 구멍이 남는다.
+        private bool TouchesFloor(int x, int y)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    if (Layout.IsFloor(x + dx, y + dy))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         // 자기 자신과 8방향 이웃이 전부 벽인가. 지도 밖은 벽으로 친다.
         private bool SurroundedByWall(int x, int y)
         {
@@ -360,15 +476,55 @@ namespace Game.Gameplay
         {
             if (player != null)
             {
-                player.position = groundTilemap.GetCellCenterWorld(
-                    new Vector3Int(Layout.PlayerSpawn.x, Layout.PlayerSpawn.y, 0));
+                player.position = FloorCenter(Layout.PlayerSpawn, "player");
             }
 
             if (extractionPoint != null)
             {
-                extractionPoint.transform.position = groundTilemap.GetCellCenterWorld(
-                    new Vector3Int(Layout.ExtractionPoint.x, Layout.ExtractionPoint.y, 0));
+                extractionPoint.transform.position = FloorCenter(Layout.ExtractionPoint, "extraction");
             }
+        }
+
+        // 방 중심이 바닥이 아닐 경로는 지금 로직상 막혀 있다고 읽히지만, "지금
+        // 로직상 안 걸린다" 와 "영원히 안 걸린다" 는 다르다. 세 씬 전부 겪었던
+        // "추출구가 벽 밖" 사고의 재발 비용에 비하면 이 검사가 훨씬 싸다
+        // (팀 리뷰 STAGE_MAP_REVIEW.md A5, 2026-08-08).
+        private Vector3 FloorCenter(Vector2Int cell, string what)
+        {
+            if (!Layout.IsFloor(cell.x, cell.y))
+            {
+                Vector2Int rescued = NearestFloor(cell);
+                Debug.LogError($"stage_actor_off_floor what={what} cell={cell} -> {rescued}");
+                cell = rescued;
+            }
+
+            return groundTilemap.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
+        }
+
+        private Vector2Int NearestFloor(Vector2Int from)
+        {
+            int max = Mathf.Max(Layout.Width, Layout.Height);
+            for (int r = 1; r < max; r++)
+            {
+                for (int dx = -r; dx <= r; dx++)
+                {
+                    for (int dy = -r; dy <= r; dy++)
+                    {
+                        // 껍질만 훑는다 — 안쪽은 더 작은 r 에서 이미 봤다.
+                        if (Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy)) != r)
+                        {
+                            continue;
+                        }
+
+                        if (Layout.IsFloor(from.x + dx, from.y + dy))
+                        {
+                            return new Vector2Int(from.x + dx, from.y + dy);
+                        }
+                    }
+                }
+            }
+
+            return from;
         }
 
         // 방마다 트리거 하나 — 밟은 구역을 GameManager.CurrentBiomeId 로 흘려

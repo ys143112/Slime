@@ -14,13 +14,17 @@ namespace Game.Gameplay
         [SerializeField] private StageMapGenerator generator;
         [SerializeField] private GameObject wildSlimePrefab;
 
-        [SerializeField] private int perRoomMin = 2;
-        [SerializeField] private int perRoomMax = 4;
+        [SerializeField] private int perRoomMin = 3;
+        [SerializeField] private int perRoomMax = 6;
 
-        // 방 패턴별 배율(§5-6). Safe 는 0 — 조용한 방이 있어야 다음 방이
-        // 무섭다. Nest 는 3 — 안 들어가도 되는 방이 제일 위험해야 "욕심"이
-        // 결정이 된다. 동시 상한은 없음(사용자 결정, 2026-08-08).
-        [SerializeField] private float safeMultiplier;
+        // 방 패턴별 배율(§5-6). Nest 는 3 — 안 들어가도 되는 방이 제일 위험해야
+        // "욕심"이 결정이 된다. 동시 상한은 없음(사용자 결정, 2026-08-08).
+        //
+        // Safe 는 0 이었다. 조용한 방이 있어야 다음 방이 무섭다는 뜻이었는데,
+        // 방이 16개나 되고 그중 Safe 가 여럿이라 지도의 넓은 구역이 통째로
+        // 비었다 — "특정 구간에만 슬라임이 나온다" 로 신고됨(2026-08-08).
+        // 0.5 면 다른 방의 절반이라 여전히 한숨 돌리는 자리로 읽힌다.
+        [SerializeField] private float safeMultiplier = 0.5f;
         [SerializeField] private float pillarMultiplier = 1f;
         [SerializeField] private float nestMultiplier = 3f;
 
@@ -30,13 +34,28 @@ namespace Game.Gameplay
 
         [SerializeField] private float minSlimeSpacing = 1.5f;
 
-        private void Start()
+        // 이번 지도에 우리가 세운 개체들. R 로 다시 생성할 때 걷어내려고 들고 있다.
+        private readonly List<GameObject> _spawned = new List<GameObject>();
+
+        // 구독은 Awake 에서 한다. 예전에는 Start 에서 "생성기 Start 가 먼저
+        // 돌았겠지" 하고 Layout 을 읽었는데, Unity 는 다른 GameObject 의 Start
+        // 순서를 보장하지 않아 뒤집히면 슬라임이 0마리가 된다(팀 리뷰 D7,
+        // 2026-08-08). 모든 Awake 는 모든 Start 보다 먼저 도므로 이러면 순서가
+        // 보장된다.
+        private void Awake()
         {
-            // StageMapGenerator.Start 가 먼저 돌아야 Layout 이 있다. 생성기와
-            // 스포너가 늘 한 세트로만 쓰이므로 스크립트 실행 순서 설정 없이
-            // 여기서 직접 부른다 — 인스펙터 순서가 바뀌면 여기도 깨진다는
-            // 뜻이니, 둘을 분리하게 되면 이벤트로 바꿀 것.
-            Spawn();
+            if (generator != null)
+            {
+                generator.MapGenerated += Spawn;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (generator != null)
+            {
+                generator.MapGenerated -= Spawn;
+            }
         }
 
         public void Spawn()
@@ -46,6 +65,18 @@ namespace Game.Gameplay
                 Debug.LogError("SlimeSpawner: StageMapGenerator.Layout 이 아직 없습니다.");
                 return;
             }
+
+            // 지도를 다시 그리면 옛 개체는 새 지도의 벽 속에 박힌다. 추격이
+            // 직선이라 거기서 영영 못 나온다(팀 리뷰 A4).
+            foreach (GameObject old in _spawned)
+            {
+                if (old != null)
+                {
+                    Destroy(old);
+                }
+            }
+
+            _spawned.Clear();
 
             StageLayout layout = generator.Layout;
             BiomeCatalog catalog = GameManager.Instance != null ? GameManager.Instance.Catalog : null;
@@ -72,13 +103,13 @@ namespace Game.Gameplay
                 int tier = CorruptionTierFor(room.biomeId) + (room.pattern == RoomPattern.Nest ? nestTierBonus : 0);
                 string[] pool = SpeciesPoolFor(catalog, room.biomeId);
 
-                spawned += SpawnInRoom(layout.SpawnCandidates(i), count, tier, pool, placed);
+                spawned += SpawnInRoom(layout.SpawnCandidates(i), count, tier, pool, placed, _spawned);
             }
 
             Debug.Log($"slime_spawner_done count={spawned}");
         }
 
-        private int SpawnInRoom(List<Vector2Int> candidates, int count, int tier, string[] pool, List<Vector2> placed)
+        private int SpawnInRoom(List<Vector2Int> candidates, int count, int tier, string[] pool, List<Vector2> placed, List<GameObject> spawnedObjects)
         {
             if (candidates.Count == 0)
             {
@@ -109,6 +140,7 @@ namespace Game.Gameplay
                 }
 
                 placed.Add(world);
+                spawnedObjects.Add(instance);
                 spawned++;
             }
 
@@ -148,8 +180,7 @@ namespace Game.Gameplay
 
         private static string[] SpeciesPoolFor(BiomeCatalog catalog, string biomeId)
         {
-            BiomeEntry entry = catalog != null ? catalog.Find(biomeId) : null;
-            return entry != null && entry.speciesPool != null ? entry.speciesPool : Array.Empty<string>();
+            return catalog != null ? catalog.WildSpeciesPool(biomeId) : Array.Empty<string>();
         }
     }
 }

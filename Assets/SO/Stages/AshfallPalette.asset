@@ -48,6 +48,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8497b8715816f9b43ad692aa4100e95c, type: 2}
   - {fileID: 11400000, guid: a0b23aec562396e4291d97935421fedb, type: 2}
   wallShadow: {fileID: 11400000, guid: e33cd50708418d44a90205d77168a773, type: 2}
+  invisibleWall: {fileID: 11400000, guid: e33cd50708418d44a90205d77168a773, type: 2}
   fogLevels:
   - {fileID: 11400000, guid: c556e5d88053ed848b3c2127d7065a2c, type: 2}
   - {fileID: 11400000, guid: d40aede5625bbba498447721ea5067fc, type: 2}
@@ -57,4 +58,10 @@ MonoBehaviour:
   decorTiles:
   - {fileID: 11400000, guid: 4fe44b9c52585328540e5481ae3ef4e9, type: 2}
   - {fileID: 11400000, guid: be7c728e4e3fcd7a495f0b9462cb4daa, type: 2}
-  treeProps: []
+  treeProps:
+  - {fileID: 11400000, guid: e3cc7369a8ae8d84ab8378e6b7f96fc2, type: 2}
+  - {fileID: 11400000, guid: e6a21bdf89dc8dd47bfcd9145275e193, type: 2}
+  - {fileID: 11400000, guid: 5e9091f0786e782418f146c32be2584c, type: 2}
+  - {fileID: 11400000, guid: 42abdddc155d73c45906aa97f63a8e26, type: 2}
+  - {fileID: 11400000, guid: 7a6c3d1b7239b294d892a17ad1d2ed46, type: 2}
+  - {fileID: 11400000, guid: 695d8e505525dd143b4033ff5a242c30, type: 2}

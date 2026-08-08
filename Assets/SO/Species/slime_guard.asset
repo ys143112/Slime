@@ -31,4 +31,6 @@ MonoBehaviour:
   passiveRadius: 4
   passiveInterval: 1
   passiveAmount: 0
-  breedingOnly: 0
+  breedingOnly: 1
+  breedingChance: 0.25
+  biomeTints: []

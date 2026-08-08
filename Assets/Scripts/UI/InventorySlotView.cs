@@ -45,8 +45,20 @@ namespace Game.Gameplay
 
             if (icon != null)
             {
-                icon.color = instance.corruptedGeneFlag ? new Color(0.6f, 0.4f, 0.9f) :
-                    instance.mutantFlag ? new Color(0.95f, 0.55f, 0.2f) : Color.white;
+                // 종 그림을 띄운다. 예전에는 색만 칠해서 어느 슬라임인지 글자로만
+                // 읽어야 했다(사용자, 2026-08-08). 배낭 슬롯과 같은 규칙이다.
+                Sprite portrait = SlimeSpeciesCatalog.Portrait(instance);
+                icon.sprite = portrait;
+                icon.preserveAspect = true;
+                icon.enabled = portrait != null;
+
+                // 그림이 붙으면 색은 그림 자체를 물들인다 — 이로치 색이 이미
+                // 실려 있어 태그 색까지 겹치면 알아볼 수 없다. 태그는 라벨의
+                // [MUTANT]/[CORRUPT] 가 이미 말하고 있다.
+                icon.color = portrait != null
+                    ? (instance.shinyFlag ? instance.shinyTint : Color.white)
+                    : instance.corruptedGeneFlag ? new Color(0.6f, 0.4f, 0.9f)
+                    : instance.mutantFlag ? new Color(0.95f, 0.55f, 0.2f) : Color.white;
             }
         }
     }

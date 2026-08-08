@@ -49,6 +49,7 @@ namespace Game.Gameplay
         public Faction Faction => Faction.Player;
 
         private Rigidbody2D _body;
+        private Collider2D _collider;
         private ActorAnimation _animation;
         private Transform _player;
         private float _nextAttackTime;
@@ -116,6 +117,7 @@ namespace Game.Gameplay
         private void Awake()
         {
             _body = GetComponent<Rigidbody2D>();
+            _collider = GetComponent<Collider2D>();
             _animation = GetComponent<ActorAnimation>();
         }
 
@@ -171,7 +173,7 @@ namespace Game.Gameplay
             {
                 // 사거리 딱 그 자리에 서면 밀리는 순간마다 판정이 들락날락한다.
                 // 조금 더 파고들게 해서 사거리 안쪽에 머무르게 한다.
-                MoveToward(enemyPosition, Instance.baseStats.speed * UnitsPerSpeedPoint, attackRange - 0.2f);
+                MoveToward(enemyPosition, ApproachSpeed(), attackRange - 0.2f);
                 TryAttack(enemy, enemyPosition);
                 return;
             }
@@ -211,11 +213,21 @@ namespace Game.Gameplay
                 return;
             }
 
-            _body.linearVelocity = error.normalized * (Mathf.Min(followSpeed, gap * 6f) * _slow.Scale);
+            _body.linearVelocity = Steering.SlideAlongWalls(
+                _collider, error.normalized * (Mathf.Min(followSpeed, gap * 6f) * _slow.Scale));
             if (_animation != null)
             {
                 _animation.SetMovement(_body.linearVelocity);
             }
+        }
+
+        // 적에게 붙을 때도 따라올 때보다 느려지지 않게 한다. 스탯 speed 를 그대로
+        // 쓰면 기본 3 → 1.2유닛/초라 followSpeed(6.5)의 1/5 이다 — 잘 따라오던
+        // 동행이 적을 보는 순간 기어가는 것처럼 보였다(팀 QA, 2026-08-08).
+        // 빠른 종은 그 이점을 그대로 살린다.
+        private float ApproachSpeed()
+        {
+            return Mathf.Max(followSpeed, Instance.baseStats.speed * UnitsPerSpeedPoint);
         }
 
         private void MoveToward(Vector2 destination, float speed, float stopDistance)
@@ -232,7 +244,8 @@ namespace Game.Gameplay
                 return;
             }
 
-            _body.linearVelocity = offset.normalized * (speed * _slow.Scale);
+            _body.linearVelocity = Steering.SlideAlongWalls(
+                _collider, offset.normalized * (speed * _slow.Scale));
             if (_animation != null)
             {
                 _animation.SetMovement(_body.linearVelocity);

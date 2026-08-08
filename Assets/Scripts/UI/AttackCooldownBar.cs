@@ -90,7 +90,7 @@ namespace Game.Gameplay
             float ratio = _attack.CooldownRatio;
             _fill.anchorMax = new Vector2(ratio, 1f);
             _fillImage.color = ratio >= 1f ? Ready : Charging;
-            _label.text = ratio >= 1f ? "Ready (Space)" : "Charging";
+            _label.text = ratio >= 1f ? "Ready (Click)" : "Charging";
         }
     }
 }

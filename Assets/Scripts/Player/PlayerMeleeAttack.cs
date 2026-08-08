@@ -9,7 +9,10 @@ namespace Game.Gameplay
         // 판정 원 안에 동행 슬라임이 들어와도 때리지 않게 하는 근거.
         public Faction Faction => Faction.Player;
 
-        [SerializeField] private int attackDamage = 8;
+        // 8 이면 HP 20 짜리 tier0 슬라임에 3타, 티어가 오르면 4~5타라 잡는 데
+        // 너무 오래 걸렸다(사용자, 2026-08-08). 12 면 tier0 는 2타, tier3(HP 29)
+        // 도 3타다.
+        [SerializeField] private int attackDamage = 12;
         [SerializeField] private float hitboxRadius = 0.6f;
         [SerializeField] private float reachOffset = 0.9f;
 
@@ -43,10 +46,23 @@ namespace Game.Gameplay
             }
         }
 
+        // EventSystem 이 없으면(씬 배선 사고) 클릭을 통째로 막지 않는다 —
+        // 공격이 조용히 안 되는 것보다 UI 뒤에서 한 번 휘두르는 편이 낫다.
+        private static bool PointerOverUI()
+        {
+            var events = UnityEngine.EventSystems.EventSystem.current;
+            return events != null && events.IsPointerOverGameObject();
+        }
+
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame
-                && Time.time >= _nextAttackTime)
+            // 공격은 마우스 좌클릭이다(사용자 결정, 2026-08-08). 예전엔 Space
+            // 였는데, 이동이 WASD 라 왼손이 이미 바쁘고 오른손은 놀고 있었다.
+            //
+            // UI 위에서 누른 클릭은 무시한다 — 인벤토리 슬롯을 고르려고 누를
+            // 때마다 뒤에서 칼을 휘두르면 안 된다.
+            bool clicked = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
+            if (clicked && Time.time >= _nextAttackTime && !PointerOverUI() && !BreedingPen.PointerOverPen())
             {
                 _nextAttackTime = Time.time + attackCooldown;
                 PerformAttack();

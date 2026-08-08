@@ -39,6 +39,13 @@ namespace Game.Gameplay
         [Tooltip("벽 전체에 쓰는 그림자 타일. wangBlendCollidable[15] 를 어둡게 틴트.")]
         public TileBase wallShadow;
 
+        // 그림 없이 충돌만 내는 타일. 벽 그림을 Ground 의 wang 이 다 그리게 된
+        // 뒤로 벽 타일맵은 대부분 이걸 깐다 — 그림자를 그대로 쓰면 둔덕 위에
+        // 어두운 사각형이 겹쳐 찍힌다. wang 이 못 덮은 칸(두께 1칸 기둥)에서만
+        // wallShadow 로 돌아간다.
+        [Tooltip("그림 없이 충돌만 내는 타일(Tile_Invisible). 벽 밴드 대부분이 이걸 쓴다.")]
+        public TileBase invisibleWall;
+
         [Tooltip("안개 5단계, 옅음→짙음. FogOfWarReveal.fogLevels 와 같은 순서.")]
         public TileBase[] fogLevels = new TileBase[5];
 
