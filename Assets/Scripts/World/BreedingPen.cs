@@ -21,6 +21,24 @@ namespace Game.Gameplay
 
         public int PlacedCount => _placed.Count;
 
+        private TextMesh _label;
+
+        // 작업장과 같은 이유 — 여기 뭐가 있고 무슨 키를 누르는지 화면에
+        // 아무 데도 안 적혀 있었다.
+        private void Awake()
+        {
+            _label = WorldLabel.Attach(transform, string.Empty, 0.9f);
+            RefreshLabel();
+        }
+
+        private void RefreshLabel()
+        {
+            if (_label != null)
+            {
+                _label.text = $"교배장 ({_placed.Count}/{Capacity})\nQ 선택  F 내놓기  G 되돌리기";
+            }
+        }
+
         // spec-008: 보유 슬라임 한 마리를 교배장에 내놓는다. 두 마리가 차는
         // 순간 교배가 자동으로 시작되고 교배장은 다시 빈다.
         public bool TryPlace(SlimeInstance instance)
@@ -54,6 +72,7 @@ namespace Game.Gameplay
                 Clear();
             }
 
+            RefreshLabel();
             return true;
         }
 
@@ -77,6 +96,7 @@ namespace Game.Gameplay
             }
 
             PlayerRoster.Instance.Add(instance);
+            RefreshLabel();
             return instance;
         }
 

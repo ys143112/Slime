@@ -20,6 +20,27 @@ namespace Game.Gameplay
             Assigned != null && outputTable != null ? outputTable.OutputFor(Assigned.baseStats) : 0;
 
         private float _elapsed;
+        private TextMesh _label;
+
+        // 그림이 바닥 타일 조각이라 배경에 묻혀 여기 뭐가 있는지 안 보였다.
+        // 전용 그림이 생기기 전까지는 글자가 그 역할을 한다.
+        private void Awake()
+        {
+            _label = WorldLabel.Attach(transform, string.Empty, 0.7f);
+            RefreshLabel();
+        }
+
+        private void RefreshLabel()
+        {
+            if (_label == null)
+            {
+                return;
+            }
+
+            _label.text = Assigned == null
+                ? "작업장\nZ 선택  X 배치"
+                : $"작업장: {Assigned.speciesId}\n산출 {OutputPerTick}/틱  C 회수";
+        }
 
         public bool TryAssign(SlimeInstance instance)
         {
@@ -37,6 +58,7 @@ namespace Game.Gameplay
 
             Assigned = instance;
             _elapsed = 0f;
+            RefreshLabel();
             return true;
         }
 
@@ -56,6 +78,7 @@ namespace Game.Gameplay
             SlimeInstance released = Assigned;
             Assigned = null;
             _elapsed = 0f;
+            RefreshLabel();
             PlayerRoster.Instance.Add(released);
             return released;
         }
