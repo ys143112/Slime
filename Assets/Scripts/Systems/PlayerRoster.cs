@@ -32,8 +32,18 @@ namespace Game.Gameplay
             _roster.AddRange(SaveSystem.Load(SaveKey, new List<SlimeInstance>()));
         }
 
+        // 목록에 들어오는 순간 한 번만 체력을 정상화한다. 포획된 개체는 약화
+        // 상태(HP 0)로 들어오므로 어디선가는 되돌려야 하는데, 그 자리를 동행
+        // 배치 쪽에 두면 슬롯을 다시 누를 때마다 풀피가 되는 무한 회복이 된다
+        // (2026-08-08 실측). 들어올 때 한 번이면 그 구멍이 없다.
         public void Add(SlimeInstance instance)
         {
+            if (instance != null)
+            {
+                instance.weakened = false;
+                instance.currentHp = Mathf.Max(1, instance.baseStats.maxHp);
+            }
+
             _roster.Add(instance);
             SaveSystem.Save(SaveKey, _roster);
             RosterChanged?.Invoke();

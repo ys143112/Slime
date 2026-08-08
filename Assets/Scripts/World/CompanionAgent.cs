@@ -70,6 +70,13 @@ namespace Game.Gameplay
                 return null;
             }
 
+            // 체력이 없는 개체를 내보내면 나가자마자 죽어 영구히 사라진다.
+            if (instance.currentHp <= 0)
+            {
+                Debug.LogWarning($"CompanionAgent.Deploy: {instance.speciesId} 는 체력이 0 이라 내보낼 수 없습니다.");
+                return null;
+            }
+
             if (Active != null)
             {
                 Active.Recall();
@@ -116,10 +123,9 @@ namespace Game.Gameplay
             Active = this;
             Instance = instance;
 
-            // 로스터 개체는 예전 런에서 다친 채로 남아 있을 수 있다. 약화 상태로
-            // 내보내면 나가자마자 죽으므로 체력을 채워서 내보낸다.
-            Instance.weakened = false;
-            Instance.currentHp = Mathf.Max(1, Instance.baseStats.maxHp);
+            // 체력은 건드리지 않는다. 여기서 채우면 슬롯을 다시 누를 때마다
+            // 풀피가 되는 무한 회복이 된다 — 정상화는 PlayerRoster.Add 가
+            // 들어올 때 한 번만 한다.
 
             if (appearance != null)
             {
