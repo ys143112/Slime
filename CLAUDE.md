@@ -225,6 +225,32 @@ spec-001 다이브 트리거는 키 없음 (`OnTriggerEnter2D` + `CompareTag("Pl
 `1 + 0.15×tier`. `defense` 필드는 존재하지만 데미지 계산에서 안 읽힘(미사용).
 Space 3타로 약화, 접촉 6회로 플레이어 사망. 낙인 스택 3당 티어 1, 티어 캡 5.
 
+## 진영 (2026-08-08 신규)
+
+`IDamageable` 이 `IFactionMember` 를 상속하고 `Faction{Player,Wild}` 를 든다.
+예전엔 "`IDamageable` 이면 때린다" 였다 — `ApplyDamage(양, source)` 의 source
+를 아무도 안 읽어서, 동행 슬라임을 넣는 순간 동행이 플레이어를 때린다.
+
+- **가드는 호출부가 아니라 `ApplyDamage` 구현부에 있다**(`Factions.IsFriendlyFire`).
+  새 공격자가 생겨도 못 우회한다.
+- **때리는 쪽이 항상 맞는 쪽은 아니다** — `PlayerMeleeAttack` 은 `IDamageable`
+  이 아니라 `IFactionMember` 만 구현한다. 그래서 인터페이스를 둘로 나눴다.
+- **진영을 안 밝히는 출처는 통과시킨다.** 테스트가 `ApplyDamage(x, this)` 로
+  부르고, 환경 피해도 진영이 없다 — 막으면 피해가 조용히 사라져 원인을 못 찾는다.
+
+## `WildSlimeAgent.Initialize` (2026-08-08 신규)
+
+`Awake` 가 HP 20 을 하드코딩해 스탯을 자가 생성하고 있었다 — 스포너와 동행이
+각자 `Awake` 를 고치면 충돌한다. 두 갈래로 꺼냈다:
+
+- `Initialize(string species, int tier)` — 티어 배율 → 종 편향 순서로 스탯을
+  만든다. **밖에서 다시 걸지 말 것(두 번 곱해진다).**
+- `Initialize(SlimeInstance)` — 완성된 개체를 그대로 심는다.
+
+`Awake` 가 전자를 부르므로 손배치 개체는 예전과 같다. 스포너는 `Instantiate`
+직후 덮어쓴다 — **비활성 프리팹 순서 트릭이 필요없다**(`Instantiate` 가 `Awake`
+를 즉시 돌리므로 "Initialize 가 먼저" 는 성립할 수 없다).
+
 ## 씬 · 영속 오브젝트
 
 씬: `Boot`(부팅) → `Hub`(목장) / `Biome` `BiomeMarsh` `BiomeAshfall`(바이옴 3종,
@@ -299,6 +325,13 @@ EventSystem 은 씬마다 하나씩 필요(uGUI 버튼 클릭용) — Hub, Biome
 세이브 파일: `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Slime\Saves\
 {biome_stigma,player_roster}.json`. 런타임 검증하다 낙인/로스터에 테스트
 데이터 섞이기 쉽다 — 실제 플레이 전에 확인.
+
+**WebGL 에서는 파일 IO 를 안 탄다**(2026-08-08). 브라우저에 쓸 수 있는
+파일시스템이 없다. `#if UNITY_WEBGL && !UNITY_EDITOR` 로 갈랐다 —
+`SaveSystem` 은 `PlayerPrefs`(키 `save_{key}`, 쓸 때마다 `PlayerPrefs.Save`
+로 즉시 내려쓴다. 탭이 예고 없이 닫힌다), `RunLogWriter` 는 `Debug.Log` 로
+흘린다. 로그는 **이벤트마다** 부르는 자리라 예외가 한 번 나면 런이 통째로
+멈춘다.
 
 ## 에셋 파이프라인 (PixelLab 경유)
 
@@ -462,8 +495,12 @@ GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아�
 로컬좌표라 자동으로 따라감), 뷰포트 크기 계산 불필요 — 그냥 확실히 큰
 스케일(60×40 같은)로 깔면 됨.
 
-테스트 프레임워크(`com.unity.test-framework`)는 설치돼 있지만 **테스트
-0개, asmdef 0개** — 기획서의 `Test_*` 이름 25개가 전부 미작성 상태.
+테스트 프레임워크(`com.unity.test-framework`)는 설치돼 있고 PlayMode 테스트
+5파일이 있다(`CombatTests` `PursuitTests` `BreedingPenTests` `RunSatchelTests`
++ 헬퍼 3). **다만 테스트 러너에 안 뜬다** — asmdef 0개이고
+`ProjectSettings.asset` 의 `playModeTestRunnerEnabled: 0` 이라 둘 다 없다.
+켜려면 `Assets/Tests/PlayMode` 에 asmdef 를 하나 두는 쪽이 낫다 — 플래그를
+켜면 nunit 이 **플레이어 빌드에 섞인다**(WebGL 목표에 불리).
 
 ## 이 파일 갱신 규칙
 

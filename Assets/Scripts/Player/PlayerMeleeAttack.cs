@@ -4,8 +4,11 @@ using UnityEngine.InputSystem;
 namespace Game.Gameplay
 {
     // 기능: spec-007 (방향 공격은 spec-012)
-    public sealed class PlayerMeleeAttack : MonoBehaviour
+    public sealed class PlayerMeleeAttack : MonoBehaviour, IFactionMember
     {
+        // 판정 원 안에 동행 슬라임이 들어와도 때리지 않게 하는 근거.
+        public Faction Faction => Faction.Player;
+
         [SerializeField] private int attackDamage = 8;
         [SerializeField] private float hitboxRadius = 0.6f;
         [SerializeField] private float reachOffset = 0.9f;

@@ -39,6 +39,10 @@ namespace Game.Gameplay
 
         public SlimeInstance Instance { get; private set; }
 
+        // 야생 개체 전용 클래스다 — 동행은 별도 클래스(CompanionAgent)라 여기서
+        // 진영이 갈릴 일이 없다.
+        public Faction Faction => Faction.Wild;
+
         public WildSlimeState State { get; private set; } = WildSlimeState.Resting;
 
         private Rigidbody2D _body;
@@ -54,8 +58,18 @@ namespace Game.Gameplay
                 Debug.LogError("WildSlimeAgent: Rigidbody2D 컴포넌트가 없어 추격을 비활성화합니다.");
             }
 
-            speciesId = ResolveSpeciesId();
-            int tier = CurrentCorruptionTier();
+            // 씬에 손배치된 개체는 여기서 스스로 스탯을 만든다. 스포너가 만든
+            // 개체는 Instantiate 직후 Initialize 로 이 값을 덮는다.
+            Initialize(ResolveSpeciesId(), CurrentCorruptionTier());
+        }
+
+        // 스포너·동행이 종과 티어를 밖에서 정하는 유일한 자리. 이 경로가 없으면
+        // 스탯이 Awake 안에 갇혀 있어 호출자마다 Awake 를 각자 고치게 된다.
+        // 티어 배율 → 종 편향 순서는 바깥에서 다시 걸지 말 것(두 번 곱해진다).
+        public void Initialize(string species, int tier)
+        {
+            speciesId = string.IsNullOrEmpty(species) ? speciesId : species;
+
             float multiplier = 1f + StatMultiplierPerTier * tier;
             var stats = new SlimeStatBlock(
                 Mathf.RoundToInt(20 * multiplier),
@@ -65,13 +79,27 @@ namespace Game.Gameplay
 
             // 종의 성격(방어형은 방어가 높고 공격이 0, 무지개는 총량이 낮다)을
             // 오염 티어 배율 위에 얹는다. 표가 없으면 종 구분 없이 예전과 같다.
-            SlimeSpecies species = SlimeSpeciesCatalog.Lookup(speciesId);
-            if (species != null)
+            SlimeSpecies speciesData = SlimeSpeciesCatalog.Lookup(speciesId);
+            if (speciesData != null)
             {
-                stats = species.ApplyBias(stats);
+                stats = speciesData.ApplyBias(stats);
             }
 
-            Instance = new SlimeInstance(speciesId, stats);
+            Initialize(new SlimeInstance(speciesId, stats));
+        }
+
+        // 완성된 개체를 그대로 심는 경로. 교배로 나온 슬라임을 야생에 세우거나
+        // 테스트가 스탯을 고정할 때 쓴다.
+        public void Initialize(SlimeInstance instance)
+        {
+            if (instance == null)
+            {
+                Debug.LogError("WildSlimeAgent.Initialize: instance 가 null 이라 무시합니다.");
+                return;
+            }
+
+            Instance = instance;
+            speciesId = instance.speciesId;
 
             // 종마다 그림이 다르다. 야생 개체는 아직 돌연변이 판정 전이라
             // (포획 시점에 굴린다) 평상시 그림이 걸린다.
@@ -83,7 +111,7 @@ namespace Game.Gameplay
             UpdateHealthBar();
             if (weakenedIndicator != null)
             {
-                weakenedIndicator.SetActive(false);
+                weakenedIndicator.SetActive(Instance.weakened);
             }
 
             if (alertIndicator != null)
@@ -199,7 +227,7 @@ namespace Game.Gameplay
 
         public void ApplyDamage(int amount, object source)
         {
-            if (Instance.weakened)
+            if (Instance.weakened || Factions.IsFriendlyFire(source, this))
             {
                 return;
             }
