@@ -28,7 +28,7 @@ namespace Game.Gameplay
         {
             Instance = instance;
 
-            string tag = instance.mutantFlag ? " [돌연변이]" : instance.corruptedGeneFlag ? " [오염]" : "";
+            string tag = instance.mutantFlag ? " [MUTANT]" : instance.corruptedGeneFlag ? " [CORRUPT]" : "";
 
             // 지금 나가 있는 동행이 어느 개체인지 목록에서 바로 보여야 한다 —
             // 안 보이면 같은 종이 여럿일 때 누구를 내보냈는지 알 수 없다.
@@ -38,9 +38,9 @@ namespace Game.Gameplay
                 // 스탯을 안 보여주면 교배 결과를 확인할 방법이 없다 — 종 편향이
                 // 걸렸는지, 좋은 개체가 나왔는지가 전부 이 숫자에 있다.
                 SlimeStatBlock stats = instance.baseStats;
-                label.text = $"{(isCompanion ? "★ " : "")}{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tag}\n" +
+                label.text = $"{(isCompanion ? "* " : "")}{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tag}\n" +
                     $"HP {instance.currentHp}/{stats.maxHp}\n" +
-                    $"공 {stats.attack} 방 {stats.defense} 속 {stats.speed}";
+                    $"ATK {stats.attack} DEF {stats.defense} SPD {stats.speed}";
             }
 
             if (icon != null)

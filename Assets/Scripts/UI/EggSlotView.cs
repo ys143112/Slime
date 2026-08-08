@@ -24,9 +24,9 @@ namespace Game.Gameplay
                 return;
             }
 
-            string tag = _egg.mutantFlag ? " [돌연변이]" : _egg.corruptedGeneFlag ? " [오염]" : "";
+            string tag = _egg.mutantFlag ? " [MUTANT]" : _egg.corruptedGeneFlag ? " [CORRUPT]" : "";
             float remaining = _egg.RemainingSeconds(nowUtc);
-            label.text = $"{SlimeSpeciesCatalog.DisplayName(_egg.speciesId)}{tag}\n{_egg.hatchConditionLabel} ({remaining:0.0}초)";
+            label.text = $"{SlimeSpeciesCatalog.DisplayName(_egg.speciesId)}{tag}\n{_egg.hatchConditionLabel} ({remaining:0.0}s)";
         }
     }
 }

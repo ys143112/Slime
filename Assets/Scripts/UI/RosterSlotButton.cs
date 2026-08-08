@@ -74,7 +74,7 @@ namespace Game.Gameplay
             _instance = instance;
             _onClicked = onClicked;
 
-            string tag = instance.mutantFlag ? " [돌연변이]" : instance.corruptedGeneFlag ? " [오염]" : "";
+            string tag = instance.mutantFlag ? " [MUTANT]" : instance.corruptedGeneFlag ? " [CORRUPT]" : "";
             _baseLabel = $"{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tag}\nHP {instance.currentHp}/{instance.baseStats.maxHp}";
 
             if (icon != null)
@@ -99,7 +99,8 @@ namespace Game.Gameplay
         {
             if (label != null)
             {
-                label.text = selected ? $"▶ {_baseLabel}" : _baseLabel;
+                // Kenney Pixel 에 없는 글자는 빈칸으로 나온다 — 선택 표시는 ASCII 로.
+                label.text = selected ? $"> {_baseLabel}" : _baseLabel;
             }
 
             transform.localScale = selected ? Vector3.one * 1.1f : Vector3.one;

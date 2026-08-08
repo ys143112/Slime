@@ -12,29 +12,32 @@ namespace Game.Gameplay
         // 병합 사고 위험이 생긴다. 이 패널은 씬에 비활성으로 저장돼 있어
         // MCP 도구로는 손도 못 댄다 — 코드에서 채우면 그 제약도 비껴간다.
         private const string ControlsBody =
-            "WASD  이동\n" +
-            "Space  공격 (쿨다운 0.5초, 화면 왼쪽 아래 막대로 확인)\n" +
-            "E  포획 (약화된 슬라임만)\n" +
-            "I  인벤토리 — 슬롯을 누르면 그 슬라임이 동행으로 나간다\n" +
-            "B  런 배낭 (다이브 중 잡은 것)\n" +
-            "U  교배 창 (목장에서만) — 두 마리를 골라 교배 버튼\n" +
-            "Z / X / C  휴식소: 선택 전환 / 눕히기 / 회수";
+            "WASD  Move\n" +
+            "Space  Attack (0.5s cooldown, bar at bottom left)\n" +
+            "E  Capture (weakened slimes only)\n" +
+            "I  Inventory - click a slot to send that slime out as companion\n" +
+            "B  Run satchel (what you caught this dive)\n" +
+            "U  Breeding window (ranch only) - pick two, press Breed\n" +
+            "Z / X / C  Rest area: switch / assign / collect";
 
         private const string DescriptionBody =
-            "바이옴에 다이브해 야생 슬라임을 약화시키고(Space) 잡는다(E).\n" +
-            "잡은 슬라임은 곧바로 내 것이 아니다 — 런 배낭(B)에 쌓이고, 추출 지점까지\n" +
-            "살아서 돌아와야 보유 목록에 들어간다. 도중에 죽으면 전부 몰수다.\n" +
+            "Dive into a biome, weaken wild slimes (Space) and capture them (E).\n" +
+            "A captured slime is not yours yet - it goes into the run satchel (B),\n" +
+            "and only reaches your roster if you walk out through the extraction\n" +
+            "point alive. Die on the way and you lose the whole satchel.\n" +
             "\n" +
-            "동행: 인벤토리에서 슬라임 한 마리를 데리고 다닐 수 있다(한 마리까지).\n" +
-            "같이 싸워 주지만 쓰러지면 보유 목록에서 영구히 사라진다.\n" +
+            "Companion: one slime from the inventory can follow you.\n" +
+            "It fights with you, but if it falls it is gone from the roster forever.\n" +
             "\n" +
-            "휴식소: 다친 슬라임을 눕히면(X) 2초마다 최대 체력의 10%씩 낫는다\n" +
-            "(0에서 완치까지 약 20초). 다 나으면 회수한다(C). 눕혀 둔 동안에는 보유\n" +
-            "목록에서 빠져 교배·동행에 못 쓴다 — 이것이 유일한 회복 수단이다.\n" +
+            "Rest area: assign a hurt slime (X) and it heals 10% of max HP every\n" +
+            "2 seconds (about 20s from zero). Collect it when healed (C). While it\n" +
+            "rests it leaves the roster and cannot breed or follow - this is the\n" +
+            "only way to heal.\n" +
             "\n" +
-            "교배장: U 로 창을 열어 두 마리를 고르면 알이 생기고, 시간이 지나면 부화한다.\n" +
-            "자손은 부모 중 한쪽의 종을 물려받고 스탯은 그 종의 성격을 따른다.\n" +
-            "오염된 바이옴일수록 돌연변이(스탯 반전)와 이로치가 잘 나온다.";
+            "Breeding pen: press U, pick two slimes, an egg appears and hatches\n" +
+            "after a while. The child inherits one parent's species and takes that\n" +
+            "species' stat bias. The more corrupted the biome, the more mutants\n" +
+            "(inverted stats) and shinies you get.";
 
         private Slider _bgmSlider;
         private Slider _sfxSlider;
@@ -55,7 +58,18 @@ namespace Game.Gameplay
         // 안 열리면 볼륨 조절까지 같이 막힌다.
         private void SetText(string childName, string body)
         {
-            Transform child = transform.Find(childName);
+            // 이름으로 손자까지 훑는다. 본문은 ScrollView/Content 밑으로 들어가
+            // 직계 자식이 아니고, 앞으로 한 겹 더 감싸도 배선이 안 끊긴다.
+            Transform child = null;
+            foreach (Transform candidate in GetComponentsInChildren<Transform>(true))
+            {
+                if (candidate.name == childName)
+                {
+                    child = candidate;
+                    break;
+                }
+            }
+
             if (child == null)
             {
                 return;

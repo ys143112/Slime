@@ -24,7 +24,7 @@ namespace Game.Gameplay
             {
                 BiomeCatalog catalog = GameManager.Instance != null ? GameManager.Instance.Catalog : null;
                 string name = catalog != null ? catalog.DisplayNameOf(biomeId) : biomeId;
-                destinationText.text = $"다음 목적지: {name}";
+                destinationText.text = $"Next: {name}";
             }
 
             if (stigmaIcon != null)

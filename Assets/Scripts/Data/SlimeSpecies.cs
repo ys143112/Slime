@@ -22,7 +22,7 @@ namespace Game.Gameplay
     {
         [Header("식별")]
         public string speciesId = "slime_basic";
-        public string displayName = "슬라임";
+        public string displayName = "Slime";
 
         [Header("그림 — PNG 를 여기 끼운다")]
         [Tooltip("평상시 스프라이트.")]

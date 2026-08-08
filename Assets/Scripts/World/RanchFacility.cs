@@ -26,7 +26,7 @@ namespace Game.Gameplay
 
         private float _elapsed;
         private TextMesh _label;
-        private string _selectionText = "없음";
+        private string _selectionText = "None";
         private bool _nearby;
         private float _nearbyUntil;
 
@@ -40,7 +40,7 @@ namespace Game.Gameplay
         /// </remarks>
         public void ShowSelection(string selectionText, int rosterCount)
         {
-            _selectionText = rosterCount > 0 ? selectionText : "없음";
+            _selectionText = rosterCount > 0 ? selectionText : "None";
 
             // 인터랙터는 범위를 벗어나면 아예 안 부른다. "안 불린 지 좀 됐으면
             // 멀어진 것" 으로 판정해야 근접 안내가 계속 떠 있지 않는다.
@@ -67,14 +67,14 @@ namespace Game.Gameplay
             if (Assigned == null)
             {
                 _label.text = _nearby
-                    ? $"휴식소 (비어 있음)\n선택: {_selectionText}\nZ 전환  X 눕히기"
-                    : "휴식소\n가까이 가면 조작할 수 있다";
+                    ? $"Rest Area (empty)\nSelected: {_selectionText}\nZ switch  X assign"
+                    : "Rest Area\nStep closer to use";
                 return;
             }
 
             bool full = Assigned.currentHp >= Assigned.baseStats.maxHp;
-            _label.text = $"휴식소: {SlimeSpeciesCatalog.DisplayName(Assigned.speciesId)}\n" +
-                $"HP {Assigned.currentHp}/{Assigned.baseStats.maxHp}{(full ? " (다 나음)" : "")}  C 회수";
+            _label.text = $"Rest Area: {SlimeSpeciesCatalog.DisplayName(Assigned.speciesId)}\n" +
+                $"HP {Assigned.currentHp}/{Assigned.baseStats.maxHp}{(full ? " (full)" : "")}  C collect";
         }
 
         // 눕혀 둔 슬라임이 틱마다 회복한다. 이것이 게임에 있는 유일한 회복

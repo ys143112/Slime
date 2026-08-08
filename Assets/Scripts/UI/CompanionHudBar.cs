@@ -100,7 +100,7 @@ namespace Game.Gameplay
 
             if (_label != null)
             {
-                _label.text = $"동행 {SlimeSpeciesCatalog.DisplayName(instance.speciesId)}  "
+                _label.text = $"Companion {SlimeSpeciesCatalog.DisplayName(instance.speciesId)}  "
                     + $"{instance.currentHp}/{instance.baseStats.maxHp}";
             }
         }

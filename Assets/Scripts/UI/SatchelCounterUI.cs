@@ -32,7 +32,7 @@ namespace Game.Gameplay
         {
             if (counterText != null)
             {
-                counterText.text = $"위험 슬라임 {RunSatchel.Count}마리";
+                counterText.text = $"Satchel {RunSatchel.Count}";
             }
 
             if (detailPanel == null)

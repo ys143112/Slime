@@ -13,7 +13,7 @@ namespace Game.Gameplay
         [SerializeField] private GameObject placedSlimePrefab;
         [SerializeField] private Transform[] slots = new Transform[Capacity];
         [SerializeField] private float hatchDurationSeconds = 30f;
-        [SerializeField] private string hatchConditionLabel = "부화 시간 경과";
+        [SerializeField] private string hatchConditionLabel = "Incubating";
 
         // 서로 다른 종을 붙였을 때 교배 전용 종(무지개)이 나올 확률.
         [SerializeField] [Range(0f, 1f)] private float crossSpeciesChance = 0.12f;
@@ -38,7 +38,7 @@ namespace Game.Gameplay
         {
             if (_label != null)
             {
-                _label.text = $"교배장 ({_placed.Count}/{Capacity})\nU 로 연다";
+                _label.text = $"Breeding Pen ({_placed.Count}/{Capacity})\nU to open";
             }
         }
 
