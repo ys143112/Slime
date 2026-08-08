@@ -29,9 +29,14 @@ namespace Game.Gameplay
             Instance = instance;
 
             string tag = instance.mutantFlag ? " [돌연변이]" : instance.corruptedGeneFlag ? " [오염]" : "";
+
+            // 지금 나가 있는 동행이 어느 개체인지 목록에서 바로 보여야 한다 —
+            // 안 보이면 같은 종이 여럿일 때 누구를 내보냈는지 알 수 없다.
+            bool isCompanion = CompanionAgent.Active != null && CompanionAgent.Active.Instance == instance;
             if (label != null)
             {
-                label.text = $"{instance.speciesId}{tag}\nHP {instance.currentHp}/{instance.baseStats.maxHp}";
+                label.text = $"{(isCompanion ? "★ " : "")}{instance.speciesId}{tag}\n" +
+                    $"HP {instance.currentHp}/{instance.baseStats.maxHp}";
             }
 
             if (icon != null)

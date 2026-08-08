@@ -427,6 +427,16 @@ GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아�
   꼭 `Stop` 부터.
 - MCP 브리지가 가끔 "Unity not detected" 로 한 번씩 끊긴다(도메인 리로드
   타이밍 추정) — 재시도하면 대개 바로 붙는다.
+- **`Unity_ReadConsole Types=["Error"]` 는 컴파일 에러를 못 잡는다.** 스크립트
+  컴파일 에러가 `Type: "Log"` 로 분류돼 나온다(2026-08-08 실측: `error CS0165`
+  가 Log 로 왔다). 에러만 걸러 읽으면 "콘솔 깨끗한데 dll 이 안 갱신된다" 는
+  헛다리를 짚게 된다 — **`Types=["All"]` 로 읽을 것.** 컴파일 여부는
+  `Library/ScriptAssemblies/Game.Gameplay.dll` 의 수정 시각으로 확인하는 게
+  가장 확실하다.
+- `RunCommand` 코드는 `Unity.AI.Assistant.Agent.Dynamic.Extension.Editor`
+  네임스페이스 안에 감싸여 컴파일된다. 그래서 `CompilationPipeline` 같은
+  짧은 이름이 `Unity.CompilationPipeline` 로 잘못 붙는다 —
+  `UnityEditor.Compilation.CompilationPipeline` 처럼 완전한 이름을 쓸 것.
 - **Play 중에 RunCommand 를 여러 번 부르면 `static` 이 조용히 날아간다.**
   RunCommand 는 매번 코드를 컴파일하고, 그게 도메인 리로드를 부른다.
   `DontDestroyOnLoad` 오브젝트는 살아남지만 `Awake` 는 다시 안 돌아서
@@ -495,12 +505,17 @@ GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아�
 로컬좌표라 자동으로 따라감), 뷰포트 크기 계산 불필요 — 그냥 확실히 큰
 스케일(60×40 같은)로 깔면 됨.
 
-테스트 프레임워크(`com.unity.test-framework`)는 설치돼 있고 PlayMode 테스트
-5파일이 있다(`CombatTests` `PursuitTests` `BreedingPenTests` `RunSatchelTests`
-+ 헬퍼 3). **다만 테스트 러너에 안 뜬다** — asmdef 0개이고
-`ProjectSettings.asset` 의 `playModeTestRunnerEnabled: 0` 이라 둘 다 없다.
-켜려면 `Assets/Tests/PlayMode` 에 asmdef 를 하나 두는 쪽이 낫다 — 플래그를
-켜면 nunit 이 **플레이어 빌드에 섞인다**(WebGL 목표에 불리).
+테스트 프레임워크(`com.unity.test-framework`) 설치됨. PlayMode 테스트
+4파일 + 헬퍼 3(`CombatTests` `PursuitTests` `BreedingPenTests`
+`RunSatchelTests`). **asmdef 는 2개 있다** —
+`Assets/Scripts/Game.Gameplay.asmdef`(런타임 전부)와
+`Assets/Tests/PlayMode/Game.Gameplay.PlayModeTests.asmdef`. 테스트 러너에
+정상으로 뜬다. (`playModeTestRunnerEnabled: 0` 은 별개 설정이고, asmdef 가
+있으므로 켤 필요 없다 — 켜면 nunit 이 플레이어 빌드에 섞인다.)
+
+**런타임 스크립트는 `Assembly-CSharp` 이 아니라 `Game.Gameplay` 어셈블리다.**
+오래된 프리팹의 `m_EditorClassIdentifier` 에 `Assembly-CSharp::` 가 남아
+있지만 Unity 는 `m_Script` GUID 로 찾으므로 실동작에는 영향 없다.
 
 ## 이 파일 갱신 규칙
 

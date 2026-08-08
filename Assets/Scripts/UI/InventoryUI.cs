@@ -112,8 +112,40 @@ namespace Game.Gameplay
             {
                 InventorySlotView slot = Instantiate(slotPrefab, slotContainer);
                 slot.Bind(instance);
+
+                // 슬롯을 누르면 그 개체가 동행으로 나간다. 새 화면도 새 버튼
+                // 프리팹도 만들지 않는다 — 슬롯은 매번 다시 만들어지므로 구독을
+                // 따로 풀 필요도 없다.
+                slot.Clicked += ToggleCompanion;
                 _spawned.Add(slot);
             }
+        }
+
+        // 이미 나가 있는 개체를 다시 누르면 거둬들인다. 상한 1마리라 다른 개체를
+        // 누르면 CompanionAgent.Deploy 가 앞의 동행을 알아서 거둔다.
+        private void ToggleCompanion(SlimeInstance instance)
+        {
+            if (instance == null)
+            {
+                return;
+            }
+
+            if (CompanionAgent.Active != null && CompanionAgent.Active.Instance == instance)
+            {
+                CompanionAgent.Active.Recall();
+                Refresh();
+                return;
+            }
+
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player == null)
+            {
+                Debug.LogWarning("InventoryUI: 플레이어가 없는 화면이라 동행을 내보낼 수 없습니다.");
+                return;
+            }
+
+            CompanionAgent.Deploy(instance, player.transform.position);
+            Refresh();
         }
     }
 }
