@@ -27,6 +27,28 @@ namespace Game.Gameplay
             return ring;
         }
 
+        /// <summary>원을 지운다. <see cref="LineRenderer"/> 까지 같이 떼야 한다.</summary>
+        /// <remarks>
+        /// 야생 슬라임은 Awake 에서 한 번, 스포너에서 또 한 번 Initialize 된다.
+        /// 첫 번째가 방어형이면 도발 원(파랑)이 그려지는데, 두 번째가 파란
+        /// 슬라임이면 SpeciesPassive 만 떨어지고 원은 남아 "패시브 없는 종에
+        /// 파란 원이 붙어 있는" 상태가 됐다.
+        /// </remarks>
+        public static void Remove(GameObject host)
+        {
+            var ring = host.GetComponent<PassiveRangeRing>();
+            if (ring != null)
+            {
+                Destroy(ring);
+            }
+
+            var line = host.GetComponent<LineRenderer>();
+            if (line != null)
+            {
+                Destroy(line);
+            }
+        }
+
         private void Build(float radius, Color color)
         {
             _color = color;

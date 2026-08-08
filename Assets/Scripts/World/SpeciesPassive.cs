@@ -76,6 +76,8 @@ namespace Game.Gameplay
                     Destroy(existing);
                 }
 
+                // 컴포넌트만 떼면 그려 놓은 원이 남는다.
+                PassiveRangeRing.Remove(host);
                 return;
             }
 
