@@ -141,11 +141,22 @@ public void Breed(SlimeInstance parentA, SlimeInstance parentB)
                 return;
             }
 
-            SlimeStatBlock offspringStats = inheritanceTable.Blend(parentA.baseStats, parentB.baseStats);
-
             // 외형(PNG)도 유전한다 — 종이 곧 그림이므로 부모 중 한쪽의 종을
             // 물려받는다. parentA 로 고정하면 아빠 쪽만 계속 나와 "유전"이 아니다.
             string inheritedSpecies = Random.value < 0.5f ? parentA.speciesId : parentB.speciesId;
+
+            // 부모 편향을 벗기고 섞은 뒤 자손 종의 편향을 입힌다. 그냥 섞으면
+            // 방어형 부모의 2.2배 방어가 자손 종과 무관하게 흘러들어가, 종은
+            // 용암인데 성격은 부모 평균인 개체가 나온다. 순서를 지켜야 "종이
+            // 곧 성격" 이라는 규칙이 교배에서도 성립한다.
+            SlimeStatBlock offspringStats = inheritanceTable.Blend(
+                Unbias(parentA), Unbias(parentB));
+
+            SlimeSpecies offspringSpecies = SlimeSpeciesCatalog.Lookup(inheritedSpecies);
+            if (offspringSpecies != null)
+            {
+                offspringStats = offspringSpecies.ApplyBias(offspringStats);
+            }
 
             var offspring = new SlimeInstance(inheritedSpecies, offspringStats)
             {
@@ -178,6 +189,13 @@ public void Breed(SlimeInstance parentA, SlimeInstance parentB)
 
             EggIncubator.Instance.AddEgg(offspring, hatchDurationSeconds, hatchConditionLabel);
             RunLogWriter.AppendLine($"BreedingProducedEgg species={offspring.speciesId}");
+        }
+
+        // 표에 없는 종은 편향이 걸린 적도 없으므로 그대로 쓴다.
+        private static SlimeStatBlock Unbias(SlimeInstance parent)
+        {
+            SlimeSpecies species = SlimeSpeciesCatalog.Lookup(parent.speciesId);
+            return species != null ? species.RemoveBias(parent.baseStats) : parent.baseStats;
         }
     }
 }

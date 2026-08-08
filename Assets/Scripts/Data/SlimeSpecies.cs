@@ -117,6 +117,30 @@ namespace Game.Gameplay
             return shiny && shinySprite != null ? shinySprite : defaultSprite;
         }
 
+        /// <summary>입힌 편향을 도로 벗긴다. 교배에서 부모 스탯을 견줄 때 쓴다.</summary>
+        /// <remarks>
+        /// 부모 스탯에는 이미 각자의 종 편향이 발려 있다. 그대로 섞으면 방어형
+        /// 부모의 2.2배 방어가 자손 종과 무관하게 그대로 흘러들어간다 — 종을
+        /// 물려받아도 성격은 부모 평균인 개체가 나온다.
+        ///
+        /// 배율이 0 이면 나눌 수 없어 값을 그대로 둔다. 방어형의 공격(배율 0,
+        /// 저장값 0)이 그 경우이고, 0 이 그대로 남는 것이 뜻으로도 맞다 —
+        /// 공격 못 하는 부모는 공격을 물려줄 것이 없다.
+        /// </remarks>
+        public SlimeStatBlock RemoveBias(SlimeStatBlock stats)
+        {
+            return new SlimeStatBlock(
+                Unscale(stats.maxHp, maxHpMultiplier),
+                Unscale(stats.attack, attackMultiplier),
+                Unscale(stats.defense, defenseMultiplier),
+                Unscale(stats.speed, speedMultiplier));
+        }
+
+        private static int Unscale(int value, float multiplier)
+        {
+            return multiplier <= 0.01f ? value : Mathf.RoundToInt(value / multiplier);
+        }
+
         /// <summary>종의 성격을 스탯에 입힌다. 최소 1은 보장한다 — 0 이 되면 죽은 스탯이다.</summary>
         public SlimeStatBlock ApplyBias(SlimeStatBlock stats)
         {
