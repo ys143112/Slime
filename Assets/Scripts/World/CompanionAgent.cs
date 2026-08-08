@@ -33,7 +33,11 @@ namespace Game.Gameplay
 
         [Header("전투")]
         [SerializeField] private float detectionRadius = 4.5f;
-        [SerializeField] private float attackRange = 0.9f;
+
+        // 동행과 야생 슬라임의 원 충돌체가 각각 반지름 0.5 라 두 중심은 1.0 아래로
+        // 못 붙는다. 사거리를 그보다 짧게 잡으면 서로 밀려나는 찰나에만 판정이
+        // 들어가 "때리는 시늉만 하고 피해가 없는" 상태가 된다.
+        [SerializeField] private float attackRange = 1.2f;
         [SerializeField] private float attackInterval = 0.8f;
 
         // 스탯의 speed 1 이 초당 몇 유닛인지. WildSlimeAgent 와 같은 환산이다.
@@ -77,7 +81,9 @@ namespace Game.Gameplay
                 return null;
             }
 
-            CompanionAgent spawned = Instantiate(prefab, position, Quaternion.identity);
+            // 플레이어 좌표에 그대로 내보내면 두 충돌체가 완전히 겹친 채로
+            // 시작해 물리가 서로를 튕겨낸다. 옆으로 한 칸 비켜서 세운다.
+            CompanionAgent spawned = Instantiate(prefab, position + new Vector3(-1.2f, -0.4f, 0f), Quaternion.identity);
 
             // 바이옴을 오가도 따라와야 한다 — 씬과 함께 지워지면 다이브 때마다
             // 사라진다.
@@ -149,7 +155,9 @@ namespace Game.Gameplay
             IDamageable enemy = toPlayer <= teleportDistance * 0.5f ? FindEnemy(out enemyPosition) : null;
             if (enemy != null)
             {
-                MoveToward(enemyPosition, Instance.baseStats.speed * UnitsPerSpeedPoint, attackRange);
+                // 사거리 딱 그 자리에 서면 밀리는 순간마다 판정이 들락날락한다.
+                // 조금 더 파고들게 해서 사거리 안쪽에 머무르게 한다.
+                MoveToward(enemyPosition, Instance.baseStats.speed * UnitsPerSpeedPoint, attackRange - 0.2f);
                 TryAttack(enemy, enemyPosition);
                 return;
             }
@@ -237,6 +245,9 @@ namespace Game.Gameplay
                 _animation.PlayAttack(enemyPosition - (Vector2)transform.position);
             }
 
+            // 판정이 나갔다는 것과 피해가 들어갔다는 것을 로그로 구분할 수 있게
+            // 한다 — 사거리와 충돌체 반지름이 어긋나면 앞만 일어난다.
+            Debug.Log($"companion_attack damage={Instance.baseStats.attack}");
             enemy.ApplyDamage(Instance.baseStats.attack, this);
         }
 
@@ -250,6 +261,20 @@ namespace Game.Gameplay
             // 씬을 넘나들면 예전 플레이어가 파괴돼 참조가 죽는다 — 매번 다시 찾는다.
             GameObject found = GameObject.FindGameObjectWithTag("Player");
             _player = found != null ? found.transform : null;
+
+            // 플레이어와는 부딪히지 않게 한다. 따라다니는 사이라 계속 몸이 닿는데,
+            // 그때마다 서로를 밀어내면 둘 다 버벅이고 좁은 통로에서는 낀다.
+            // 레이어를 새로 만들지 않고 이 두 충돌체만 무시시킨다.
+            if (_player != null)
+            {
+                var mine = GetComponent<Collider2D>();
+                var theirs = _player.GetComponent<Collider2D>();
+                if (mine != null && theirs != null)
+                {
+                    Physics2D.IgnoreCollision(mine, theirs);
+                }
+            }
+
             return _player;
         }
 

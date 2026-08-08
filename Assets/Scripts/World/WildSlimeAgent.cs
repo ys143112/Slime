@@ -160,9 +160,9 @@ namespace Game.Gameplay
                 return;
             }
 
-            Transform player = FindPlayer();
-            bool inRange = player != null &&
-                Vector2.Distance(player.position, transform.position) <= detectionRadius;
+            Transform target = FindTarget();
+            bool inRange = target != null &&
+                Vector2.Distance(target.position, transform.position) <= detectionRadius;
 
             SetState(inRange ? WildSlimeState.Pursuing : WildSlimeState.Resting);
 
@@ -177,13 +177,36 @@ namespace Game.Gameplay
                 return;
             }
 
-            Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+            Vector2 direction = ((Vector2)target.position - (Vector2)transform.position).normalized;
             _body.linearVelocity = direction * (Instance.baseStats.speed * UnitsPerSpeedPoint);
 
             if (_animation != null)
             {
                 _animation.SetMovement(_body.linearVelocity);
             }
+        }
+
+        // 플레이어와 동행 중 가까운 쪽을 문다. 플레이어만 보게 두면 동행이 앞을
+        // 막고 서 있어도 그대로 지나쳐 뒤를 때려서, 동행을 세우는 의미가 없다.
+        // CompanionAgent.Active 는 동행이 죽을 때 스스로 null 이 되므로 죽은
+        // 대상을 계속 쫓는 일은 없다.
+        private Transform FindTarget()
+        {
+            Transform player = FindPlayer();
+            CompanionAgent companion = CompanionAgent.Active;
+            if (companion == null)
+            {
+                return player;
+            }
+
+            if (player == null)
+            {
+                return companion.transform;
+            }
+
+            float toCompanion = Vector2.Distance(companion.transform.position, transform.position);
+            float toPlayer = Vector2.Distance(player.position, transform.position);
+            return toCompanion < toPlayer ? companion.transform : player;
         }
 
         private Transform FindPlayer()
