@@ -47,11 +47,25 @@ SHEET_ORDER = [13, 10, 4, 12, 6, 8, 0, 1, 11, 3, 2, 5, 15, 14, 9, 7]
 # 늪지대만 파일 이름이 둘인 이유: BiomeMarsh 의 Ground 타일맵은 384칸 전부를
 # `MarshTile_0` 으로 칠했고 그건 `GroundBlend_*` 가 아니라 `wang_*` 를 가리킨다.
 # 나머지 세 씬은 `Tile_GroundBlend_*` 를 쓴다. 한쪽만 갈면 늪지대는 안 바뀐다.
+#
+# **접두사에 `↗` 뒤(upper 지형)까지 넣는다.** 처음엔 lower 만 봤는데,
+# 초원 시트가 `lush grassy field ↗ 나무` 에서 `lush grassy field ↗ lush grassy
+# field` 로 갈리면서 옛 시트와 새 시트가 같은 접두사를 갖게 됐다 — 둘 다
+# 매칭돼 정렬 순서에 따라 아무거나 적용된다. lower 만으로는 로비와 초원도
+# 구분이 안 된다(둘의 upper 가 같은 문장이다).
 SHEETS: dict[str, tuple[str, bool, tuple[str, ...]]] = {
-    "A backdrop of cool grasslands": ("hub", False, ("GroundBlend_{index}.png",)),  # 로비
-    "A space where the ash of blazing lava": ("ashfall", True, ("GroundBlend_{index}.png",)),  # 화산재
-    "lush grassy field": ("biome", False, ("GroundBlend_{index}.png",)),  # 초원
-    "Swampy, muddy water": ("marsh", False, ("GroundBlend_{index}.png", "wang_{index}.png")),  # 늪지대
+    # 로비
+    "A backdrop of cool grasslands and pastures, with overgrown weeds. ↗ lush grassy field":
+        ("hub", False, ("GroundBlend_{index}.png",)),
+    # 화산재
+    "A space where the ash of blazing lava drifts through the air. ↗ An area impassable":
+        ("ashfall", True, ("GroundBlend_{index}.png",)),
+    # 초원
+    "lush grassy field with varied green blades and scattered wildflower patches ↗ lush grassy field":
+        ("biome", False, ("GroundBlend_{index}.png",)),
+    # 늪지대
+    "Swampy, muddy water ↗ Swampy mud pile":
+        ("marsh", False, ("GroundBlend_{index}.png", "wang_{index}.png")),
 }
 
 
