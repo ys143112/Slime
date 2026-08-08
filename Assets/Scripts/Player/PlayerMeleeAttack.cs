@@ -18,9 +18,15 @@ namespace Game.Gameplay
         [SerializeField] private GameObject swingArc;
         [SerializeField] private float swingVisibleSeconds = 0.12f;
 
+        // 쿨다운이 없어 연타하면 프레임마다 판정이 나갔다 — 아무 슬라임이나
+        // 붙어서 스페이스를 문지르면 이겼다. 공격 애니메이션(0.12초)보다 넉넉히
+        // 길어야 클립이 매번 처음으로 되감기지도 않는다.
+        [SerializeField] private float attackCooldown = 0.5f;
+
         private PlayerMovement _movement;
         private ActorAnimation _animation;
         private float _swingHideTime;
+        private float _nextAttackTime;
 
         private void Awake()
         {
@@ -34,8 +40,10 @@ namespace Game.Gameplay
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame
+                && Time.time >= _nextAttackTime)
             {
+                _nextAttackTime = Time.time + attackCooldown;
                 PerformAttack();
             }
 

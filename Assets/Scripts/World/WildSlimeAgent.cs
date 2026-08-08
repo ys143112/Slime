@@ -284,7 +284,7 @@ namespace Game.Gameplay
                 return;
             }
 
-            Instance.currentHp = Mathf.Max(0, Instance.currentHp - amount);
+            Instance.currentHp = Mathf.Max(0, Instance.currentHp - Instance.baseStats.Mitigate(amount));
             Debug.Log(
                 $"slime_damaged species={Instance.speciesId} " +
                 $"hp={Instance.currentHp}/{Instance.baseStats.maxHp}");
