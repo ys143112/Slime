@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 5151eee4e3c1585498d6df744b449c75
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5970321718943232803
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_0
+  - first:
+      213: 2773003750238182157
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_1
+  - first:
+      213: -5812945509519530750
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_2
+  - first:
+      213: -2493793032218805359
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_3
+  - first:
+      213: 8407859235088840350
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_4
+  - first:
+      213: 5892412809432244548
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_5
+  - first:
+      213: 597331076017759351
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_6
+  - first:
+      213: -8197047515121227615
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_7
+  - first:
+      213: -344566153535542420
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_8
+  - first:
+      213: 821098999727519024
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_9
+  - first:
+      213: 8887461371341527993
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_10
+  - first:
+      213: 3992881628782366101
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_11
+  - first:
+      213: 7088325738596262290
+    second: window_inventroy_UI_Farm_game-style_UI_a_style_fea_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_0
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 104
+        width: 112
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3233964a8f7dad250800000000000000
+      internalID: 5970321718943232803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_1
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 129
+        width: 36
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0bd5c50830bb7620800000000000000
+      internalID: 2773003750238182157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_2
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 110
+        width: 100
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 205e26e7bd4445fa0800000000000000
+      internalID: -5812945509519530750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_3
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 76
+        width: 75
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19bf04b2374446dd0800000000000000
+      internalID: -2493793032218805359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_4
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 74
+        width: 129
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9635f47d67bea470800000000000000
+      internalID: 8407859235088840350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_5
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 75
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 441ab281b3e06c150800000000000000
+      internalID: 5892412809432244548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_6
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 10
+        width: 101
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7742757e2752a4800800000000000000
+      internalID: 597331076017759351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_7
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 40
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a8633ef6bc3e3e80800000000000000
+      internalID: -8197047515121227615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_8
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 40
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6b24e0b8ead73bf0800000000000000
+      internalID: -344566153535542420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_9
+      rect:
+        serializedVersion: 2
+        x: 187
+        y: 10
+        width: 56
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 035ff2c9031256b00800000000000000
+      internalID: 821098999727519024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_10
+      rect:
+        serializedVersion: 2
+        x: 258
+        y: 17
+        width: 47
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bb51d9870b965b70800000000000000
+      internalID: 8887461371341527993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_11
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 16
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59d81c9afa0996730800000000000000
+      internalID: 3992881628782366101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: window_inventroy_UI_Farm_game-style_UI_a_style_fea_12
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 16
+        width: 20
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 291e94524bace5260800000000000000
+      internalID: 7088325738596262290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_0: 5970321718943232803
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_1: 2773003750238182157
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_10: 8887461371341527993
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_11: 3992881628782366101
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_12: 7088325738596262290
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_2: -5812945509519530750
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_3: -2493793032218805359
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_4: 8407859235088840350
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_5: 5892412809432244548
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_6: 597331076017759351
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_7: -8197047515121227615
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_8: -344566153535542420
+      window_inventroy_UI_Farm_game-style_UI_a_style_fea_9: 821098999727519024
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
