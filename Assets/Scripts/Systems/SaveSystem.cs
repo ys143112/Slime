@@ -13,13 +13,27 @@ namespace Game.Gameplay
             public T value;
         }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // WebGL 은 파일 IO 가 없다. PlayerPrefs 는 IndexedDB 로 내려가므로
+        // 브라우저에서도 런 사이에 남는다. 키는 파일 경로 대신 접두사로 나눈다.
+        private static string PrefsKeyFor(string key) => "save_" + key;
+#else
         private static string PathFor(string key)
         {
             return Path.Combine(Application.persistentDataPath, "Saves", key + ".json");
         }
+#endif
 
         public static void Save<T>(string key, T data)
         {
+            string json = JsonUtility.ToJson(new Wrapper<T> { value = data });
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            PlayerPrefs.SetString(PrefsKeyFor(key), json);
+
+            // 브라우저 탭은 예고 없이 닫힌다 — 즉시 내려쓰지 않으면 세이브가 날아간다.
+            PlayerPrefs.Save();
+#else
             string path = PathFor(key);
             string directory = Path.GetDirectoryName(path);
             if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
@@ -27,12 +41,19 @@ namespace Game.Gameplay
                 Directory.CreateDirectory(directory);
             }
 
-            string json = JsonUtility.ToJson(new Wrapper<T> { value = data });
             File.WriteAllText(path, json);
+#endif
         }
 
         public static T Load<T>(string key, T defaultValue)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            string json = PlayerPrefs.GetString(PrefsKeyFor(key), string.Empty);
+            if (string.IsNullOrEmpty(json))
+            {
+                return defaultValue;
+            }
+#else
             string path = PathFor(key);
             if (!File.Exists(path))
             {
@@ -40,6 +61,8 @@ namespace Game.Gameplay
             }
 
             string json = File.ReadAllText(path);
+#endif
+
             Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
             if (wrapper == null)
             {
