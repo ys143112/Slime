@@ -2448,7 +2448,7 @@ MonoBehaviour:
     pillarMax: 8
     regionSeedCount: 3
     homeShareMin: 0.6
-    spawnSafeRadius: 10
+    spawnSafeRadius: 6
   useFixedSeed: 0
   fixedSeed: 0
   regionBlendRadius: 5

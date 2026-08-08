@@ -125,24 +125,32 @@ namespace Game.Gameplay
             }
         }
 
+        // 지형은 벽 칸만 따로 칠하지 않고, 지도 전체를 wang 16장으로 한 번에
+        // 그린다. 이 타일셋의 upper 지형이 곧 "둔덕" 이다 — 흙·바위 턱이 그림에
+        // 이미 들어 있어서, 경계 칸에 블렌드 그림이 와야 땅이 솟아오른 것으로
+        // 읽힌다. 예전처럼 바닥은 [0], 벽은 단색 그림자로 칠하면 턱이 한 번도
+        // 안 나와 평평한 카펫으로 보였다(사용자 신고, 2026-08-08).
+        //
+        // 벽 밴드가 좌우 반 칸씩 바닥 쪽으로 번져 보이지만 충돌은 IsWall 그대로다
+        // — 번지는 부분이 턱의 비탈이라 걸어 들어갈 수 있는 게 맞다.
         private void PaintFloorAndFog()
         {
             for (int x = 0; x < Layout.Width; x++)
             {
                 for (int y = 0; y < Layout.Height; y++)
                 {
-                    if (!Layout.IsFloor(x, y))
-                    {
-                        continue;
-                    }
-
                     var cell = new Vector3Int(x, y, 0);
                     StagePalette palette = PaletteAt(x, y);
-                    groundTilemap.SetTile(cell, palette.wangBlend[0]);
+                    groundTilemap.SetTile(cell, palette.wangBlend[WangIndexAt(x, y)]);
 
                     // FogOfWarReveal 은 "이미 타일이 있는 칸만" 걷어낸다. 여기서
                     // 안 채우면 에러 없이 안개가 통째로 사라진다(STAGE_A_DESIGN §9).
                     // 가장 짙은 단계로 깔아 시작 시점엔 전부 안 보이게 한다.
+                    //
+                    // 벽 칸까지 덮는다. 예전엔 바닥에만 깔았는데, 벽이 단색
+                    // 그림자였을 때는 티가 안 났지만 이제 벽이 숲 그림이라
+                    // 걸어보지도 않은 지도의 숲 윤곽이 처음부터 다 보인다 —
+                    // 가려야 할 것이 오히려 안 가려진다.
                     if (palette.fogLevels.Length > 0)
                     {
                         fogTilemap.SetTile(cell, palette.fogLevels[palette.fogLevels.Length - 1]);
@@ -151,8 +159,46 @@ namespace Game.Gameplay
             }
         }
 
+        // wang 코너 인덱스: index = NW*8 + NE*4 + SW*2 + SE*1, 비트 1 = upper(둔덕).
+        // 코너 하나는 그 코너에 닿는 네 칸 중 하나라도 벽이면 upper 로 본다.
+        // "전부 벽일 때만" 으로 잡으면 그림이 충돌 범위보다 안쪽으로 물러나
+        // 아무것도 없어 보이는 곳에서 막힌다.
+        private int WangIndexAt(int x, int y)
+        {
+            int nw = CornerUpper(x, y + 1) ? 8 : 0;
+            int ne = CornerUpper(x + 1, y + 1) ? 4 : 0;
+            int sw = CornerUpper(x, y) ? 2 : 0;
+            int se = CornerUpper(x + 1, y) ? 1 : 0;
+            return nw + ne + sw + se;
+        }
+
+        private bool CornerUpper(int cx, int cy)
+        {
+            return CellUpper(cx - 1, cy - 1) || CellUpper(cx, cy - 1) ||
+                CellUpper(cx - 1, cy) || CellUpper(cx, cy);
+        }
+
+        // 지도 밖은 둔덕으로 친다 — 그래야 바깥 테두리가 열린 채로 끝나지 않는다.
+        private bool CellUpper(int x, int y)
+        {
+            if (x < 0 || y < 0 || x >= Layout.Width || y >= Layout.Height)
+            {
+                return true;
+            }
+
+            return Layout.IsWall(x, y);
+        }
+
         private void PaintWalls()
         {
+            // Walls 타일맵은 이제 충돌만 담당한다. 그림은 Ground 의 wang 이 다
+            // 그리므로, 여기까지 보이면 둔덕 위에 단색 사각형이 겹쳐 찍힌다.
+            var renderer = wallsTilemap.GetComponent<TilemapRenderer>();
+            if (renderer != null)
+            {
+                renderer.enabled = false;
+            }
+
             for (int x = 0; x < Layout.Width; x++)
             {
                 for (int y = 0; y < Layout.Height; y++)
@@ -257,53 +303,61 @@ namespace Game.Gameplay
 
             var placed = new List<Vector2Int>();
 
-            // 1차: 가장자리, 2차: 내부. 순서가 곧 우선순위다.
-            for (int pass = 0; pass < 2; pass++)
+            for (int x = 0; x < Layout.Width; x++)
             {
-                bool edgePass = pass == 0;
-                for (int x = 0; x < Layout.Width; x++)
+                for (int y = 0; y < Layout.Height; y++)
                 {
-                    for (int y = 0; y < Layout.Height; y++)
+                    // 벽 밴드 안쪽에만 세운다. 예전엔 바닥과 맞닿은 칸을 오히려
+                    // 우선했는데, 캐노피가 걸어다니는 쪽으로 넘어와 "바닥에
+                    // 나무가 서 있다" 로 보였다(사용자 요청, 2026-08-08).
+                    // 여덟 방향이 전부 벽인 칸만 남기면 그림이 벽 밖으로 안 샌다.
+                    if (!SurroundedByWall(x, y))
                     {
-                        if (!Layout.IsWall(x, y))
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        bool onEdge = TouchesFloor(x, y);
-                        if (onEdge != edgePass)
-                        {
-                            continue;
-                        }
+                    StagePalette palette = PaletteAt(x, y);
+                    if (palette.treeProps == null || palette.treeProps.Length == 0)
+                    {
+                        continue;
+                    }
 
-                        StagePalette palette = PaletteAt(x, y);
-                        if (palette.treeProps == null || palette.treeProps.Length == 0)
-                        {
-                            continue;
-                        }
+                    if (CellNoise(x, y, _currentSeed + 6421) >= 0.75f)
+                    {
+                        continue;
+                    }
 
-                        // 안쪽은 절반 확률로만 — 가장자리를 촘촘히 하려는 것이다.
-                        float gate = edgePass ? 0.75f : 0.35f;
-                        if (CellNoise(x, y, _currentSeed + 6421) >= gate)
-                        {
-                            continue;
-                        }
+                    var cell = new Vector2Int(x, y);
+                    if (TooCloseToTree(cell, placed))
+                    {
+                        continue;
+                    }
 
-                        var cell = new Vector2Int(x, y);
-                        if (TooCloseToTree(cell, placed))
-                        {
-                            continue;
-                        }
+                    int pick = Mathf.FloorToInt(
+                        CellNoise(x, y, _currentSeed + 1187) * palette.treeProps.Length);
+                    pick = Mathf.Clamp(pick, 0, palette.treeProps.Length - 1);
 
-                        int pick = Mathf.FloorToInt(
-                            CellNoise(x, y, _currentSeed + 1187) * palette.treeProps.Length);
-                        pick = Mathf.Clamp(pick, 0, palette.treeProps.Length - 1);
+                    propsTilemap.SetTile(new Vector3Int(x, y, 0), palette.treeProps[pick]);
+                    placed.Add(cell);
+                }
+            }
+        }
 
-                        propsTilemap.SetTile(new Vector3Int(x, y, 0), palette.treeProps[pick]);
-                        placed.Add(cell);
+        // 자기 자신과 8방향 이웃이 전부 벽인가. 지도 밖은 벽으로 친다.
+        private bool SurroundedByWall(int x, int y)
+        {
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    if (!CellUpper(x + dx, y + dy))
+                    {
+                        return false;
                     }
                 }
             }
+
+            return true;
         }
 
         private bool TooCloseToTree(Vector2Int cell, List<Vector2Int> placed)

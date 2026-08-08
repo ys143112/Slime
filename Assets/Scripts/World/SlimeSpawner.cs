@@ -52,13 +52,14 @@ namespace Game.Gameplay
             var placed = new List<Vector2>();
             int spawned = 0;
 
+            // 시작 방을 통째로 비우지 않는다. StageLayout.SpawnCandidates 가 이미
+            // 플레이어 스폰 반경 안을 걷어내므로 "첫 3초에 죽는" 일은 그쪽에서
+            // 막힌다. 방까지 통째로 비우면 지도가 120x90 이라 가장 가까운 슬라임이
+            // 20유닛 밖에 서고, 화면이 17.8x10 이라 다이브 직후 화면에 아무것도
+            // 없다 — "스폰이 안 된다" 로 보였던 것이 이것이다(2026-08-08 실측:
+            // 45마리가 떴는데 최근접이 19.4).
             for (int i = 0; i < layout.Rooms.Count; i++)
             {
-                if (i == layout.StartRoomIndex)
-                {
-                    continue; // 첫 3초에 죽으면 안 된다 — 시작 방은 비운다.
-                }
-
                 StageRoom room = layout.Rooms[i];
                 float multiplier = MultiplierFor(room.pattern);
                 if (multiplier <= 0f)
