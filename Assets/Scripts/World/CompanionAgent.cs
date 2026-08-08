@@ -101,6 +101,7 @@ namespace Game.Gameplay
                 Active = null;
             }
 
+            CompanionHudBar.Hide();
             Destroy(gameObject);
         }
 
@@ -126,6 +127,7 @@ namespace Game.Gameplay
             }
 
             UpdateHealthBar();
+            CompanionHudBar.Show(this);
         }
 
         private void FixedUpdate()
@@ -145,7 +147,10 @@ namespace Game.Gameplay
             float toPlayer = Vector2.Distance(player.position, transform.position);
             if (toPlayer > teleportDistance)
             {
-                transform.position = player.position;
+                // 플레이어 좌표에 정확히 겹쳐 놓으면 그 자리에 있던 야생 슬라임과
+                // 깊이 파묻힌 채로 시작해, 물리가 겹침을 푸는 순간 튕겨 나간다
+                // (2026-08-08: "동행이 엄청난 속도로 박는다"의 정체).
+                transform.position = player.position + new Vector3(-1.2f, -0.4f, 0f);
                 _body.linearVelocity = Vector2.zero;
                 return;
             }

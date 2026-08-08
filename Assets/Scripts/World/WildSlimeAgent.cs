@@ -193,6 +193,10 @@ namespace Game.Gameplay
             Vector2 offset = (Vector2)target.position - (Vector2)transform.position;
             if (offset.magnitude <= contactStopDistance)
             {
+                // 붙어 있는 동안 계속 때린다. 콜백이 아니라 여기서 내므로 서로
+                // 멈춰 서 있어도(=강체가 잠들어도) 피해가 끊기지 않는다.
+                TryContactDamage(target);
+
                 _body.linearVelocity = Vector2.zero;
                 if (_animation != null)
                 {
@@ -329,41 +333,26 @@ namespace Game.Gameplay
             healthBar.SetRatio((float)Instance.currentHp / Mathf.Max(1, Instance.baseStats.maxHp));
         }
 
-        // 접촉 피해는 붙어 있는 동안 주기적으로 들어간다. 예전에는
-        // OnCollisionEnter2D 뿐이라 "접촉이 시작되는 순간"에만 때렸고, 상대가
-        // 붙은 채로 서 있으면 다시 부딪히는 일이 없어 그때부터 무해했다.
-        // 움직이는 플레이어한테만 유효한 공격이었던 셈이다(2026-08-08 실측:
-        // 동행 슬라임이 사거리 안에 멈춰 서서 일방적으로 이겼다).
+        // 접촉 피해는 충돌 콜백이 아니라 거리 검사로 낸다.
         //
-        // Enter 도 함께 두는 이유: 정지한 강체는 잠들 수 있고 그러면 Stay 가
-        // 안 온다. 첫 타는 Enter 가 보장한다 — 쿨다운을 공유하므로 두 번
-        // 들어가지는 않는다.
-        private void OnCollisionEnter2D(Collision2D collision)
+        // 처음엔 OnCollisionEnter2D 뿐이라 "접촉이 시작되는 순간"에만 때렸고,
+        // 상대가 붙은 채로 서 있으면 다시 부딪히는 일이 없어 그때부터 무해했다.
+        // 그래서 OnCollisionStay2D 를 더했더니 이번에는 **강체가 잠들어** 콜백이
+        // 끊겼다 — 밀어내지 않으려고 추격을 멈추게 한 것이 곧 슬립 조건이었다.
+        // 콜백 두 개가 서로 다른 이유로 각각 안 오는 셈이라, 물리 이벤트를 아예
+        // 안 쓴다. 동행(CompanionAgent)이 쓰는 방식과 같아진다.
+        private void TryContactDamage(Transform target)
         {
-            TryContactDamage(collision);
-        }
-
-        private void OnCollisionStay2D(Collision2D collision)
-        {
-            TryContactDamage(collision);
-        }
-
-        private void TryContactDamage(Collision2D collision)
-        {
-            if (Instance.weakened || Time.time < _nextContactDamageTime)
+            if (Time.time < _nextContactDamageTime || Instance.baseStats.attack <= 0)
             {
                 return;
             }
 
-            IDamageable target = collision.collider.GetComponent<IDamageable>();
-            if (target == null || target.Faction == Faction)
-            {
-                return;
-            }
+            var victim = target.GetComponent<IDamageable>();
 
             // 공격력 0 인 종(방어형)은 부딪혀도 피해를 주지 않는다 — 그 종의
             // 정의가 "공격 불가" 이므로 접촉 피해도 없어야 말이 된다.
-            if (Instance.baseStats.attack <= 0)
+            if (victim == null || victim.Faction == Faction)
             {
                 return;
             }
@@ -372,10 +361,10 @@ namespace Game.Gameplay
 
             if (_animation != null)
             {
-                _animation.PlayAttack(((Vector2)collision.transform.position - (Vector2)transform.position));
+                _animation.PlayAttack((Vector2)target.position - (Vector2)transform.position);
             }
 
-            target.ApplyDamage(Instance.baseStats.attack, this);
+            victim.ApplyDamage(Instance.baseStats.attack, this);
         }
     }
 }
