@@ -1074,11 +1074,11 @@ MonoBehaviour:
   innerRadius: 3
   outerRadius: 6
   fogLevels:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 9b50e2c69bab5314b9d05eb75766becf, type: 2}
+  - {fileID: 11400000, guid: 4b427c1d2c6005d458cdf99ef02bb42a, type: 2}
+  - {fileID: 11400000, guid: c554e54f101a02f4e91f40f906ef3517, type: 2}
+  - {fileID: 11400000, guid: e6cba39eff38acb4f9af6dbf746f4c00, type: 2}
+  - {fileID: 11400000, guid: a0fe5ee35e9c3f44fbc33d854f90189d, type: 2}
 --- !u!483693784 &840459863
 TilemapRenderer:
   serializedVersion: 2
