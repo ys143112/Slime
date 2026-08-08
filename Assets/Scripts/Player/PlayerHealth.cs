@@ -19,6 +19,8 @@ namespace Game.Gameplay
 
         public int MaxHp => maxHp;
 
+        public Faction Faction => Faction.Player;
+
         private void Awake()
         {
             _currentHp = maxHp;
@@ -28,7 +30,7 @@ namespace Game.Gameplay
 
         public void ApplyDamage(int amount, object source)
         {
-            if (_dead)
+            if (_dead || Factions.IsFriendlyFire(source, this))
             {
                 return;
             }

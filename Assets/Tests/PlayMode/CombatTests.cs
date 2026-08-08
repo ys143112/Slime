@@ -127,6 +127,28 @@ namespace Game.Gameplay.Tests
             }
         }
 
+        // P0-1: 동행 슬라임이 들어오기 전에 진영 필터가 서 있어야 한다. 없으면
+        // 동행이 플레이어를, 플레이어 공격이 동행을 그대로 때린다.
+        [Test]
+        public void Test_Same_Faction_Damage_Is_Ignored()
+        {
+            PlayerHealth health = _player.GetComponent<PlayerHealth>();
+            WildSlimeAgent agent = _slime.GetComponent<WildSlimeAgent>();
+            PlayerMeleeAttack attack = _player.AddComponent<PlayerMeleeAttack>();
+
+            health.ApplyDamage(5, attack);
+            Assert.AreEqual(health.MaxHp, health.CurrentHp, "같은 진영(플레이어) 출처의 피해가 들어갔습니다.");
+
+            int slimeHp = agent.Instance.currentHp;
+            agent.ApplyDamage(5, agent);
+            Assert.AreEqual(slimeHp, agent.Instance.currentHp, "같은 진영(야생) 출처의 피해가 들어갔습니다.");
+
+            // 진영을 안 밝히는 출처(테스트·환경 피해)는 계속 통해야 한다.
+            agent.ApplyDamage(5, this);
+            Assert.AreEqual(slimeHp - 5, agent.Instance.currentHp,
+                "진영 없는 출처의 피해까지 막혔습니다 — 피해가 조용히 사라집니다.");
+        }
+
         [UnityTest]
         public IEnumerator Test_Player_Death_Fires_RunEnded_Once()
         {
