@@ -248,7 +248,6 @@ GameObject:
   - component: {fileID: 5347350793442146179}
   - component: {fileID: 8323760613453286610}
   - component: {fileID: 5570419562998220627}
-  - component: {fileID: 6287476480149135690}
   - component: {fileID: 3803589787159725595}
   - component: {fileID: 6542374784859213240}
   - component: {fileID: 8806160174598167797}
@@ -349,6 +348,7 @@ MonoBehaviour:
   reachOffset: 0.9
   swingArc: {fileID: 7403404119394370327}
   swingVisibleSeconds: 0.12
+  attackCooldown: 0.5
 --- !u!114 &5347350793442146179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,20 +458,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &6287476480149135690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7188216265129579766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a42135199d540744ab70fa8b16723f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.BreedingPenInteractor
-  interactRange: 1.5
-  statusText: {fileID: 0}
 --- !u!114 &3803589787159725595
 MonoBehaviour:
   m_ObjectHideFlags: 0

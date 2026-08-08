@@ -35,7 +35,7 @@ namespace Game.Gameplay
         {
             if (_label != null)
             {
-                _label.text = $"교배장 ({_placed.Count}/{Capacity})\nQ 선택  F 내놓기  G 되돌리기";
+                _label.text = $"교배장 ({_placed.Count}/{Capacity})\nU 로 연다";
             }
         }
 
