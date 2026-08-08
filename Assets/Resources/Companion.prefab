@@ -506,7 +506,7 @@ MonoBehaviour:
   teleportDistance: 14
   detectionRadius: 4.5
   attackRange: 1.2
-  attackInterval: 0.8
+  attackInterval: 1.5
 --- !u!212 &7990269747631988482
 SpriteRenderer:
   serializedVersion: 3

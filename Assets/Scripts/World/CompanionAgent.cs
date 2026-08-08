@@ -43,7 +43,7 @@ namespace Game.Gameplay
         // 못 붙는다. 사거리를 그보다 짧게 잡으면 서로 밀려나는 찰나에만 판정이
         // 들어가 "때리는 시늉만 하고 피해가 없는" 상태가 된다.
         [SerializeField] private float attackRange = 1.2f;
-        [SerializeField] private float attackInterval = 0.8f;
+        [SerializeField] private float attackInterval = 1.5f;
 
         // 스탯의 speed 1 이 초당 몇 유닛인지. WildSlimeAgent 와 같은 환산이다.
         private const float UnitsPerSpeedPoint = 0.4f;

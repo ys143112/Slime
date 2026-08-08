@@ -15,6 +15,11 @@ namespace Game.Gameplay
         [SerializeField] private string speciesId = "slime_basic";
         [SerializeField] private int attackDamage = 5;
         [SerializeField] private float detectionRadius = 4f;
+
+        // 붙어 있는 동안 이 간격으로 접촉 피해가 들어간다. 대상별로 나누지 않고
+        // 하나로 둔다 — 슬라임 하나가 동시에 둘을 물고 있는 경우가 드물다.
+        // ponytail: 전역 쿨다운. 다대일 상황이 흔해지면 대상별로 나눈다.
+        [SerializeField] private float contactDamageInterval = 1.2f;
         [SerializeField] private HealthBar healthBar;
         [SerializeField] private DamageFlash damageFlash;
         [SerializeField] private SlimeAppearance appearance;
@@ -48,6 +53,7 @@ namespace Game.Gameplay
         private Rigidbody2D _body;
         private Transform _player;
         private ActorAnimation _animation;
+        private float _nextContactDamageTime;
 
         private void Awake()
         {
@@ -304,15 +310,34 @@ namespace Game.Gameplay
             healthBar.SetRatio((float)Instance.currentHp / Mathf.Max(1, Instance.baseStats.maxHp));
         }
 
+        // 접촉 피해는 붙어 있는 동안 주기적으로 들어간다. 예전에는
+        // OnCollisionEnter2D 뿐이라 "접촉이 시작되는 순간"에만 때렸고, 상대가
+        // 붙은 채로 서 있으면 다시 부딪히는 일이 없어 그때부터 무해했다.
+        // 움직이는 플레이어한테만 유효한 공격이었던 셈이다(2026-08-08 실측:
+        // 동행 슬라임이 사거리 안에 멈춰 서서 일방적으로 이겼다).
+        //
+        // Enter 도 함께 두는 이유: 정지한 강체는 잠들 수 있고 그러면 Stay 가
+        // 안 온다. 첫 타는 Enter 가 보장한다 — 쿨다운을 공유하므로 두 번
+        // 들어가지는 않는다.
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (Instance.weakened)
+            TryContactDamage(collision);
+        }
+
+        private void OnCollisionStay2D(Collision2D collision)
+        {
+            TryContactDamage(collision);
+        }
+
+        private void TryContactDamage(Collision2D collision)
+        {
+            if (Instance.weakened || Time.time < _nextContactDamageTime)
             {
                 return;
             }
 
             IDamageable target = collision.collider.GetComponent<IDamageable>();
-            if (target == null)
+            if (target == null || target.Faction == Faction)
             {
                 return;
             }
@@ -323,6 +348,8 @@ namespace Game.Gameplay
             {
                 return;
             }
+
+            _nextContactDamageTime = Time.time + contactDamageInterval;
 
             if (_animation != null)
             {
