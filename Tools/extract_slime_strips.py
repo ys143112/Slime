@@ -25,7 +25,7 @@ from pathlib import Path
 from PIL import Image
 
 REPO = Path(__file__).resolve().parent.parent
-CHARACTERS = REPO / "Assets" / "Resources" / "Characters"
+CHARACTERS = REPO / "Assets" / "Art" / "Characters"
 SRC = CHARACTERS / "slimes"
 OUT = REPO / "Assets" / "Art" / "SlimeStrips"
 
@@ -53,7 +53,7 @@ ACTION_MAP: dict[str, tuple[str, str]] = {
 # GIF 이 없는 칸은 PixelLab 이 같이 내보낸 정지 8방향 PNG 로 메운다.
 # 용암 슬라임 GIF 은 동서남북 4방향뿐이라 대각선 4칸이 빈다.
 # 같은 칸에 GIF 이 이미 있으면 건드리지 않는다 — 움직이는 그림이 낫다.
-# 경로는 Assets/Resources/Characters 기준이다.
+# 경로는 Assets/Art/Characters 기준이다.
 STATIC_MAP: list[tuple[str, str, str]] = [
     ("slime_lava", "Idle", "slimes/angry_fire_red_slime_big_eye/Idle/rotations"),
     ("player", "Hit", "cute_anime_girl_farmer_b-state_of_being_attac/state_of_being_attac/rotations"),

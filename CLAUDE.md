@@ -94,7 +94,7 @@ acceptanceCriteria 를 satchel 기준으로 고쳤다(원본:
 
 ## 배우 애니메이션 — 슬라임 5종 + 플레이어 (2026-08-07 신규)
 
-**Unity 의 GIF 임포터는 첫 프레임만 가져온다.** `Assets/Resources/Characters/`
+**Unity 의 GIF 임포터는 첫 프레임만 가져온다.** `Assets/Art/Characters/`
 아래의 `.gif` 들은 그래서 그냥 두면 정지 그림이다(`.gif.meta` 의 spriteSheet 에
 `..._0` 하나만 있는 것이 그 증거). 프레임을 밖에서 펴야 한다:
 

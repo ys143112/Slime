@@ -116,3 +116,8 @@ InitTestScene*.unity*
 # Unity 크래시 복구 잔여물
 /[Aa]ssets/_Recovery/
 /[Aa]ssets/_Recovery.meta
+
+# Performance Testing 패키지가 빌드/테스트 때 Assets/Resources 에 떨구는 파일.
+# Resources 안이라 그냥 두면 빌드에 실려 나간다.
+/[Aa]ssets/[Rr]esources/PerformanceTestRun*.json
+/[Aa]ssets/[Rr]esources/PerformanceTestRun*.json.meta
