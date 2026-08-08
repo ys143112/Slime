@@ -223,10 +223,15 @@ namespace Game.Gameplay
         // 여전히 자연스럽다.
         private TileBase WallTileAt(int x, int y) => PaletteAt(x, y).wallShadow;
 
-        // 방 바닥에 장식을 흩뿌린다. 복도에는 안 놓는다 — 복도는 폭 3칸뿐이라
-        // 장식이 끼면 길인지 막힌 곳인지 헷갈린다(안개 때문에 멀리 못 보는
-        // 상황에서 특히). 방=머무는 곳, 복도=지나가는 곳이라는 구분을 시각으로도
-        // 유지한다.
+        // 돌·풀 같은 작은 장식도 나무와 같이 벽 덩어리 안쪽에만 놓는다(사용자
+        // 요청, 2026-08-08). 예전엔 방 바닥에 흩뿌리면서 벽에 붙은 칸을 3배
+        // 우선했는데, 걸어다니는 바닥에 그림이 얹히면 밟고 지나갈 수 있는
+        // 장식인지 막힌 곳인지 구분이 안 됐다 — 안개 때문에 멀리 못 보는
+        // 상황에서 특히. 이제 바닥은 전부 비고, 장식은 벽의 질감이 된다.
+        //
+        // 방별 밀도 조절(시작 방 절반, 둥지 1.5배)은 같이 없앴다. 그건 "이 방에
+        // 뭐가 사는지" 를 바닥 어질러진 정도로 알리는 장치였는데, 장식이 벽으로
+        // 옮겨간 이상 방 안에 보이지도 않는다.
         private void PaintDecor()
         {
             if (decorTilemap == null)
@@ -234,56 +239,33 @@ namespace Game.Gameplay
                 return;
             }
 
-            Vector2Int spawn = Layout.PlayerSpawn;
-            Vector2Int exit = Layout.ExtractionPoint;
-
-            for (int i = 0; i < Layout.Rooms.Count; i++)
+            for (int x = 0; x < Layout.Width; x++)
             {
-                StageRoom room = Layout.Rooms[i];
-                StagePalette palette = LookupPalette(room.biomeId);
-                if (palette.decorTiles == null || palette.decorTiles.Length == 0)
+                for (int y = 0; y < Layout.Height; y++)
                 {
-                    continue;
-                }
-
-                // 시작 방은 절반만 — 첫 화면은 깔끔해야 조작을 배우기 좋다.
-                // 둥지는 1.5배로 어질러 "여긴 뭔가 산다" 를 그림으로 먼저 알린다.
-                float density = decorDensity;
-                if (i == Layout.StartRoomIndex) density *= 0.5f;
-                else if (room.pattern == RoomPattern.Nest) density *= 1.5f;
-
-                for (int x = room.bounds.x; x < room.bounds.xMax; x++)
-                {
-                    for (int y = room.bounds.y; y < room.bounds.yMax; y++)
+                    if (!SurroundedByWall(x, y))
                     {
-                        if (!Layout.IsFloor(x, y))
-                        {
-                            continue;
-                        }
-
-                        // 스폰·추출구 주변은 비운다 — 그 위에 겹치면 표식을 가린다.
-                        var cell = new Vector2Int(x, y);
-                        if (Vector2Int.Distance(cell, spawn) < 3f ||
-                            Vector2Int.Distance(cell, exit) < 3f)
-                        {
-                            continue;
-                        }
-
-                        // 벽에 붙은 칸은 3배 자주 놓는다. 자연에서 바위·풀은
-                        // 가장자리에 몰리고, 방 한가운데는 비어 있어야 싸울 자리가
-                        // 된다 — 균일하게 뿌리면 전투 공간이 지저분해진다.
-                        float weight = TouchesWall(x, y) ? 3f : 1f;
-                        if (CellNoise(x, y, _currentSeed + 7717) >= density * weight)
-                        {
-                            continue;
-                        }
-
-                        int pick = Mathf.FloorToInt(
-                            CellNoise(x, y, _currentSeed + 3391) * palette.decorTiles.Length);
-                        pick = Mathf.Clamp(pick, 0, palette.decorTiles.Length - 1);
-
-                        decorTilemap.SetTile(new Vector3Int(x, y, 0), palette.decorTiles[pick]);
+                        continue;
                     }
+
+                    StagePalette palette = PaletteAt(x, y);
+                    if (palette.decorTiles == null || palette.decorTiles.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    // 벽 안쪽은 방 바닥보다 칸 수가 훨씬 적다. 예전 밀도(0.06)를
+                    // 그대로 쓰면 벽이 거의 비어 보이므로 넉넉하게 곱한다.
+                    if (CellNoise(x, y, _currentSeed + 7717) >= decorDensity * 5f)
+                    {
+                        continue;
+                    }
+
+                    int pick = Mathf.FloorToInt(
+                        CellNoise(x, y, _currentSeed + 3391) * palette.decorTiles.Length);
+                    pick = Mathf.Clamp(pick, 0, palette.decorTiles.Length - 1);
+
+                    decorTilemap.SetTile(new Vector3Int(x, y, 0), palette.decorTiles[pick]);
                 }
             }
         }
@@ -372,18 +354,6 @@ namespace Game.Gameplay
             }
 
             return false;
-        }
-
-        private bool TouchesFloor(int x, int y)
-        {
-            return Layout.IsFloor(x + 1, y) || Layout.IsFloor(x - 1, y) ||
-                Layout.IsFloor(x, y + 1) || Layout.IsFloor(x, y - 1);
-        }
-
-        private bool TouchesWall(int x, int y)
-        {
-            return !Layout.IsFloor(x + 1, y) || !Layout.IsFloor(x - 1, y) ||
-                !Layout.IsFloor(x, y + 1) || !Layout.IsFloor(x, y - 1);
         }
 
         private void PlaceActors()

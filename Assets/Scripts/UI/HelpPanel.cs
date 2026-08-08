@@ -39,13 +39,15 @@ namespace Game.Gameplay
             "species' stat bias. The more corrupted the biome, the more mutants\n" +
             "(inverted stats) and shinies you get.";
 
+        // 괄호 안 부연은 뺐다 — 한글은 같은 뜻을 더 넓게 차지해 줄이 패널 밖으로
+        // 넘쳤다. 부연 내용은 어차피 바로 아래 설명 본문에 다시 나온다.
         private const string ControlsBodyKo =
             "WASD  이동\n" +
-            "Space  공격 (쿨다운 0.5초, 화면 왼쪽 아래 막대로 확인)\n" +
-            "E  포획 (약화된 슬라임만)\n" +
+            "Space  공격\n" +
+            "E  포획\n" +
             "I  인벤토리 — 슬롯을 누르면 그 슬라임이 동행으로 나간다\n" +
-            "B  런 배낭 (다이브 중 잡은 것)\n" +
-            "U  교배 창 (목장에서만) — 두 마리를 골라 교배 버튼\n" +
+            "B  런 배낭\n" +
+            "U  교배 창 — 두 마리를 골라 교배 버튼\n" +
             "Z / X / C  휴식소: 선택 전환 / 눕히기 / 회수";
 
         private const string DescriptionBodyKo =
