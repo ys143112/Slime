@@ -43,8 +43,39 @@ namespace Game.Gameplay
                 breedButton.onClick.AddListener(OnBreedButtonClicked);
             }
 
+            EnsureGridWraps();
             SetVisible(false);
             RefreshSlots();
+        }
+
+        /// <summary>로스터 그리드가 창 안에서 줄바꿈하게 만든다.</summary>
+        /// <remarks>
+        /// 씬의 <see cref="GridLayoutGroup"/> 이 <c>FixedRowCount = 1</c> 이라
+        /// 보유 슬라임이 늘어나면 한 줄로 이어져 창 밖으로, 결국 화면 밖까지
+        /// 흘러나갔다(2026-08-09 실측: 22마리가 가로로 한 줄). 폭에 맞춰 열 수를
+        /// 고정하고, 그래도 넘치는 줄은 <see cref="RectMask2D"/> 가 잘라 알 목록을
+        /// 덮지 않게 한다.
+        /// </remarks>
+        private void EnsureGridWraps()
+        {
+            if (gridContent == null)
+            {
+                return;
+            }
+
+            var grid = gridContent.GetComponent<GridLayoutGroup>();
+            if (grid != null)
+            {
+                // 84 + 10 간격으로 11칸 = 1024 < 창 안쪽 폭 1040.
+                grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+                grid.constraintCount = 11;
+                grid.childAlignment = TextAnchor.UpperLeft;
+            }
+
+            if (gridContent.GetComponent<RectMask2D>() == null)
+            {
+                gridContent.gameObject.AddComponent<RectMask2D>();
+            }
         }
 
         // spec-003: PlayerRoster.Instance 는 Awake 에서 세팅된다 - 같은 Boot 씬의

@@ -1,11 +1,14 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.Gameplay
 {
     // 기능: spec-003 (교배 UI 로스터 그리드 항목) - 보유 슬라임 1마리를 원형 아이콘으로 표시한다.
-    public sealed class RosterSlotButton : MonoBehaviour
+    // 스탯은 마우스를 올리면 뜨는 SlimeTooltipUI 가 보여준다 — 칸에 글자를 넣으면
+    // 그림 위에 포개져 둘 다 안 읽힌다(2026-08-08 에 글자를 뺀 이유).
+    public sealed class RosterSlotButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private Text label;
         [SerializeField] private Button button;
@@ -39,6 +42,23 @@ namespace Game.Gameplay
                 icon.sprite = GetCircleSprite();
                 icon.type = Image.Type.Simple;
             }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            SlimeTooltipUI.Show(_instance);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            SlimeTooltipUI.Hide(_instance);
+        }
+
+        // 그리드는 로스터가 바뀔 때마다 다시 그려진다 — 띄운 채로 사라지면
+        // 가리키는 대상이 없는 쪽지가 남는다.
+        private void OnDisable()
+        {
+            SlimeTooltipUI.Hide(_instance);
         }
 
         private static Sprite GetCircleSprite()

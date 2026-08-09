@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Game.Gameplay
 {
@@ -17,12 +18,70 @@ namespace Game.Gameplay
 
         private readonly List<InventorySlotView> _spawned = new List<InventorySlotView>();
 
+        // 격자 한 칸 크기와 간격. 슬롯 프리팹 크기는 무시된다 —
+        // GridLayoutGroup 이 자식 RectTransform 을 cellSize 로 덮어쓴다.
+        private const int Columns = 6;
+        private static readonly Vector2 CellSize = new Vector2(140f, 140f);
+        private static readonly Vector2 CellSpacing = new Vector2(14f, 14f);
+
         private void Awake()
         {
             Instance = this;
 
             // Boot 씬에만 있다 — 바이옴을 오가도 인벤토리 창은 그대로 떠 있어야 한다.
             DontDestroyOnLoad(gameObject);
+
+            EnsureGrid();
+        }
+
+        /// <summary>슬롯을 한 줄짜리 목록이 아니라 격자로 늘어놓는다.</summary>
+        /// <remarks>
+        /// 씬의 Content 에는 <see cref="VerticalLayoutGroup"/> 이 붙어 있어 슬롯이
+        /// 세로로만 쌓였다(사용자, 2026-08-09: 참고 그림처럼 가로·세로로 채워
+        /// 달라). 씬을 고치는 대신 코드에서 바꾸는 이유는 Boot 씬이 병합 사고로
+        /// UI 를 통째로 잃은 전력이 있어서다(CLAUDE.md 「씬 병합 함정」).
+        ///
+        /// <see cref="ContentSizeFitter"/> 가 있어야 줄이 늘어난 만큼 Content 가
+        /// 길어져 스크롤이 생긴다 — 없으면 첫 화면 밖의 슬라임은 볼 수 없다.
+        /// </remarks>
+        private void EnsureGrid()
+        {
+            if (slotContainer == null)
+            {
+                return;
+            }
+
+            // DestroyImmediate 여야 한다. Destroy 는 프레임 끝에 처리되는데, 한
+            // 오브젝트에 LayoutGroup 은 하나뿐이라 그동안은 AddComponent 가
+            // **에러 없이 거부된다** — 세로 정렬이 사라진 자리에 격자가 안 붙어
+            // 슬롯이 전부 한 칸에 겹쳐 쌓였다(2026-08-09 실측).
+            var vertical = slotContainer.GetComponent<VerticalLayoutGroup>();
+            if (vertical != null)
+            {
+                DestroyImmediate(vertical);
+            }
+
+            var grid = slotContainer.GetComponent<GridLayoutGroup>();
+            if (grid == null)
+            {
+                grid = slotContainer.gameObject.AddComponent<GridLayoutGroup>();
+            }
+
+            grid.cellSize = CellSize;
+            grid.spacing = CellSpacing;
+            grid.padding = new RectOffset(16, 16, 16, 16);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = Columns;
+            grid.childAlignment = TextAnchor.UpperLeft;
+
+            var fitter = slotContainer.GetComponent<ContentSizeFitter>();
+            if (fitter == null)
+            {
+                fitter = slotContainer.gameObject.AddComponent<ContentSizeFitter>();
+            }
+
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
         // PlayerRoster.Instance 는 Awake 에서 세팅된다 - 같은 Boot 씬의 영속

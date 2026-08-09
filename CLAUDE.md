@@ -286,6 +286,7 @@ Overlay, 1920×1080 기준, sortingOrder 100) 밑이다. Boot 씬은 병합 사�
 | 조작 안내(H 로 접기, `PlayerPrefs` 에 기억) | `ScreenInfoHud` | 오른쪽 아래 |
 | 바이옴·오염 티어·돌연변이/이로치 확률·천장까지 남은 수 | 〃 | 오른쪽 위 |
 | 도감(J) | `BestiaryPanel` | 화면 가운데 |
+| 슬라임 스탯 쪽지(hover) | `SlimeTooltipUI` | 커서 옆 |
 | 배경음·효과음 슬라이더 | `MainVolumeControls` | 시작/일시정지 메뉴 왼쪽 아래 |
 | `PAUSED - Esc to resume` | `BootMenuUI` | 게임 중 메뉴 열렸을 때 위쪽 |
 
@@ -297,6 +298,17 @@ Overlay, 1920×1080 기준, sortingOrder 100) 밑이다. Boot 씬은 병합 사�
   월드 좌표(화면 ±8.9 × ±5)를 돌려준다 — 배치를 확인할 때 픽셀로 착각하지 말 것.
   픽셀 단위로 잡은 RectTransform 값은 캔버스 스케일이 1920px→화면폭으로 접어
   주므로 그대로 써도 된다.
+- **슬롯 안에는 글자를 두지 않는다**(2026-08-09). 인벤토리는 격자
+  (`GridLayoutGroup`, 6열 140px)라 한 칸에 그림과 글자를 같이 넣으면 포개진다 —
+  종 이름·스탯·태그·동행 여부는 `SlimeTooltipUI` 가 hover 로 보여준다.
+  `InventorySlotView`/`RosterSlotButton` 이 `IPointerEnterHandler` 로 부른다.
+- **`Destroy` 로 `LayoutGroup` 을 지운 자리에 곧바로 다른 것을 붙일 수 없다.**
+  삭제가 프레임 끝으로 밀려 그동안 `AddComponent` 가 **에러 없이 거부되고**,
+  격자가 안 붙어 슬롯이 한 칸에 전부 겹쳐 쌓인다 —
+  `InventoryUI.EnsureGrid` 는 `DestroyImmediate` 를 쓴다(2026-08-09 실측).
+- 교배창 로스터 그리드는 씬에서 `FixedRowCount = 1` 이라 보유가 늘면 한 줄로
+  화면 밖까지 흘렀다. `BreedingUIPanel.EnsureGridWraps` 가 11열로 접고
+  `RectMask2D` 로 넘치는 줄을 자른다.
 - 도감은 `SlimeBestiary`(정적, `SaveSystem` 키 `bestiary`)가 기록한다. 올리는
   자리는 `RunSatchel.Add`(포획 — 죽어서 몰수돼도 남아야 한다)와
   `PlayerRoster.Add`(부화·회수 — 교배 전용 종은 여기가 유일한 경로) 둘이다.

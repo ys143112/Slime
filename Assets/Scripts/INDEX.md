@@ -95,6 +95,7 @@
 | `ScreenInfoHud.cs` | QA-09 | 조작 안내(H 로 접기) + 오염 티어·돌연변이 확률 |
 | `BestiaryPanel.cs` | QA-09 | J 도감 창. 안 잡은 종은 실루엣 + `???` |
 | `MainVolumeControls.cs` | QA-09 | 시작/일시정지 메뉴의 배경음·효과음 슬라이더 |
+| `SlimeTooltipUI.cs` | QA-09 | 슬롯에 마우스를 올리면 뜨는 스탯 쪽지(인벤토리·교배창 공용) |
 | `AttackCooldownBar.cs` / `CompanionHudBar.cs` | 주말 B | 공격 쿨다운 / 동행 체력 |
 | `FloatingText.cs` / `WorldLabel.cs` | — | 떠오르는 피해 숫자 / 월드 이름표 |
 | `ScreenWipe.cs` | — | 씬 전환 와이프 |
