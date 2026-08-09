@@ -54,6 +54,20 @@ namespace Game.Gameplay
             return go;
         }
 
+        /// <summary>부모를 꽉 채운다. 코드로 만든 HUD 묶음의 뿌리에 반드시 걸어야 한다.</summary>
+        /// <remarks>
+        /// 묶음 오브젝트를 <c>RectTransform</c> 없이 만들거나 크기를 안 주면, 그
+        /// 밑의 자식이 "화면 오른쪽 아래" 로 앵커를 잡아도 크기 0 인 부모 기준이
+        /// 되어 화면 한가운데에 뜬다(2026-08-09 실측).
+        /// </remarks>
+        public static void Stretch(RectTransform rect)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
+
         /// <summary>왼쪽 아래 구석 기준으로 자리를 잡는다. 해상도가 바뀌어도 안 밀린다.</summary>
         public static RectTransform PinBottomLeft(GameObject go, Vector2 position, Vector2 size)
         {

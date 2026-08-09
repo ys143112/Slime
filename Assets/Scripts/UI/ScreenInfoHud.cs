@@ -40,8 +40,12 @@ namespace Game.Gameplay
                 return;
             }
 
-            var go = new GameObject("ScreenInfoHud", typeof(ScreenInfoHud));
+            // RectTransform 으로 만들고 캔버스에 꽉 채워야 한다. 그냥 Transform
+            // 이면 자식 앵커가 크기 0 짜리 부모를 기준으로 잡혀, 오른쪽 아래로
+            // 붙인 것이 화면 한가운데에 뜬다(2026-08-09 실측).
+            var go = new GameObject("ScreenInfoHud", typeof(RectTransform), typeof(ScreenInfoHud));
             go.transform.SetParent(HudRoot.Get(), false);
+            HudRoot.Stretch(go.GetComponent<RectTransform>());
             _instance = go.GetComponent<ScreenInfoHud>();
         }
 
@@ -53,6 +57,7 @@ namespace Game.Gameplay
             _hints = BuildCorner("Hints", new Vector2(1f, 0f), new Vector2(-24f, 24f),
                 new Vector2(760f, 110f), TextAnchor.LowerRight, 22);
             _hints.text = Hints;
+            FitToText(_hints);
             _hintsRoot = _hints.transform.parent.gameObject;
             _hintsRoot.SetActive(PlayerPrefs.GetInt(HintPrefsKey, 1) == 1);
         }
@@ -100,6 +105,25 @@ namespace Game.Gameplay
 
             _lastRunInfo = next;
             _runInfo.text = next;
+            FitToText(_runInfo);
+        }
+
+        /// <summary>배경판을 글자 크기에 맞춘다.</summary>
+        /// <remarks>
+        /// 판을 고정 폭으로 두면 오른쪽 정렬한 글자 왼쪽에 검은 여백이 길게
+        /// 남는다. 글자가 바뀔 때마다 다시 재므로 확률 숫자 자릿수가 늘어도
+        /// 판이 따라간다.
+        /// </remarks>
+        private static void FitToText(Text text)
+        {
+            var panel = (RectTransform)text.transform.parent;
+            var textRect = (RectTransform)text.transform;
+
+            // 글자 칸은 판 안쪽으로 들여 놓았다 — 그 여백을 도로 더해야 판이
+            // 글자를 자르지 않는다.
+            float padX = textRect.offsetMin.x - textRect.offsetMax.x;
+            float padY = textRect.offsetMin.y - textRect.offsetMax.y;
+            panel.sizeDelta = new Vector2(text.preferredWidth + padX, text.preferredHeight + padY);
         }
 
         private static string BiomeName(string biomeId)

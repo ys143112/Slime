@@ -30,8 +30,11 @@ namespace Game.Gameplay
                 return;
             }
 
-            var go = new GameObject("BestiaryPanel", typeof(BestiaryPanel));
+            // 루트는 RectTransform 이어야 한다 — 그냥 Transform 이면 자식 앵커가
+            // 크기 0 부모를 기준으로 잡힌다(ScreenInfoHud 와 같은 함정).
+            var go = new GameObject("BestiaryPanel", typeof(RectTransform), typeof(BestiaryPanel));
             go.transform.SetParent(HudRoot.Get(), false);
+            HudRoot.Stretch(go.GetComponent<RectTransform>());
             _instance = go.GetComponent<BestiaryPanel>();
         }
 

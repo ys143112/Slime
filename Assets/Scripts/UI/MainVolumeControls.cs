@@ -90,10 +90,10 @@ namespace Game.Gameplay
             Pin(sliderGo.GetComponent<RectTransform>(), new Vector2(100f, y + 12f), new Vector2(300f, 22f));
 
             GameObject background = HudRoot.Panel("Background", sliderGo.transform, new Color(0f, 0f, 0f, 0.55f));
-            Stretch(background.GetComponent<RectTransform>());
+            HudRoot.Stretch(background.GetComponent<RectTransform>());
 
             GameObject fillArea = HudRoot.Panel("Fill", sliderGo.transform, new Color(0.55f, 0.85f, 1f, 0.95f));
-            Stretch(fillArea.GetComponent<RectTransform>());
+            HudRoot.Stretch(fillArea.GetComponent<RectTransform>());
 
             // 손잡이는 레이캐스트를 받아야 끌 수 있다 — Panel 은 raycastTarget 을
             // 꺼서 만들므로 여기서 다시 켠다.
@@ -126,12 +126,5 @@ namespace Game.Gameplay
             rect.sizeDelta = size;
         }
 
-        private static void Stretch(RectTransform rect)
-        {
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-        }
     }
 }
