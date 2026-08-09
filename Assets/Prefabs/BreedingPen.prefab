@@ -85,8 +85,8 @@ MonoBehaviour:
   - {fileID: 9130967509120060909}
   - {fileID: 6191358518185665521}
   hatchDurationSeconds: 30
-  hatchConditionLabel: Incubating
-  crossSpeciesChance: 0.12
+  hatchConditionLabel: "\uBD80\uD654 \uC911"
+  interactRange: 3.5
 --- !u!212 &7802007704109986429
 SpriteRenderer:
   serializedVersion: 3
@@ -144,7 +144,7 @@ SpriteRenderer:
   m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
 --- !u!61 &794711235336181721

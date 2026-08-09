@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: slime_rainbow
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_rainbow
-  displayName: Rainbow Slime
+  displayName: 무지개 슬라임
   defaultSprite: {fileID: 4560041396085760085, guid: a15aa8ccd4227f444958f16d3fd4bc9b, type: 3}
   shinySprite: {fileID: 0}
   animatorController: {fileID: 9100000, guid: 294f4652e19a2e743824aacad4c12c90, type: 2}

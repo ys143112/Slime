@@ -67,8 +67,8 @@ namespace Game.Gameplay
         // 알 수 없었다(팀 QA, 2026-08-09). 게임 중에 메뉴가 떠 있을 때만 띄운다.
         private static Text BuildPausedLabel(Transform parent)
         {
-            Text text = HudRoot.Label("PausedLabel", parent, 34);
-            text.text = "PAUSED  -  Esc to resume";
+            Text text = HudRoot.Label("PausedLabel", parent, 33);
+            text.text = "일시정지  -  Esc 로 계속";
             text.alignment = TextAnchor.UpperCenter;
 
             var rect = text.GetComponent<RectTransform>();
@@ -84,15 +84,74 @@ namespace Game.Gameplay
 
         private void Update()
         {
-            if (!_inGame || Keyboard.current == null)
+            if (Keyboard.current == null)
             {
                 return;
             }
 
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (!Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                ShowMenu(!_menuOpen);
+                return;
             }
+
+            // 창이 떠 있으면 그 창부터 닫는다. 예전엔 Esc 가 늘 일시정지 메뉴를
+            // 열어, 인벤토리를 열어 둔 채 Esc 를 누르면 창 위에 메뉴가 겹쳤다
+            // (사용자, 2026-08-09). 창을 닫는 키는 창마다 다르고(I/U/J) 그걸
+            // 외우게 하는 대신 Esc 하나로 통일한다.
+            if (CloseTopmostPanel())
+            {
+                return;
+            }
+
+            // 타이틀 화면에서는 메뉴가 곧 화면이라 Esc 로 끄면 안 된다 — 창을
+            // 닫는 일만 하고 빠진다.
+            if (!_inGame)
+            {
+                return;
+            }
+
+            ShowMenu(!_menuOpen);
+        }
+
+        /// <summary>떠 있는 창 하나를 닫는다. 닫을 게 없으면 false.</summary>
+        /// <remarks>
+        /// 창끼리는 이미 상호 배타라 동시에 둘이 뜨지 않는다 — 순서는 "먼저 닫히는
+        /// 쪽" 을 정하는 게 아니라 어느 하나를 찾는 일이다. 설명 패널은 게임 중에도
+        /// 버튼으로 열리므로 같이 본다.
+        /// </remarks>
+        private bool CloseTopmostPanel()
+        {
+            if (_helpPanel != null && _helpPanel.activeSelf)
+            {
+                _helpPanel.SetActive(false);
+                return true;
+            }
+
+            if (_settingsPanel != null && _settingsPanel.activeSelf)
+            {
+                _settingsPanel.SetActive(false);
+                return true;
+            }
+
+            if (InventoryUI.Instance != null && InventoryUI.Instance.IsOpen)
+            {
+                InventoryUI.Instance.Close();
+                return true;
+            }
+
+            if (BreedingUIPanel.Instance != null && BreedingUIPanel.Instance.IsOpen)
+            {
+                BreedingUIPanel.Instance.Close();
+                return true;
+            }
+
+            if (SatchelCounterUI.Instance != null && SatchelCounterUI.Instance.IsOpen)
+            {
+                SatchelCounterUI.Instance.Close();
+                return true;
+            }
+
+            return BestiaryPanel.CloseIfOpen();
         }
 
         private void ShowMenu(bool visible)

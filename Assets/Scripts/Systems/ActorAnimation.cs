@@ -56,6 +56,14 @@ namespace Game.Gameplay
             // 보인다. 정지 시 방향을 안 덮는 규칙과도 어긋나지 않는다 — 여기서
             // 정하는 건 최초 1회뿐이다.
             SetFacing(Vector2.down);
+
+            // 발밑 그림자는 **플레이어에게만** 붙인다(사용자, 2026-08-09: 슬라임은
+            // 빼라). 슬라임은 제자리에서 통통 뛰는 그림이라 그림자가 붙으면 뜀에
+            // 따라 같이 움직여 오히려 바닥에서 떠 보였다.
+            if (GetComponent<PlayerMovement>() != null)
+            {
+                ActorShadow.Attach(transform, GetComponent<SpriteRenderer>());
+            }
         }
 
         /// <summary>

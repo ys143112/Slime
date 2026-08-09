@@ -875,7 +875,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 1356dedf7b010c647b7e6fc51f2a95d7, type: 3}
+    m_Font: {fileID: 12800000, guid: 7903098f375c22a40b4ca5bf7b4aeaa8, type: 3}
     m_FontSize: 22
     m_FontStyle: 0
     m_BestFit: 0
@@ -887,7 +887,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SatchelCounterText
+  m_Text: 
 --- !u!222 &647154942
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1231,8 +1231,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 1356dedf7b010c647b7e6fc51f2a95d7, type: 3}
-    m_FontSize: 14
+    m_Font: {fileID: 12800000, guid: 7903098f375c22a40b4ca5bf7b4aeaa8, type: 3}
+    m_FontSize: 11
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -1243,7 +1243,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &937758266
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1365,6 +1365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.ExtractionDirectionArrow
   arrowRect: {fileID: 1192121989}
+  arrowScale: 2
 --- !u!114 &1192121991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2033,8 +2034,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 1356dedf7b010c647b7e6fc51f2a95d7, type: 3}
-    m_FontSize: 14
+    m_Font: {fileID: 12800000, guid: 7903098f375c22a40b4ca5bf7b4aeaa8, type: 3}
+    m_FontSize: 11
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10

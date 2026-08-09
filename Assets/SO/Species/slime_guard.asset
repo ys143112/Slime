@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: slime_guard
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_guard
-  displayName: Guard Slime
+  displayName: 방패 슬라임
   defaultSprite: {fileID: 1843758491302937760, guid: 0468bf721347e8d4bb8f6c6d7c962a7d, type: 3}
   shinySprite: {fileID: 0}
   animatorController: {fileID: 9100000, guid: b769dca9a21c57d4aaa1b906b54cc127, type: 2}

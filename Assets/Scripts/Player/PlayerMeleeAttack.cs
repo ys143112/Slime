@@ -192,7 +192,11 @@ namespace Game.Gameplay
                 return;
             }
 
-            swingArc.transform.localPosition = facing * reachOffset;
+            // 월드 좌표로 놓는다. localPosition 을 쓰면 Player 루트의 스케일
+            // (0.5)이 곱해져 그림만 판정 원의 절반 거리에 뜬다 — 이펙트와 실제
+            // 사거리가 어긋나 보이던 원인이다(팀 QA, 2026-08-09). 크기는
+            // FitSwingArcToHitbox 가 이미 월드 기준으로 맞춰 둔다.
+            swingArc.transform.position = (Vector2)transform.position + facing * reachOffset;
             swingArc.transform.localRotation =
                 Quaternion.Euler(0f, 0f, Vector2.SignedAngle(Vector2.up, facing));
             swingArc.SetActive(true);

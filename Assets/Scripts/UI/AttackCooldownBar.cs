@@ -46,7 +46,7 @@ namespace Game.Gameplay
 
         private void Build(Transform parent)
         {
-            _root = HudRoot.Panel("AttackCooldown", parent, new Color(0.07f, 0.07f, 0.1f, 0.8f));
+            _root = HudRoot.Frame("AttackCooldown", parent);
             HudRoot.PinBottomLeft(_root, new Vector2(24f, 24f), new Vector2(BarWidth, BarHeight + 22f));
 
             GameObject track = HudRoot.Panel("Track", _root.transform, new Color(0.15f, 0.15f, 0.18f, 1f));
@@ -60,7 +60,7 @@ namespace Game.Gameplay
             _fill.offsetMin = Vector2.zero;
             _fill.offsetMax = Vector2.zero;
 
-            _label = HudRoot.Label("Label", _root.transform, 15);
+            _label = HudRoot.Label("Label", _root.transform, 11);
             RectTransform labelRect = _label.GetComponent<RectTransform>();
             labelRect.anchorMin = new Vector2(0f, 0f);
             labelRect.anchorMax = new Vector2(1f, 0f);
@@ -90,7 +90,7 @@ namespace Game.Gameplay
             float ratio = _attack.CooldownRatio;
             _fill.anchorMax = new Vector2(ratio, 1f);
             _fillImage.color = ratio >= 1f ? Ready : Charging;
-            _label.text = ratio >= 1f ? "Ready (Click)" : "Charging";
+            _label.text = ratio >= 1f ? "공격 가능 (좌클릭)" : "재장전";
         }
     }
 }

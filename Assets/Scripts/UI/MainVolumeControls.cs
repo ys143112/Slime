@@ -35,8 +35,8 @@ namespace Game.Gameplay
             rect.sizeDelta = new Vector2(420f, RowHeight * 2f);
 
             var controls = go.GetComponent<MainVolumeControls>();
-            controls._bgm = controls.BuildRow("Bgm", "BGM", RowHeight, OnBgmChanged);
-            controls._sfx = controls.BuildRow("Sfx", "SFX", 0f, OnSfxChanged);
+            controls._bgm = controls.BuildRow("Bgm", "배경음", RowHeight, OnBgmChanged);
+            controls._sfx = controls.BuildRow("Sfx", "효과음", 0f, OnSfxChanged);
             controls.Pull();
             return controls;
         }
@@ -79,7 +79,7 @@ namespace Game.Gameplay
 
         private Slider BuildRow(string name, string caption, float y, UnityEngine.Events.UnityAction<float> onChanged)
         {
-            Text label = HudRoot.Label(name + "Label", transform, 24);
+            Text label = HudRoot.Label(name + "Label", transform, 22);
             label.alignment = TextAnchor.MiddleLeft;
             var labelRect = label.GetComponent<RectTransform>();
             Pin(labelRect, new Vector2(0f, y), new Vector2(90f, RowHeight));

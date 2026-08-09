@@ -43,39 +43,137 @@ namespace Game.Gameplay
                 breedButton.onClick.AddListener(OnBreedButtonClicked);
             }
 
-            EnsureGridWraps();
+            EnsureGridScroll();
             SetVisible(false);
             RefreshSlots();
         }
 
-        /// <summary>로스터 그리드가 창 안에서 줄바꿈하게 만든다.</summary>
+        // 로스터 격자 한 칸. 인벤토리(140)보다 조금 작게 잡아 일곱 칸이
+        // 창 안쪽 폭(1040)에 들어가게 한다: 7×130 + 6×12 = 982.
+        private const int GridColumns = 7;
+        private static readonly Vector2 GridCell = new Vector2(130f, 130f);
+        private static readonly Vector2 GridSpacing = new Vector2(12f, 12f);
+
+        // 두 줄이 보이고 나머지는 스크롤로 넘긴다(130×2 + 12 = 272).
+        private const float GridAreaHeight = 300f;
+        private const float GridAreaBottom = 20f;
+
+        /// <summary>로스터 격자를 스크롤 뷰포트 안에 넣는다.</summary>
         /// <remarks>
-        /// 씬의 <see cref="GridLayoutGroup"/> 이 <c>FixedRowCount = 1</c> 이라
-        /// 보유 슬라임이 늘어나면 한 줄로 이어져 창 밖으로, 결국 화면 밖까지
-        /// 흘러나갔다(2026-08-09 실측: 22마리가 가로로 한 줄). 폭에 맞춰 열 수를
-        /// 고정하고, 그래도 넘치는 줄은 <see cref="RectMask2D"/> 가 잘라 알 목록을
-        /// 덮지 않게 한다.
+        /// 예전에는 격자가 창에 직접 붙어 있고 <see cref="RectMask2D"/> 로 넘치는
+        /// 줄을 잘라냈다 — 잘린 슬라임은 볼 방법이 아예 없었다(사용자, 2026-08-09).
+        /// 마스크를 격자가 아니라 <b>뷰포트</b>에 걸고 <see cref="ScrollRect"/> 로
+        /// 격자를 밀어 올린다.
+        ///
+        /// 씬을 안 고치고 코드로 짜는 이유는 <see cref="InventoryUI.EnsureGrid"/>
+        /// 와 같다 — Boot 씬은 병합 사고로 UI 를 통째로 잃은 전력이 있다.
+        /// 알 목록은 그만큼 위로 물러난다(원래 격자 자리가 180px 였다).
         /// </remarks>
-        private void EnsureGridWraps()
+        private void EnsureGridScroll()
         {
-            if (gridContent == null)
+            if (gridContent == null || gridContent.parent == null)
             {
                 return;
             }
 
-            var grid = gridContent.GetComponent<GridLayoutGroup>();
-            if (grid != null)
+            var panel = (RectTransform)gridContent.parent;
+            if (panel.GetComponent<ScrollRect>() != null || gridContent.GetComponentInParent<ScrollRect>() != null)
             {
-                // 84 + 10 간격으로 11칸 = 1024 < 창 안쪽 폭 1040.
-                grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-                grid.constraintCount = 11;
-                grid.childAlignment = TextAnchor.UpperLeft;
+                ApplyGridLayout();
+                return;
             }
 
-            if (gridContent.GetComponent<RectMask2D>() == null)
+            // 창 안쪽이라 창틀(Window)을 또 두르면 테두리가 두 겹이 된다 — 슬롯 틀로 깐다.
+            GameObject viewGo = HudRoot.Slot("RosterViewport", panel);
+            viewGo.AddComponent<RectMask2D>();
+            viewGo.AddComponent<ScrollRect>();
+            var view = viewGo.GetComponent<RectTransform>();
+            view.anchorMin = new Vector2(0f, 0f);
+            view.anchorMax = new Vector2(1f, 0f);
+            view.pivot = new Vector2(0.5f, 0f);
+            view.anchoredPosition = new Vector2(0f, GridAreaBottom);
+            view.sizeDelta = new Vector2(-60f, GridAreaHeight);
+
+            // 판이 있어야 빈 곳을 끌어도 스크롤된다 — HudRoot.Panel 은
+            // raycastTarget 을 꺼 두므로 여기서 되켠다.
+            viewGo.GetComponent<Image>().raycastTarget = true;
+
+            // 격자에 붙어 있던 마스크는 뗀다 — 뷰포트가 그 일을 대신하고,
+            // 남겨두면 스크롤로 올린 줄이 격자 자기 영역 밖이라며 다시 잘린다.
+            var oldMask = gridContent.GetComponent<RectMask2D>();
+            if (oldMask != null)
             {
-                gridContent.gameObject.AddComponent<RectMask2D>();
+                Destroy(oldMask);
             }
+
+            gridContent.SetParent(view, false);
+            gridContent.anchorMin = new Vector2(0f, 1f);
+            gridContent.anchorMax = new Vector2(1f, 1f);
+            gridContent.pivot = new Vector2(0.5f, 1f);
+            gridContent.anchoredPosition = Vector2.zero;
+            gridContent.sizeDelta = Vector2.zero;
+
+            // 줄이 늘어난 만큼 격자가 길어져야 스크롤할 거리가 생긴다.
+            var fitter = gridContent.GetComponent<ContentSizeFitter>();
+            if (fitter == null)
+            {
+                fitter = gridContent.gameObject.AddComponent<ContentSizeFitter>();
+            }
+
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var scroll = viewGo.GetComponent<ScrollRect>();
+            scroll.content = gridContent;
+            scroll.viewport = view;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 40f;
+
+            ApplyGridLayout();
+            PushEggListAbove(panel);
+        }
+
+        private void ApplyGridLayout()
+        {
+            var grid = gridContent.GetComponent<GridLayoutGroup>();
+            if (grid == null)
+            {
+                grid = gridContent.gameObject.AddComponent<GridLayoutGroup>();
+            }
+
+            grid.cellSize = GridCell;
+            grid.spacing = GridSpacing;
+            grid.padding = new RectOffset(12, 12, 12, 12);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = GridColumns;
+            grid.childAlignment = TextAnchor.UpperLeft;
+        }
+
+        // 격자가 180 → 300px 로 커진 만큼 알 목록을 위로 밀어 겹치지 않게 한다.
+        // 위쪽 155px 는 부모·교배 버튼 줄이라 건드리지 않는다.
+        private void PushEggListAbove(RectTransform panel)
+        {
+            if (eggListContent == null || eggListContent.parent == null || eggListContent.parent.parent == null)
+            {
+                return;
+            }
+
+            var eggScroll = eggListContent.parent.parent as RectTransform;
+            if (eggScroll == null)
+            {
+                return;
+            }
+
+            float bottom = GridAreaBottom + GridAreaHeight + 10f;
+            float top = panel.rect.height - 155f;
+
+            eggScroll.anchorMin = new Vector2(0f, 0f);
+            eggScroll.anchorMax = new Vector2(1f, 0f);
+            eggScroll.pivot = new Vector2(0.5f, 0f);
+            eggScroll.anchoredPosition = new Vector2(0f, bottom);
+            eggScroll.sizeDelta = new Vector2(-60f, Mathf.Max(80f, top - bottom));
         }
 
         // spec-003: PlayerRoster.Instance 는 Awake 에서 세팅된다 - 같은 Boot 씬의
@@ -154,6 +252,7 @@ namespace Game.Gameplay
                 // 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
                 InventoryUI.Instance?.Close();
                 BestiaryPanel.CloseIfOpen();
+                SatchelCounterUI.Instance?.Close();
             }
 
             SetVisible(next);
@@ -174,6 +273,9 @@ namespace Game.Gameplay
             canvasGroup.interactable = visible;
             canvasGroup.blocksRaycasts = visible;
         }
+
+        /// <summary>Esc 가 "지금 떠 있는 창부터 닫는다" 를 판단할 때 읽는다.</summary>
+        public bool IsOpen => _visible;
 
         public void Close()
         {
@@ -248,7 +350,7 @@ namespace Game.Gameplay
             }
         }
 
-        // 빈 칸일 때만 글자를 쓴다("Empty"). 채워지면 그림만 남기고 글자는 지운다
+        // 빈 칸일 때만 글자를 쓴다("빈 칸"). 채워지면 그림만 남기고 글자는 지운다
         // — 63px 칸에 둘을 같이 넣으면 글자가 그림을 덮는다.
         private static void ShowSlot(Image icon, Text label, SlimeInstance instance)
         {
@@ -265,7 +367,7 @@ namespace Game.Gameplay
             if (label != null)
             {
                 // 그림을 못 찾은 종은 이름이라도 보여야 빈 칸과 구분된다.
-                label.text = instance == null ? "Empty"
+                label.text = instance == null ? "빈 칸"
                     : portrait != null ? string.Empty
                     : SlimeSpeciesCatalog.DisplayName(instance.speciesId);
             }

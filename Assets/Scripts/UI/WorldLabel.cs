@@ -20,7 +20,10 @@ namespace Game.Gameplay
         // 슬라임(0)·시설 스프라이트보다 위. 체력바(200번대)보다는 아래다.
         private const int SortingOrder = 150;
 
-        private const string PixelFontResource = "Fonts/Kenney Pixel";
+        // Galmuri11. Kenney Pixel 도 픽셀 폰트지만 한글 글리프가 없어 "초원"
+        // 같은 이름표가 빈칸으로 떴다 — UI 전부를 이 폰트 하나로 통일했다
+        // (사용자, 2026-08-09). 둘 다 픽셀이라 톤은 그대로다.
+        private const string PixelFontResource = "Fonts/KoreanFont";
 
         public static TextMesh Attach(Transform parent, string text, float height)
         {

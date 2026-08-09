@@ -137,9 +137,13 @@ namespace Game.Gameplay
                 // 두 창이 동시에 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
                 BreedingUIPanel.Instance?.Close();
                 BestiaryPanel.CloseIfOpen();
+                SatchelCounterUI.Instance?.Close();
                 Refresh();
             }
         }
+
+        /// <summary>Esc 가 "지금 떠 있는 창부터 닫는다" 를 판단할 때 읽는다.</summary>
+        public bool IsOpen => panelRoot != null && panelRoot.activeSelf;
 
         public void Close()
         {

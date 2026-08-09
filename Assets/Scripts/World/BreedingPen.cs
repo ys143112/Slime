@@ -14,7 +14,7 @@ namespace Game.Gameplay
         [SerializeField] private GameObject placedSlimePrefab;
         [SerializeField] private Transform[] slots = new Transform[Capacity];
         [SerializeField] private float hatchDurationSeconds = 30f;
-        [SerializeField] private string hatchConditionLabel = "Incubating";
+        [SerializeField] private string hatchConditionLabel = "부화 중";
 
         // 교배 전용 종이 나올 확률은 종마다 다르므로 여기가 아니라
         // SlimeSpecies.breedingChance 가 들고 있다(방패 25%, 무지개 5%).
@@ -117,7 +117,7 @@ namespace Game.Gameplay
             if (_label != null)
             {
                 // 이름 한 줄. 조작 안내는 게임 설명 패널이 적고 있다.
-                _label.text = "Breeding Pen";
+                _label.text = "교배장";
             }
         }
 

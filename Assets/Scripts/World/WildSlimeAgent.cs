@@ -328,6 +328,7 @@ namespace Game.Gameplay
                 }
 
                 RunLogWriter.AppendLine($"WildSlimeWeakened species={Instance.speciesId}");
+                MakeCorpseUnpushable();
 
                 // 막대는 0 이 되면 스스로 숨는다. 그 자리를 약화 표식이 대신해
                 // "이제 E 로 잡는다" 를 알린다.
@@ -335,6 +336,30 @@ namespace Game.Gameplay
                 {
                     weakenedIndicator.SetActive(true);
                 }
+            }
+        }
+
+        /// <summary>쓰러진 개체를 밀 수 없게 만든다.</summary>
+        /// <remarks>
+        /// 약화된 슬라임이 그대로 Dynamic 리지드바디 + 단단한 콜라이더라, 플레이어가
+        /// 몸으로 밀어 시체를 끌고 다닐 수 있었다(사용자, 2026-08-09).
+        ///
+        /// **콜라이더를 끄지 않고 트리거로 바꾼다** — <see cref="CaptureTool"/> 이
+        /// <c>Physics2D.OverlapCircleAll</c> 로 잡을 대상을 찾기 때문이다. 트리거는
+        /// 그 질의에 그대로 잡히면서 밀리지는 않는다. 리지드바디는 Static 으로
+        /// 내려 물리 계산에서도 뺀다.
+        /// </remarks>
+        private void MakeCorpseUnpushable()
+        {
+            if (_collider != null)
+            {
+                _collider.isTrigger = true;
+            }
+
+            if (_body != null)
+            {
+                _body.linearVelocity = Vector2.zero;
+                _body.bodyType = RigidbodyType2D.Static;
             }
         }
 

@@ -56,7 +56,7 @@ namespace Game.Gameplay
         public static string PosterLine()
         {
             string species = SlimeSpeciesCatalog.DisplayName(TargetSpeciesId);
-            return $"WANTED  {species} (boss)  ·  cleared {ClearedCount}";
+            return $"수배  {species} (보스)  ·  처치 {ClearedCount}";
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Game.Gameplay
             // 눈으로도 구분돼야 한다 — 같은 그림에 숫자만 다르면 어느 놈이
             // 수배 대상인지 붙어 보기 전에는 모른다.
             agent.transform.localScale *= 1.6f;
-            WorldLabel.Attach(agent.transform, "WANTED", 1.1f);
+            WorldLabel.Attach(agent.transform, "수배", 1.1f);
 
             agent.Initialize(instance);
             Debug.Log($"wanted_boss_spawned species={instance.speciesId} hp={stats.maxHp} atk={stats.attack}");

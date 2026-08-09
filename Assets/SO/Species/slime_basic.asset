@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: slime_basic
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_basic
-  displayName: Blue Slime
+  displayName: 파란 슬라임
   defaultSprite: {fileID: -8290264432739398848, guid: 739ccc1b78b2f0a4d8909cd09847e33d, type: 3}
   shinySprite: {fileID: 0}
   animatorController: {fileID: 9100000, guid: 57a3bd388d573ba40affa52c96ac6088, type: 2}

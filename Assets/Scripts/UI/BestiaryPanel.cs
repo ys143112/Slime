@@ -39,12 +39,16 @@ namespace Game.Gameplay
         }
 
         /// <summary>다른 창이 열릴 때 닫는다 — 겹쳐 뜨면 둘 다 못 읽는다.</summary>
-        public static void CloseIfOpen()
+        /// <returns>실제로 닫았으면 true. Esc 처리가 이 값으로 "닫을 게 있었나" 를 안다.</returns>
+        public static bool CloseIfOpen()
         {
-            if (_instance != null && _instance._window.activeSelf)
+            if (_instance == null || !_instance._window.activeSelf)
             {
-                _instance._window.SetActive(false);
+                return false;
             }
+
+            _instance._window.SetActive(false);
+            return true;
         }
 
         private void Awake()
@@ -86,12 +90,17 @@ namespace Game.Gameplay
                 BreedingUIPanel.Instance.Close();
             }
 
+            if (SatchelCounterUI.Instance != null)
+            {
+                SatchelCounterUI.Instance.Close();
+            }
+
             Refresh();
         }
 
         private void BuildWindow()
         {
-            _window = HudRoot.Panel("Window", transform, new Color(0.06f, 0.07f, 0.1f, 0.92f));
+            _window = HudRoot.Frame("Window", transform);
             var rect = _window.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -99,7 +108,7 @@ namespace Game.Gameplay
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = new Vector2(760f, 620f);
 
-            _title = HudRoot.Label("Title", _window.transform, 30);
+            _title = HudRoot.Label("Title", _window.transform, 33);
             _title.alignment = TextAnchor.MiddleLeft;
             var titleRect = _title.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0f, 1f);
@@ -108,15 +117,29 @@ namespace Game.Gameplay
             titleRect.offsetMin = new Vector2(24f, -70f);
             titleRect.offsetMax = new Vector2(-24f, -16f);
 
-            var listGo = new GameObject("List", typeof(RectTransform));
+            var listGo = new GameObject("List", typeof(RectTransform), typeof(GridLayoutGroup));
             listGo.transform.SetParent(_window.transform, false);
             var listRect = listGo.GetComponent<RectTransform>();
             listRect.anchorMin = Vector2.zero;
             listRect.anchorMax = Vector2.one;
             listRect.offsetMin = new Vector2(24f, 24f);
             listRect.offsetMax = new Vector2(-24f, -80f);
+
+            // 인벤토리와 같은 격자다(사용자, 2026-08-09). 한 줄에 한 종씩 긴
+            // 설명을 늘어놓으면 창이 표가 아니라 문서가 된다 — 종이 늘수록
+            // 세로로 흘러 넘친다.
+            var grid = listGo.GetComponent<GridLayoutGroup>();
+            grid.cellSize = CellSize;
+            grid.spacing = new Vector2(16f, 16f);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = Columns;
+            grid.childAlignment = TextAnchor.UpperLeft;
+
             _list = listGo.transform;
         }
+
+        private const int Columns = 4;
+        private static readonly Vector2 CellSize = new Vector2(160f, 190f);
 
         private void Refresh()
         {
@@ -133,10 +156,9 @@ namespace Game.Gameplay
 
             _rows.Clear();
 
-            _title.text = $"Bestiary   {SlimeBestiary.CaughtCount}/{SlimeBestiary.TotalSpecies} species" +
-                $"   ·   {SlimeBestiary.ShinyCount} shiny";
+            _title.text = $"도감   {SlimeBestiary.CaughtCount}/{SlimeBestiary.TotalSpecies} 종" +
+                $"   ·   이로치 {SlimeBestiary.ShinyCount}";
 
-            float y = 0f;
             foreach (SlimeSpecies species in catalog.Species)
             {
                 if (species == null)
@@ -144,33 +166,35 @@ namespace Game.Gameplay
                     continue;
                 }
 
-                _rows.Add(BuildRow(species, y));
-                y -= 96f;
+                _rows.Add(BuildCell(species));
             }
         }
 
-        private GameObject BuildRow(SlimeSpecies species, float y)
+        /// <summary>격자 한 칸 = 종 하나. 그림 + 이름 + 한 줄 요약.</summary>
+        /// <remarks>
+        /// 자리는 <see cref="GridLayoutGroup"/> 이 정하므로 앵커를 손으로 잡지
+        /// 않는다 — 잡으면 격자가 덮어써서 결과가 안 보인다. 스탯 표는 뺐다:
+        /// 칸에 다 못 들어가고, 같은 숫자를 <see cref="SlimeTooltipUI"/> 가
+        /// 이미 보유 슬라임에 대해 보여준다.
+        /// </remarks>
+        private GameObject BuildCell(SlimeSpecies species)
         {
             bool caught = SlimeBestiary.IsCaught(species.speciesId);
             bool shiny = SlimeBestiary.IsShinyCaught(species.speciesId);
 
-            GameObject row = HudRoot.Panel("Row_" + species.speciesId, _list,
-                caught ? new Color(1f, 1f, 1f, 0.06f) : new Color(1f, 1f, 1f, 0.02f));
-            var rowRect = row.GetComponent<RectTransform>();
-            rowRect.anchorMin = new Vector2(0f, 1f);
-            rowRect.anchorMax = new Vector2(1f, 1f);
-            rowRect.pivot = new Vector2(0.5f, 1f);
-            rowRect.anchoredPosition = new Vector2(0f, y);
-            rowRect.sizeDelta = new Vector2(0f, 88f);
+            // 칸도 인벤토리와 같은 슬롯 틀을 쓴다. 안 잡은 종은 틀을 어둡게 눌러
+            // 빈칸이라는 게 그림 없이도 읽히게 한다.
+            GameObject cell = HudRoot.Slot("Cell_" + species.speciesId, _list);
+            cell.GetComponent<Image>().color = caught ? Color.white : new Color(0.55f, 0.55f, 0.6f, 0.85f);
 
             var iconGo = new GameObject("Icon", typeof(RectTransform), typeof(Image));
-            iconGo.transform.SetParent(row.transform, false);
+            iconGo.transform.SetParent(cell.transform, false);
             var iconRect = iconGo.GetComponent<RectTransform>();
-            iconRect.anchorMin = new Vector2(0f, 0.5f);
-            iconRect.anchorMax = new Vector2(0f, 0.5f);
-            iconRect.pivot = new Vector2(0f, 0.5f);
-            iconRect.anchoredPosition = new Vector2(12f, 0f);
-            iconRect.sizeDelta = new Vector2(72f, 72f);
+            iconRect.anchorMin = new Vector2(0.5f, 1f);
+            iconRect.anchorMax = new Vector2(0.5f, 1f);
+            iconRect.pivot = new Vector2(0.5f, 1f);
+            iconRect.anchoredPosition = new Vector2(0f, -12f);
+            iconRect.sizeDelta = new Vector2(112f, 112f);
 
             var icon = iconGo.GetComponent<Image>();
             icon.sprite = species.defaultSprite;
@@ -180,44 +204,33 @@ namespace Game.Gameplay
             // 안 잡은 종은 그림을 검게 눌러 실루엣만 남긴다.
             icon.color = species.defaultSprite == null
                 ? new Color(1f, 1f, 1f, 0f)
-                : caught ? Color.white : new Color(0f, 0f, 0f, 0.75f);
+                : caught ? Color.white : new Color(0f, 0f, 0f, 0.85f);
 
-            Text label = HudRoot.Label("Label", row.transform, 22);
-            label.alignment = TextAnchor.MiddleLeft;
+            Text label = HudRoot.Label("Label", cell.transform, 22);
+            label.alignment = TextAnchor.UpperCenter;
+            label.horizontalOverflow = HorizontalWrapMode.Wrap;
             var labelRect = label.GetComponent<RectTransform>();
             labelRect.anchorMin = new Vector2(0f, 0f);
-            labelRect.anchorMax = new Vector2(1f, 1f);
-            labelRect.offsetMin = new Vector2(100f, 6f);
-            labelRect.offsetMax = new Vector2(-12f, -6f);
+            labelRect.anchorMax = new Vector2(1f, 0f);
+            labelRect.pivot = new Vector2(0.5f, 0f);
+            labelRect.anchoredPosition = new Vector2(0f, 8f);
+            labelRect.sizeDelta = new Vector2(-12f, 58f);
             label.text = caught ? CaughtText(species, shiny) : UnknownText(species);
             label.color = caught ? Color.white : new Color(1f, 1f, 1f, 0.5f);
-            return row;
+            return cell;
         }
 
-        // 스탯 편향은 배율이라 "×1.4" 로 보여준다 — 종마다 절대 수치가 다르고
-        // 티어 배율이 다시 곱해지므로, 절대값을 적으면 화면과 실제가 어긋난다.
         private static string CaughtText(SlimeSpecies species, bool shiny)
         {
-            string origin = species.breedingOnly ? "breeding only" : "wild";
-            string passive = species.passive == SpeciesPassiveKind.None
-                ? "no passive"
-                : $"{species.passive} r{species.passiveRadius:0.#}";
-
-            return $"{species.displayName}{(shiny ? "  ★shiny" : "")}\n" +
-                $"HP ×{species.maxHpMultiplier:0.##}  ATK ×{species.attackMultiplier:0.##}  " +
-                $"DEF ×{species.defenseMultiplier:0.##}  SPD ×{species.speedMultiplier:0.##}\n" +
-                $"{origin}  ·  {passive}";
+            string origin = species.breedingOnly ? "교배 전용" : "야생";
+            return $"{species.displayName}{(shiny ? " ★" : "")}\n{origin}";
         }
 
         // 안 잡은 종도 "어디서 나오는지" 만 알려준다. 아무 단서도 없으면 도감이
         // 목표가 아니라 빈칸 목록이 된다.
         private static string UnknownText(SlimeSpecies species)
         {
-            return "???\n" +
-                (species.breedingOnly
-                    ? "Appears only from breeding"
-                    : "Found in the wild") +
-                "\nNot yet caught";
+            return "???\n" + (species.breedingOnly ? "교배로만 등장" : "야생에 등장");
         }
     }
 }

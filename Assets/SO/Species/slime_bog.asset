@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: slime_bog
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_bog
-  displayName: Bog Slime
+  displayName: 늪지 슬라임
   defaultSprite: {fileID: -3604789384580770694, guid: b61a5e4dd0843634dbadb5077a6f33da, type: 3}
   shinySprite: {fileID: 0}
   animatorController: {fileID: 9100000, guid: a78a04124af357b4b96511fd2df531f4, type: 2}

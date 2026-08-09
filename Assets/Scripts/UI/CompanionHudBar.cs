@@ -50,7 +50,7 @@ namespace Game.Gameplay
 
         private void Build(Transform parent)
         {
-            _root = HudRoot.Panel("CompanionBar", parent, new Color(0.07f, 0.07f, 0.1f, 0.8f));
+            _root = HudRoot.Frame("CompanionBar", parent);
 
             // 쿨다운 바(y=24) 위에 얹는다.
             HudRoot.PinBottomLeft(_root, new Vector2(24f, 76f), new Vector2(BarWidth, BarHeight + 26f));
@@ -67,7 +67,7 @@ namespace Game.Gameplay
             _fill.offsetMin = Vector2.zero;
             _fill.offsetMax = Vector2.zero;
 
-            _label = HudRoot.Label("Label", _root.transform, 18);
+            _label = HudRoot.Label("Label", _root.transform, 22);
             RectTransform labelRect = _label.GetComponent<RectTransform>();
             labelRect.anchorMin = new Vector2(0f, 0f);
             labelRect.anchorMax = new Vector2(1f, 0f);
@@ -100,7 +100,7 @@ namespace Game.Gameplay
 
             if (_label != null)
             {
-                _label.text = $"Companion {SlimeSpeciesCatalog.DisplayName(instance.speciesId)}  "
+                _label.text = $"동행 {SlimeSpeciesCatalog.DisplayName(instance.speciesId)}  "
                     + $"{instance.currentHp}/{instance.baseStats.maxHp}";
             }
         }

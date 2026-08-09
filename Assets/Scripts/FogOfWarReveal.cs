@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -6,6 +7,38 @@ namespace Game.Gameplay
 {
     public class FogOfWarReveal : MonoBehaviour
     {
+        /// <summary>씬에 하나뿐. 미니맵이 "어디까지 걷어냈나" 를 여기서 읽는다.</summary>
+        public static FogOfWarReveal Instance { get; private set; }
+
+        /// <summary>안개를 걷어낸 순간. 인자는 방금 밝힌 중심 칸이다.</summary>
+        /// <remarks>
+        /// 플레이어가 칸을 옮길 때만 발생한다 — 매 프레임이 아니다. 미니맵이 이걸
+        /// 듣고 그 주변만 다시 칠하므로 지도 전체를 훑지 않는다.
+        /// </remarks>
+        public event Action<Vector3Int> Revealed;
+
+        public int OuterRadius => outerRadius;
+
+        /// <summary>이 칸을 한 번이라도 밝혔는가. 가장 짙은 단계로 남아 있으면 아니다.</summary>
+        public bool IsExplored(Vector3Int cell)
+        {
+            return fogLevels != null && fogLevels.Length > 0 &&
+                _bestLevel.TryGetValue(cell, out int level) && level < fogLevels.Length - 1;
+        }
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private Transform target;
         [SerializeField] private int innerRadius = 3;
@@ -59,6 +92,8 @@ namespace Game.Gameplay
                     fogTilemap.SetTile(pos, fogLevels[best]);
                 }
             }
+
+            Revealed?.Invoke(center);
         }
     }
 }

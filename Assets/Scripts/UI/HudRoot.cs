@@ -54,6 +54,47 @@ namespace Game.Gameplay
             return go;
         }
 
+        private const string ElementsPath = "UI/window_inventroy_UI_Farm_game-style_UI_a_style_fea/elements/";
+
+        private static Sprite _windowSprite;
+        private static Sprite _slotSprite;
+
+        /// <summary>인벤토리·교배창과 같은 나무 창틀. 9-slice 라 크기를 아무렇게나 잡아도 된다.</summary>
+        /// <remarks>
+        /// 코드로 만든 HUD 는 색만 칠한 사각형이라 씬에 있는 창들과 톤이 달랐다
+        /// (사용자, 2026-08-09: UI 에셋 안 쓴 것들 다 바꿔라). 자산을 못 찾으면
+        /// 예전처럼 반투명 검정으로 떨어진다 — 창 하나 때문에 화면이 비면 안 된다.
+        /// </remarks>
+        public static GameObject Frame(string name, Transform parent)
+        {
+            return Sliced(name, parent, ref _windowSprite, "Window", new Color(0.06f, 0.07f, 0.1f, 0.92f));
+        }
+
+        /// <summary>슬롯 한 칸짜리 틀. 도감 칸·키캡처럼 작은 것에 쓴다(테두리가 얇다).</summary>
+        public static GameObject Slot(string name, Transform parent)
+        {
+            return Sliced(name, parent, ref _slotSprite, "slot", new Color(1f, 1f, 1f, 0.08f));
+        }
+
+        private static GameObject Sliced(string name, Transform parent, ref Sprite cache,
+            string fileName, Color fallback)
+        {
+            if (cache == null)
+            {
+                cache = Resources.Load<Sprite>(ElementsPath + fileName);
+            }
+
+            GameObject go = Panel(name, parent, cache != null ? Color.white : fallback);
+            var image = go.GetComponent<UnityEngine.UI.Image>();
+            if (cache != null)
+            {
+                image.sprite = cache;
+                image.type = UnityEngine.UI.Image.Type.Sliced;
+            }
+
+            return go;
+        }
+
         /// <summary>부모를 꽉 채운다. 코드로 만든 HUD 묶음의 뿌리에 반드시 걸어야 한다.</summary>
         /// <remarks>
         /// 묶음 오브젝트를 <c>RectTransform</c> 없이 만들거나 크기를 안 주면, 그
@@ -80,6 +121,25 @@ namespace Game.Gameplay
             return rect;
         }
 
+        private static Font _font;
+
+        /// <summary>한글 글리프가 든 폰트. 없으면 빌트인으로 떨어진다.</summary>
+        /// <remarks>
+        /// 빌트인 <c>LegacyRuntime.ttf</c> 에는 한글이 없다. WebGL 에는 OS 폰트
+        /// 폴백도 없어서, 이 자리에서 갈아 끼우지 않으면 한국어 HUD 가 빈칸으로
+        /// 나온다(<see cref="HelpPanel"/> 이 같은 이유로 같은 파일을 읽는다).
+        /// </remarks>
+        private static Font UiFont()
+        {
+            if (_font == null)
+            {
+                _font = Resources.Load<Font>("Fonts/KoreanFont")
+                    ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            }
+
+            return _font;
+        }
+
         public static Text Label(string name, Transform parent, int fontSize)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Text));
@@ -87,9 +147,9 @@ namespace Game.Gameplay
 
             var text = go.GetComponent<Text>();
 
-            // 빌트인 폰트를 못 찾으면 글자만 비고 막대는 그대로 뜬다 — 표시가
+            // 폰트를 못 찾으면 글자만 비고 막대는 그대로 뜬다 — 표시가
             // 폰트 하나 때문에 통째로 사라지지 않게 한다.
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.font = UiFont();
             text.fontSize = fontSize;
             text.color = Color.white;
             text.alignment = TextAnchor.LowerLeft;

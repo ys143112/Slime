@@ -49,6 +49,8 @@ MonoBehaviour:
   defaultBiomeId: biome_default
   destinationText: {fileID: 0}
   stigmaIcon: {fileID: 0}
+  diveSfx: {fileID: 0}
+  forceDefaultBiome: 0
 --- !u!61 &5145640101372851301
 BoxCollider2D:
   m_ObjectHideFlags: 0

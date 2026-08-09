@@ -76,7 +76,7 @@ namespace Game.Gameplay
         {
             _canvasRect = (RectTransform)HudRoot.Get();
 
-            GameObject panel = HudRoot.Panel("Panel", transform, new Color(0.05f, 0.06f, 0.09f, 0.94f));
+            GameObject panel = HudRoot.Frame("Panel", transform);
             _panel = panel.GetComponent<RectTransform>();
 
             // 커서 오른쪽 아래로 펼친다 — 기준점을 왼쪽 위로 두면 위치 계산이
@@ -157,20 +157,20 @@ namespace Game.Gameplay
             SlimeSpecies species = SlimeSpeciesCatalog.Lookup(instance.speciesId);
 
             string tags = string.Empty;
-            if (instance.bossFlag) tags += "  [WANTED]";
-            if (instance.shinyFlag) tags += "  [SHINY]";
-            if (instance.mutantFlag) tags += "  [MUTANT]";
-            if (instance.corruptedGeneFlag) tags += "  [CORRUPT]";
+            if (instance.bossFlag) tags += "  [수배]";
+            if (instance.shinyFlag) tags += "  [이로치]";
+            if (instance.mutantFlag) tags += "  [돌연변이]";
+            if (instance.corruptedGeneFlag) tags += "  [오염]";
 
             bool companion = CompanionAgent.Active != null && CompanionAgent.Active.Instance == instance;
 
             string body = $"{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tags}\n" +
                 $"HP {instance.currentHp}/{stats.maxHp}\n" +
-                $"ATK {stats.attack}   DEF {stats.defense}   SPD {stats.speed}";
+                $"공격 {stats.attack}   방어 {stats.defense}   속도 {stats.speed}";
 
             if (species != null && species.passive != SpeciesPassiveKind.None)
             {
-                body += $"\nPassive {species.passive} (r{species.passiveRadius:0.#})";
+                body += $"\n패시브 {species.passive} (반경 {species.passiveRadius:0.#})";
             }
 
             if (!string.IsNullOrEmpty(instance.capturedBiomeId))
@@ -179,17 +179,17 @@ namespace Game.Gameplay
                 string origin = catalog != null
                     ? catalog.DisplayNameOf(instance.capturedBiomeId)
                     : instance.capturedBiomeId;
-                body += $"\nFrom {origin}";
+                body += $"\n출신 {origin}";
             }
 
             if (instance.weakened)
             {
-                body += "\nWeakened";
+                body += "\n약화됨";
             }
 
             if (companion)
             {
-                body += "\nOut as companion  (click to recall)";
+                body += "\n동행 중  (누르면 회수)";
             }
 
             return body;

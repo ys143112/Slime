@@ -48,6 +48,9 @@ namespace Game.Gameplay
         [Tooltip("나무 프롭 사이 최소 간격(칸). 캐노피가 겹치되 뭉개지지 않을 값.")]
         [SerializeField] private int treeSpacing = 3;
 
+        [Tooltip("막히는 칸을 눌러 어둡게 만드는 색. 바닥과 구분되는 유일한 단서다.")]
+        [SerializeField] private Color wallTint = new Color(0.42f, 0.46f, 0.42f, 1f);
+
         private Dictionary<string, StagePalette> _palettesByBiome;
         private Transform _regionsParent;
         private int _currentSeed;
@@ -122,6 +125,10 @@ namespace Game.Gameplay
             PaintTreeProps();
             PlaceActors();
             PlaceRegionTriggers();
+
+            // 미니맵은 지도가 다 그려진 뒤에 굽는다 — 여기가 Layout 이 확정되는
+            // 유일한 자리다(R 로 다시 굴려도 같이 다시 굽힌다).
+            MinimapUI.Show(this);
 
             Debug.Log($"stage_generated seed={seed} rooms={Layout.Rooms.Count}");
             MapGenerated?.Invoke();
@@ -266,8 +273,27 @@ namespace Game.Gameplay
                         continue;
                     }
 
-                    wallsTilemap.SetTile(new Vector3Int(x, y, 0),
-                        pillar ? WallTileAt(x, y) : InvisibleTileAt(x, y));
+                    var cell = new Vector3Int(x, y, 0);
+
+                    // 기둥(방 한가운데 홀로 선 벽 칸)은 **어두운 사각형으로 칠하지
+                    // 않는다.** 이웃이 전부 바닥이라 주변 그림과 이어질 데가 없어
+                    // 잔디 위에 검은 네모가 뚝 떨어진 것처럼 보였다(사용자,
+                    // 2026-08-09). 대신 충돌만 남기고 그림은 나무 프롭이 맡는다 —
+                    // "여기 나무가 서 있어서 못 지나간다" 로 읽힌다.
+                    if (pillar && !solid)
+                    {
+                        wallsTilemap.SetTile(cell, PillarColliderAt(x, y));
+                        PaintPillarProp(x, y);
+                        cells++;
+                        continue;
+                    }
+
+                    wallsTilemap.SetTile(cell, SolidWallTileAt(x, y));
+
+                    // 벽 칸만 어둡게 눌러 바닥과 갈라 놓는다. 기본 플래그가 색을
+                    // 잠그고 있어 SetTileFlags 를 먼저 풀어야 한다.
+                    wallsTilemap.SetTileFlags(cell, TileFlags.None);
+                    wallsTilemap.SetColor(cell, wallTint);
                     cells++;
                 }
             }
@@ -302,12 +328,54 @@ namespace Game.Gameplay
             return true;
         }
 
-        // 충돌만 내고 그림은 없는 타일. 팔레트에 없으면 그림자를 그대로 쓴다 —
-        // 겹쳐 보이더라도 못 지나간다는 사실이 안 보이는 것보다 낫다.
-        private TileBase InvisibleTileAt(int x, int y)
+        /// <summary>기둥 칸에 깔 충돌 전용 타일. 그림은 나무 프롭이 맡는다.</summary>
+        private TileBase PillarColliderAt(int x, int y)
         {
             StagePalette palette = PaletteAt(x, y);
-            return palette.invisibleWall != null ? palette.invisibleWall : palette.wallShadow;
+            return palette.invisibleWall != null ? palette.invisibleWall : SolidWallTileAt(x, y);
+        }
+
+        /// <summary>기둥 자리에 나무를 세운다. 없는 팔레트면 그냥 벽 그림으로 돌아간다.</summary>
+        private void PaintPillarProp(int x, int y)
+        {
+            StagePalette palette = PaletteAt(x, y);
+            if (propsTilemap == null || palette.treeProps == null || palette.treeProps.Length == 0)
+            {
+                // 나무가 없으면 안 보이는 콜라이더가 되므로 예전처럼 벽 그림을 깐다.
+                var cell = new Vector3Int(x, y, 0);
+                wallsTilemap.SetTile(cell, SolidWallTileAt(x, y));
+                wallsTilemap.SetTileFlags(cell, TileFlags.None);
+                wallsTilemap.SetColor(cell, wallTint);
+                return;
+            }
+
+            int pick = Mathf.FloorToInt(CellNoise(x, y, _currentSeed + 5501) * palette.treeProps.Length);
+            pick = Mathf.Clamp(pick, 0, palette.treeProps.Length - 1);
+            propsTilemap.SetTile(new Vector3Int(x, y, 0), palette.treeProps[pick]);
+        }
+
+        /// <summary>막는 칸에 실제로 깔 그림. 콜라이더와 1:1 이다.</summary>
+        /// <remarks>
+        /// 예전에는 투명 타일(<c>Tile_Invisible</c>)을 깔고 그림은 Ground 의
+        /// wang [15] 에 맡겼다. 그런데 팔레트 셋 다 <c>wallShadow</c>·
+        /// <c>invisibleWall</c> 이 전부 투명 타일이고, 초원 시트는 [15] 가
+        /// **긴 풀**이라 바닥([0], 짧은 풀+꽃)과 거의 같은 색이다 — 막히는 자리가
+        /// 눈으로 안 읽혀 "빈 잔디에 투명 벽" 이 됐다(사용자, 2026-08-09).
+        ///
+        /// 그래서 같은 그림을 콜라이더 있는 판(<c>wangBlendCollidable[15]</c>)으로
+        /// 깔고 <see cref="wallTint"/> 로 어둡게 눌러 그늘로 읽히게 한다. 그림과
+        /// 충돌이 같은 칸에서 나오므로 어긋날 수가 없다.
+        /// </remarks>
+        private TileBase SolidWallTileAt(int x, int y)
+        {
+            StagePalette palette = PaletteAt(x, y);
+            if (palette.wangBlendCollidable != null && palette.wangBlendCollidable.Length > 15 &&
+                palette.wangBlendCollidable[15] != null)
+            {
+                return palette.wangBlendCollidable[15];
+            }
+
+            return palette.wallShadow != null ? palette.wallShadow : palette.invisibleWall;
         }
 
         // 벽은 코너마다 그림을 바꾸지 않는다 — 진짜 바깥 모서리 칸(방마다 4개)이
@@ -387,11 +455,13 @@ namespace Game.Gameplay
             {
                 for (int y = 0; y < Layout.Height; y++)
                 {
-                    // 벽 밴드 안쪽에만 세운다. 예전엔 바닥과 맞닿은 칸을 오히려
-                    // 우선했는데, 캐노피가 걸어다니는 쪽으로 넘어와 "바닥에
-                    // 나무가 서 있다" 로 보였다(사용자 요청, 2026-08-08).
-                    // 여덟 방향이 전부 벽인 칸만 남기면 그림이 벽 밖으로 안 샌다.
-                    if (!SurroundedByWall(x, y))
+                    // **막히는 칸(wang 15)이면 세운다.** 예전 조건은 "여덟 방향이
+                    // 전부 벽" 이라 나무가 밴드 한참 안쪽에만 서고 경계는 어두운
+                    // 사각형만 남았다 — 벽과 그 뒤 못 가는 구역이 끊겨 보였다
+                    // (사용자, 2026-08-09). 콜라이더가 있는 칸과 같은 조건이라
+                    // 캐노피가 걸어다니는 바닥으로 넘어오지도 않는다(그 칸은
+                    // 애초에 못 들어간다).
+                    if (WangIndexAt(x, y) != 15)
                     {
                         continue;
                     }

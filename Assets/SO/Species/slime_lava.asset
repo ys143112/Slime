@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: slime_lava
   m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
   speciesId: slime_lava
-  displayName: Lava Slime
+  displayName: 용암 슬라임
   defaultSprite: {fileID: 2919206259579411326, guid: b7637d36adc769a4ebe7bb34132567f2, type: 3}
   shinySprite: {fileID: 0}
   animatorController: {fileID: 9100000, guid: 94ea818667b63d74291c86c5104a9f0f, type: 2}

@@ -78,6 +78,7 @@
 | `ExtractionPoint.cs` | 001 | 추출구. **벽 안쪽에 있어야 한다**(도달 불가 사고 이력) |
 | `SlimeAppearance.cs` | 005 확장 | 개체별 그림·색·컨트롤러 적용. 색은 `SpriteRenderer.color` 로만 |
 | `ShinyGlow.cs` | 005 확장 | 이로치 윤곽 발광(색만으로는 구분이 안 돼 추가) |
+| `ActorShadow.cs` | QA-09 | 발밑 타원 그림자. `ActorAnimation` 이 **플레이어에게만** 붙인다 |
 
 ## UI — 화면 (캔버스 기준 1920×1080, `ScaleWithScreenSize`)
 
@@ -88,7 +89,10 @@
 | `HelpPanel.cs` | — | 조작키·규칙 설명(부팅 시 1회 자동) |
 | `InventoryUI.cs` / `InventorySlotView.cs` | 002 | I 키 보유 목록(영속). 슬롯 뷰는 교배·목장이 재사용 |
 | `BreedingUIPanel.cs` / `RosterSlotButton.cs` / `EggSlotView.cs` | 003 | U 키 교배 패널. **클릭은 선택만, 교배는 버튼으로만** |
-| `SatchelCounterUI.cs` / `SatchelSlotView.cs` | 011 | B 키 배낭 목록 |
+| `SatchelCounterUI.cs` | 011 | B 키 배낭 — 명패 + 격자 창을 코드로 만든다(씬 것은 끈다) |
+| `SlimeIconSlot.cs` | 011/QA-09 | 코드로 만드는 슬라임 칸(슬롯 틀 + 그림 + hover 쪽지) |
+| `MinimapUI.cs` | QA-09 | 미니맵. `StageLayout` 을 텍스처로 굽고 점 둘만 매 프레임 옮긴다 |
+| `SatchelSlotView.cs` | 011 | 옛 배낭 줄. 씬 템플릿에만 남아 있다 |
 | `CapturePromptUI.cs` | 002 | 포획 가능 안내 |
 | `ExtractionDirectionArrow.cs` | 001 | 추출구 방향 화살표 |
 | `HudRoot.cs` | — | 코드로 만드는 고정 HUD 의 공용 캔버스 뿌리 |

@@ -24,7 +24,7 @@ namespace Game.Gameplay
         // 시설들과 같은 방식(WorldLabel)으로 머리 위에 띄운다.
         private void Awake()
         {
-            _label = WorldLabel.Attach(transform, "Dive", 1.1f);
+            _label = WorldLabel.Attach(transform, "다이브", 1.1f);
         }
 
         // spec-009: 다음 런이 어느 바이옴에서 시작하는지 진입 전에 보여준다.
@@ -42,12 +42,12 @@ namespace Game.Gameplay
                 //
                 // 현상수배는 여기 같이 붙인다. 목장에 안내판을 새로 세우면 씬을
                 // 고쳐야 하는데, 다이브 직전에 목표를 읽는 자리가 바로 여기다.
-                _label.text = $"Dive: {name}\n{WantedBoard.PosterLine()}";
+                _label.text = $"다이브: {name}\n{WantedBoard.PosterLine()}";
             }
 
             if (destinationText != null)
             {
-                destinationText.text = $"Next: {name}";
+                destinationText.text = $"다음: {name}";
             }
 
             if (stigmaIcon != null)
@@ -61,20 +61,56 @@ namespace Game.Gameplay
             }
         }
 
-        [Tooltip("켜면 낙인과 무관하게 늘 defaultBiomeId 로 간다. 바이옴 하나만 쓸 때.")]
-        [SerializeField] private bool forceDefaultBiome = true;
+        [Tooltip("켜면 순환 없이 늘 defaultBiomeId 로 간다. 바이옴 하나만 쓸 때.")]
+        [SerializeField] private bool forceDefaultBiome;
 
-        // 낙인이 목적지를 바꾸는 것이 spec-004 의 핵심이지만, 지금은 늪지·잿벌
-        // 지형이 초원만큼 다듬어지지 않아 초원 하나로 고정해 둔다(사용자 결정,
-        // 2026-08-08). 플래그를 끄면 원래 동작으로 돌아간다.
+        /// <summary>다음 다이브가 몇 번째 바이옴인지. 목장을 떠나도 남아야 한다.</summary>
+        private const string RotationKey = "dive_rotation";
+
+        // 목적지는 목장에 돌아올 때마다 한 번만 읽는다. 매 프레임 읽어도 값은
+        // 같지만, 순환 번호가 다이브 순간에 오르므로 캐시가 그 경계를 분명히 한다.
+        private string _rolledBiomeId;
+
         private string NextBiomeId()
         {
-            if (forceDefaultBiome || BiomeStigmaManager.Instance == null)
+            if (string.IsNullOrEmpty(_rolledBiomeId))
             {
-                return defaultBiomeId;
+                BiomeCatalog catalog = GameManager.Instance != null ? GameManager.Instance.Catalog : null;
+                _rolledBiomeId = forceDefaultBiome
+                    ? defaultBiomeId
+                    : BiomeInRotation(catalog, PlayerPrefs.GetInt(RotationKey, 0), defaultBiomeId);
             }
 
-            return BiomeStigmaManager.Instance.HighestStigmaBiome(defaultBiomeId);
+            return _rolledBiomeId;
+        }
+
+        /// <summary>순환 번호에 해당하는 바이옴. 표 순서대로 초원 → 잿벌 → 늪지 → …</summary>
+        /// <remarks>
+        /// 추첨이었다가 순환으로 바꿨다(사용자, 2026-08-09) — 무작위는 같은 곳이
+        /// 연달아 나와 "안 바뀌는 것 같다" 는 인상을 준다. 순서는
+        /// <see cref="BiomeCatalog"/> 의 표 순서이므로, 바꾸고 싶으면 코드가 아니라
+        /// <c>Assets/SO/BiomeCatalog.asset</c> 의 항목 순서를 바꾼다.
+        ///
+        /// 낙인은 더 이상 목적지를 끌지 않는다 — 순환이 그 자리를 대신한다.
+        /// </remarks>
+        public static string BiomeInRotation(BiomeCatalog catalog, int index, string fallbackBiomeId)
+        {
+            if (catalog == null || catalog.Entries.Count == 0)
+            {
+                return fallbackBiomeId;
+            }
+
+            // 음수 인덱스가 들어와도 표 안으로 접는다(PlayerPrefs 는 손으로 고칠 수 있다).
+            int count = catalog.Entries.Count;
+            int slot = ((index % count) + count) % count;
+            return catalog.Entries[slot].biomeId;
+        }
+
+        /// <summary>다이브가 시작될 때 다음 차례로 넘긴다.</summary>
+        private static void AdvanceRotation()
+        {
+            PlayerPrefs.SetInt(RotationKey, PlayerPrefs.GetInt(RotationKey, 0) + 1);
+            PlayerPrefs.Save();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -95,7 +131,14 @@ namespace Game.Gameplay
                 AudioManager.Instance.PlaySfx(diveSfx);
             }
 
-            GameManager.Instance.StartRun(NextBiomeId());
+            string destination = NextBiomeId();
+
+            // 다음 목장 방문 때 다음 바이옴이 걸리도록 여기서 넘긴다 — 다이브가
+            // 실제로 시작된 순간이 유일하게 확실한 경계다(안내판만 보고 돌아가도
+            // 순서가 밀리면 안 된다).
+            AdvanceRotation();
+
+            GameManager.Instance.StartRun(destination);
         }
     }
 }

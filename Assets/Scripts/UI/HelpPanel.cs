@@ -80,7 +80,10 @@ namespace Game.Gameplay
 
         private Font _koreanFont;
         private Font _defaultFont;
-        private bool _korean;
+
+        // 기본이 한국어다(사용자, 2026-08-09). 폰트가 없으면 글자가 통째로
+        // 빈칸이 되므로 그때만 영어로 시작한다.
+        private bool _korean = true;
         private Text _langLabel;
 
         private void Awake()
@@ -92,6 +95,7 @@ namespace Game.Gameplay
             }
 
             _koreanFont = Resources.Load<Font>(KoreanFontResource);
+            _korean = _koreanFont != null;
 
             Transform lang = FindDeep("LanguageButton");
             if (lang != null)
@@ -125,12 +129,16 @@ namespace Game.Gameplay
         {
             SetText("ControlsText", _korean ? ControlsBodyKo : ControlsBody);
             SetText("DescriptionText", _korean ? DescriptionBodyKo : DescriptionBody);
+            SetText("ControlsTitle", _korean ? "조작키" : "Controls");
+            SetText("DescriptionTitle", _korean ? "게임 설명" : "How to Play");
 
-            // 제목까지 바꾸면 한글 폰트가 없을 때 제목만 빈칸이 된다 — 본문
-            // 두 칸만 폰트를 갈아 끼운다.
+            // 폰트는 글자를 바꾼 칸에만 건다 — 한글 폰트가 없으면 _korean 이
+            // 애초에 false 라 이 갈아끼우기 자체가 안 일어난다.
             Font font = _korean ? _koreanFont : _defaultFont;
             SetFont("ControlsText", font);
             SetFont("DescriptionText", font);
+            SetFont("ControlsTitle", font);
+            SetFont("DescriptionTitle", font);
 
             if (_langLabel != null)
             {

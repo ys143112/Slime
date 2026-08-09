@@ -51,11 +51,36 @@ spec 밖(주말 작업)에서 들어와 표에 자리가 없는 것들:
 | 스테이지 생성 (STAGE_A_DESIGN.md) | `StageLayout`(계산) `StageMapGenerator`(그리기) `StageRegionTrigger` `SlimeSpawner` `StagePalette` `FogOfWarReveal` |
 | 동행·패시브 (WEEKEND_PLAN.md §4) | `CompanionAgent` `SpeciesPassive` `PassiveRangeRing` `Slowable` `CompanionHudBar` |
 | 알·부화 | `EggIncubator` `SlimeEgg` `EggSlotView` |
-| 표현 계층 | `ActorAnimation` `AudioManager` `ShinyGlow` `ScreenWipe` `FloatingText` `WorldLabel` `HudRoot` `AttackCooldownBar` |
+| 표현 계층 | `ActorAnimation` `AudioManager` `ShinyGlow` `ScreenWipe` `FloatingText` `WorldLabel` `HudRoot` `AttackCooldownBar` `ActorShadow` |
 | 시작 화면·설명 | `BootMenuUI` `SettingsPanel` `HelpPanel` |
 
 파일 단위 한 줄 설명은 [Assets/Scripts/INDEX.md](Assets/Scripts/INDEX.md) 에 있다 —
 이 표는 spec 추적용이고, 저 표가 전수 목록이다.
+
+## 발밑 그림자 (2026-08-09)
+
+**플레이어만** 그림자를 갖는다(사용자 결정, 2026-08-09). 슬라임은 제자리에서
+통통 뛰는 그림이라 그림자가 같이 움직여 오히려 떠 보였다.
+`ActorShadow.Attach` 를 `ActorAnimation.Awake` 가 부르되 `PlayerMovement` 가
+붙어 있을 때만 건다. Player 프리팹에 있던 손배치 `Shadow` 자식은 지웠다(몸
+한가운데에 작게 박혀 그림에 가려 안 보였다).
+
+- 타원 스프라이트는 **코드로 굽는다**(정적 텍스처 한 장 공유). PNG 하나 때문에
+  프리팹 넷에 배선을 늘리지 않는다.
+- **`Assets/Art/SlimeStrips/player__*.png` 33장은 Tight 메시로 임포트돼 있다.**
+  Full Rect 면 `vertices` 가 캔버스 네 귀퉁이뿐이라 계산이 캔버스(3.85유닛)로
+  떨어져 그림자가 발보다 한참 아래에 크게 깔린다. Tight 로 재임포트하면 실루엣이
+  x±0.56 / y[-1.04, 0.96] 로 잡힌다. 새 플레이어 시트를 넣으면 이 설정을 다시
+  확인할 것.
+- 크기·바닥은 `Sprite.vertices`(알파 외곽을 따라 잘린 tight 메시)에서 낸다.
+  **`Sprite.bounds` 를 쓰면 안 된다** — 투명 여백까지 포함한 캔버스라 플레이어
+  (104px 캔버스에 실루엣 50px)는 그림자가 발보다 1유닛 아래에 깔린다. 콜라이더
+  (반지름 0.5 원)도 몸 한가운데라 가슴께에 뜬다. 텍스처를 읽지 않으므로
+  Read/Write Enabled 도 필요 없다.
+- 그림자 **높이는 폭에서 낸다**(폭 0.85배, 높이는 그 0.38배). 몸 높이를 곱하면
+  키 큰 배우 발밑에 세로로 긴 얼룩이 생긴다.
+- `sortingOrder = 몸 - 1`. 같은 order 면 Y 정렬이 그림자를 몸 위로 올린다.
+- 이미 자식이 있으면 아무것도 안 한다.
 
 ## 슬라임 종·이로치 (2026-08-06 신규)
 
@@ -283,8 +308,10 @@ Overlay, 1920×1080 기준, sortingOrder 100) 밑이다. Boot 씬은 병합 사�
 
 | 무엇 | 스크립트 | 자리 |
 |---|---|---|
-| 조작 안내(H 로 접기, `PlayerPrefs` 에 기억) | `ScreenInfoHud` | 오른쪽 아래 |
+| 조작 안내 — **키캡 아이콘 10줄**(H 로 접기, `PlayerPrefs` 에 기억) | `ScreenInfoHud` | 오른쪽 아래 |
 | 바이옴·오염 티어·돌연변이/이로치 확률·천장까지 남은 수 | 〃 | 오른쪽 위 |
+| 미니맵(걸어본 곳만·내 자리·추출구) | `MinimapUI` | 왼쪽 위 |
+| 배낭 개수 명패 + B 창 | `SatchelCounterUI` | 왼쪽 위(미니맵 아래) |
 | 도감(J) | `BestiaryPanel` | 화면 가운데 |
 | 슬라임 스탯 쪽지(hover) | `SlimeTooltipUI` | 커서 옆 |
 | 배경음·효과음 슬라이더 | `MainVolumeControls` | 시작/일시정지 메뉴 왼쪽 아래 |
@@ -292,6 +319,51 @@ Overlay, 1920×1080 기준, sortingOrder 100) 밑이다. Boot 씬은 병합 사�
 
 - `ScreenInfoHud`/`BestiaryPanel` 은 `GameManager.BeginGame()` 이 띄운다 —
   타이틀 화면에 겹치면 시작 버튼을 가린다.
+- **폰트는 `Resources/Fonts/KoreanFont`(Galmuri11) 하나다**(2026-08-09).
+  씬·프리팹의 `Text` 36개와 `WorldLabel` 을 전부 이걸로 갈았다. Kenney Pixel 도
+  픽셀 폰트지만 **한글 글리프가 없어** 한국어를 넣는 순간 빈칸이 된다(WebGL 은
+  OS 폰트 폴백도 없다). Galmuri11 은 11px 그리드라 **글자 크기를 11의 배수로
+  잡는다**(11/22/33) — 아니면 픽셀이 뭉갠다. 씬 값도 11의 배수로 내림했다.
+- **UI 문구는 한국어다.** 코드가 만드는 문자열(포획 알림·쪽지·수배·휴식소·
+  일시정지)과 씬 버튼 24개, 종 이름(`SO/Species/*.asset` 의 `displayName`)까지.
+  `HelpPanel` 만 영어 본문을 남겨 두고 버튼으로 오간다(기본 한국어).
+- **코드로 만드는 판은 `HudRoot.Frame`/`HudRoot.Slot` 을 쓴다**(2026-08-09).
+  씬 창들이 쓰는 것과 같은 9-slice 자산
+  (`Resources/UI/window_.../elements/{Window,slot}`)이라 톤이 맞는다. 색만 칠한
+  `HudRoot.Panel` 은 이제 막대(체력·쿨다운 fill)처럼 틀이 필요 없는 것에만 쓴다.
+  작은 것(도감 칸)에는 `Slot`. **키캡만은 자산을 안 쓴다** — 26px 칸에 나무
+  슬롯을 넣으니 테두리가 칸을 다 먹어 글자가 동그라미에 갇혀 보였다(사용자,
+  2026-08-09). 밝은 사각형 + 어두운 글자가 실제 키캡 대비다.
+- **글자 칸은 창틀 테두리(왼 12 / 아래 10 / 오른 12 / 위 16)보다 넓게 들인다.**
+  `ScreenInfoHud` 는 22/18/22/26 을 쓴다 — 예전 값(12/8)은 위 테두리를 밟아
+  글자가 판을 벗어난 것처럼 보였다.
+- **Esc 는 떠 있는 창부터 닫는다**(`BootMenuUI.CloseTopmostPanel`). 설명 →
+  설정 → 인벤토리 → 교배 → 도감 순으로 하나 찾아 닫고, 닫을 게 없을 때만
+  일시정지 메뉴를 연다. 타이틀 화면(`_inGame == false`)에서는 창만 닫는다 —
+  메뉴가 곧 화면이라 끄면 아무것도 안 남는다.
+- 포획 알림(`CapturePromptUI`)은 2초 뒤 스스로 지워진다. 지우는 자리가 없어
+  "파란 슬라임 포획!" 이 플레이어를 따라다니며 런 끝까지 남아 있었다.
+- **배낭(B)도 코드로 만든다**(2026-08-09). 씬 셋(바이옴)에 복제돼 있던 글자
+  목록을 버리고 `SatchelCounterUI` 가 `HudRoot` 밑에 명패(왼쪽 위) + 격자 창을
+  만든다. 칸은 `SlimeIconSlot`(슬롯 틀 + 종 그림 + hover 쪽지) — 인벤토리와 같은
+  규칙이다. 씬에 남은 옛 오브젝트(`HudBackdrop` `SatchelIcon` `MeleeToolIcon`
+  `SatchelDetailScroll`)는 `HideLegacyHud` 가 끈다.
+  - **`SatchelCounterUI` 는 `SatchelCounterText` 와 같은 GameObject 에 붙어 있다.**
+    그 오브젝트를 `SetActive(false)` 하면 자기 `Update` 까지 멈춰 B 키가 죽는다 —
+    글자만 `Text.enabled = false` 로 끈다(2026-08-09 실측).
+  - **격자 폭은 뷰포트 안에 들어가게 계산한다.** 창 760 − 여백 28×2 = 704,
+    격자 안쪽 여백 16×2 를 빼면 672. 5×120 + 4×12 = 648 ≤ 672 다. 130/12 로
+    잡았을 때 다섯째 칸이 오른쪽으로 삐져나왔다.
+- 알 목록 한 줄(`EggSlotView.Enlarge`)은 높이 76 / 아이콘 64 / 글자 22 로 코드가
+  덮는다. 씬 템플릿 값(40/32)은 그림도 글자도 안 읽혔다. 줄 높이는 부모가
+  `VerticalLayoutGroup` 이라 `LayoutElement` 로 줘야 한다 — RectTransform 높이를
+  직접 넣으면 다음 프레임에 레이아웃이 도로 덮는다.
+- 조작 안내는 글자 덩어리가 아니라 `ScreenInfoHud.HintRows` 표(키 배열 + 동작)를
+  키캡 사각형으로 그린다. 키를 추가·수정하는 자리는 그 표 하나다.
+  키캡은 그림 자산이 아니라 uGUI 판+글자다 — PixelLab MCP 가 이 세션에 안 붙어
+  있었고, 키가 11개라 자산으로 뽑을 이유도 없다.
+- 도감은 인벤토리와 같은 **격자**다(4열, 160×190). 안 잡은 종은 그림을 검게
+  눌러 실루엣 + `???`. 스탯 표는 칸에 안 들어가서 뺐다.
 - 확률 숫자는 `MutantRollService.MutantChance(tier)`/`ShinyChance`/`PityRemaining`
   에서 읽는다. **UI 쪽에 상수를 다시 적지 말 것** — 밸런스를 고치면 둘이 어긋난다.
 - **`BootCanvas` 는 월드 스페이스 캔버스다.** `GetWorldCorners()` 가 픽셀이 아니라
@@ -306,12 +378,65 @@ Overlay, 1920×1080 기준, sortingOrder 100) 밑이다. Boot 씬은 병합 사�
   삭제가 프레임 끝으로 밀려 그동안 `AddComponent` 가 **에러 없이 거부되고**,
   격자가 안 붙어 슬롯이 한 칸에 전부 겹쳐 쌓인다 —
   `InventoryUI.EnsureGrid` 는 `DestroyImmediate` 를 쓴다(2026-08-09 실측).
-- 교배창 로스터 그리드는 씬에서 `FixedRowCount = 1` 이라 보유가 늘면 한 줄로
-  화면 밖까지 흘렀다. `BreedingUIPanel.EnsureGridWraps` 가 11열로 접고
-  `RectMask2D` 로 넘치는 줄을 자른다.
+- 교배창 로스터 그리드는 **스크롤 뷰포트 안**에 있다(2026-08-09).
+  `BreedingUIPanel.EnsureGridScroll` 이 런타임에 `RosterViewport`
+  (`ScrollRect`+`RectMask2D`)를 만들어 씬의 `GridContent` 를 그 밑으로 옮기고
+  130px 7열로 다시 깐다. 마스크를 격자에 걸면 넘친 줄이 **볼 방법 없이 잘린다** —
+  마스크는 뷰포트에, 격자에는 `ContentSizeFitter`.
+  격자가 180→300px 로 커진 만큼 알 목록(`PushEggListAbove`)이 위로 물러난다.
 - 도감은 `SlimeBestiary`(정적, `SaveSystem` 키 `bestiary`)가 기록한다. 올리는
   자리는 `RunSatchel.Add`(포획 — 죽어서 몰수돼도 남아야 한다)와
   `PlayerRoster.Add`(부화·회수 — 교배 전용 종은 여기가 유일한 경로) 둘이다.
+
+## 미니맵 · 벽이 보이게 (2026-08-09)
+
+**미니맵**(`MinimapUI`, 왼쪽 위): 추출구 화살표만으로는 벽을 낀 길을 못 읽어
+탈출이 어려웠다(사용자). 지도는 `StageLayout` 을 텍스처 한 장으로 굽고, 매
+프레임 움직이는 건 점 두 개(나·추출구)뿐이다.
+
+- **안개를 반영한다.** 처음엔 전부 "모르는 곳"(짙은 회색)이고,
+  `FogOfWarReveal.Revealed` 이벤트를 듣고 방금 밝힌 중심 둘레(반경 6 = 169칸)만
+  다시 칠한다 — 지도 전체를 훑지 않는다. 안개는 한 번 걷히면 다시 안 덮이므로
+  지우는 경우가 없다.
+- `FogOfWarReveal` 에 `Instance` / `IsExplored(cell)` / `Revealed` 를 뚫었다.
+  타일맵 셀 좌표와 `StageLayout` 좌표가 같으므로(생성기가 `(x, y, 0)` 을 그대로
+  쓴다) 변환이 필요 없다.
+- **추출구 표시는 안 밝힌 곳에도 띄운다** — 어디로 나가야 하는지가 미니맵을
+  넣은 이유다.
+- 창 높이는 지도 비율(120×90)로 맞춘다(`FitFrameToMap`). 정사각 창에 넣으면
+  위아래 검은 띠가 남아 "작은 카메라" 처럼 보인다. 배낭 명패는 그 아래
+  (y −227) 로 내려가 있다 — 미니맵 높이가 바뀌면 같이 손봐야 한다.
+
+**나침반**(`ExtractionDirectionArrow`, 왼쪽 아래): `Resources/UI/{compass,pointer}`
+로 갈고 위치를 옮겼다. **바늘은 회전만 한다** — 가리키는 쪽으로 밀어 봤더니
+나침반 밖으로 걸어 나간 것처럼 보였다(사용자, 2026-08-09).
+**이 컴포넌트는 씬의 옛 화살표와 같은 GameObject 에 붙어 있다** — 오브젝트를
+끄면 자기 `Update` 까지 멈춰 바늘이 안 돈다(각도 0 고정). 그림(`Graphic.enabled`)
+만 끈다. 같은 함정이 `SatchelCounterUI` 에도 있다.
+
+**쓰러진 슬라임은 못 민다**(`WildSlimeAgent.MakeCorpseUnpushable`): 약화되면
+콜라이더를 **트리거로 바꾸고** 리지드바디를 Static 으로 내린다. 끄지 않고 트리거로
+두는 이유는 `CaptureTool` 이 `OverlapCircleAll` 로 잡을 대상을 찾기 때문이다 —
+트리거는 그 질의에 잡히면서 밀리지는 않는다(2026-08-09: 시체를 끌고 다닐 수 있었다).
+
+**포획 알림 글자는 없앴다**(`CapturePromptUI`). 그 칸은 플레이어를 따라다니는
+월드 캔버스라 무엇을 적어도 인물을 가린다 — 결과는 배낭 명패·도감이 말한다.
+이벤트는 `Debug.Log` 로만 남긴다.
+
+**기둥(방 한가운데 홀로 선 벽 칸)은 나무로 그린다.** 어두운 사각형으로 칠하면
+잔디 위에 검은 네모가 뚝 떨어진 것처럼 보인다 — 충돌만 투명 타일로 남기고
+그림은 `treeProps` 가 맡는다. 나무 프롭 후보도 "8방향이 전부 벽" 에서
+"막히는 칸(wang 15)" 으로 넓혔다 — 경계가 어두운 사각형만 남지 않고 숲으로 읽힌다.
+
+**"투명한 벽" 의 진짜 원인**: 팔레트 셋 다 `wallShadow`·`invisibleWall` 이
+`Tile_Invisible`(알파 0)이라 막는 칸에 그림이 없었고, 벽 그림은 Ground 의
+wang [15] 에 맡겨져 있었다. 그런데 **초원 시트는 [15] 가 긴 풀**이라 바닥
+([0] 짧은 풀+꽃)과 색이 거의 같다 — 빈 잔디에서 막히는 것처럼 보였다.
+
+`StageMapGenerator.SolidWallTileAt` 이 이제 콜라이더 있는 같은 그림
+(`wangBlendCollidable[15]`)을 깔고 `wallTint`(0.42/0.46/0.42)로 눌러 그늘로
+읽히게 한다. **`SetTileFlags(pos, TileFlags.None)` 을 먼저 불러야 색이 먹는다**
+(기본 플래그가 색을 잠근다). 그림과 충돌이 같은 칸에서 나오므로 어긋날 수 없다.
 
 ## 현상수배 (2026-08-09 신규)
 
@@ -325,14 +450,34 @@ Overlay, 1920×1080 기준, sortingOrder 100) 밑이다. Boot 씬은 병합 사�
   체력바·그림을 갱신한다.
 - 잡았는지는 `SlimeInstance.bossFlag` 로 안다. `CaptureTool` 이 배낭에 담기
   직전에 `ReportCaptured` 를 부른다 — 도감과 같은 규칙(추출 실패해도 인정).
-- 대상은 `slime_lava` 고정. **서식지(잿벌)로 스폰을 묶지 않았다** —
-  `BiomeDiveTrigger.forceDefaultBiome` 이 켜져 있어 지금 다이브는 전부 초원으로
-  가므로, 묶으면 수배가 영영 안 뜬다.
+- 대상은 `slime_lava` 고정. **서식지(잿벌)로 스폰을 묶지 않았다** — 다이브
+  목적지가 세 바이옴을 도는 순환이라 묶으면 수배가 세 판에 한 번만 뜬다.
+
+## 다이브 목적지 순환 (2026-08-09)
+
+`BiomeDiveTrigger.forceDefaultBiome` 은 꺼졌다. 목적지는 **표 순서대로 돌아간다**
+— 초원 → 잿벌 → 늪지 → 초원 … (사용자 결정). 처음엔 가중치 추첨이었는데 같은
+곳이 연달아 나와 "안 바뀌는 것 같다" 는 인상을 줬다.
+
+- 순서는 코드가 아니라 **`Assets/SO/BiomeCatalog.asset` 의 항목 순서**다.
+  바꾸려면 그 표를 재배열한다(`BiomeDiveTrigger.BiomeInRotation`).
+- 몇 번째인지는 `PlayerPrefs` 키 `dive_rotation` 에 남는다. **다이브가 실제로
+  시작될 때만** 오른다(`AdvanceRotation`) — 안내판만 보고 돌아가도 순서가 안 밀린다.
+- 목적지는 목장에 돌아올 때마다 한 번만 읽어 캐시한다. 마차 위 `다이브: OO`
+  안내판이 이번 목적지를 미리 알려준다.
+- 낙인은 이제 목적지를 끌지 않는다(순환이 그 자리를 대신한다). 낙인은 여전히
+  오염 티어·돌연변이 확률에 쓰인다.
+- 검증: `DiveAndShadowTests` 3건(한 바퀴 순서, 음수 인덱스 접기, 표 없을 때 기본값).
 
 ## 전투 수치
 
 플레이어 HP 30 / 공격 8. 야생 슬라임 HP 20(tier0) / 공격 5. 티어 배율
 `1 + 0.15×tier`. `defense` 필드는 존재하지만 데미지 계산에서 안 읽힘(미사용).
+
+**공격 궤적은 월드 좌표로 놓는다**(`PlayerMeleeAttack.ShowSwingArc`, 2026-08-09).
+`Player.prefab` 루트 스케일이 0.5 라 `localPosition = facing * reachOffset` 은
+그림을 판정 원의 **절반 거리**(0.45)에 띄웠다 — 이펙트와 사거리가 안 맞던 원인이다.
+크기는 `FitSwingArcToHitbox` 가 이미 월드 기준이라 맞았다(실측 1.2 = 판정 지름).
 좌클릭 3타로 약화, 접촉 6회로 플레이어 사망. 낙인 스택 3당 티어 1, 티어 캡 5.
 
 ## 슬라임이 프롭에 끼는 문제 (2026-08-09)
@@ -555,6 +700,11 @@ Hub 는 카메라가 빌지 않게 Ground 를 안마당보다 훨씬 넓게 칠�
   같은 타일맵의 나머지 칸은 그림 없는 `Tile_HubCollision` 이라 안 보인다.
 - 검증: `CompositeCollider2D.pathCount` 가 그대로 2, 안마당 안은 통과,
   바깥은 차단.
+- **좌우 줄(`x = -9`, `x = 8`)에는 울타리 그림이 없다**(2026-08-09). 정면 그림을
+  90° 돌려 봤지만 눕힌 것처럼 보여서, 사용자 결정으로 그림을 아예 뺐다. 대신
+  **그림 없는 `Tile_HubCollision` 으로 갈아 끼워 충돌은 남겼다** — 빈 칸으로
+  지우면 그 24칸으로 걸어 나간다. 남은 울타리는 위아래 줄 32칸.
+  검증: `pathCount` 2, 좌·우·위 경계 `OverlapPoint` 참, 안마당 거짓.
 
 ## Hub 안마당 (2026-08-08 재시공)
 
@@ -720,12 +870,21 @@ GameObject)를 말끔히 지웠다 — diff 에 삭제선(`-`)이 없어서 아�
 스케일(60×40 같은)로 깔면 됨.
 
 테스트 프레임워크(`com.unity.test-framework`) 설치됨. PlayMode 테스트
-4파일 + 헬퍼 3(`CombatTests` `PursuitTests` `BreedingPenTests`
-`RunSatchelTests`). **asmdef 는 2개 있다** —
+`CombatTests` `PursuitTests` `BreedingPenTests` `RunSatchelTests`
+`SteeringTests` `SpeciesBiasTests` `StageLayoutTests` `DiveAndShadowTests`
++ 헬퍼 3. **asmdef 는 2개 있다** —
 `Assets/Scripts/Game.Gameplay.asmdef`(런타임 전부)와
 `Assets/Tests/PlayMode/Game.Gameplay.PlayModeTests.asmdef`. 테스트 러너에
 정상으로 뜬다. (`playModeTestRunnerEnabled: 0` 은 별개 설정이고, asmdef 가
 있으므로 켤 필요 없다 — 켜면 nunit 이 플레이어 빌드에 섞인다.)
+
+**테스트 6건이 밸런스 변경에 밀려 빨간불이다**(2026-08-09 실측, 이번 세션 변경과
+무관). 기대값이 옛 수치에 박혀 있다: 플레이어 공격 8→12, 그리고 **`defense` 가
+피해에서 실제로 차감된다**(위 「전투 수치」의 "미사용" 은 틀렸다 — 5 피해가 3으로
+들어간다). 대상: `Test_Same_Faction_Damage_Is_Ignored`
+`Test_Slime_Weakened_On_Zero_HP` `Test_Attack_Respects_Facing`
+`Test_Weakened_Slime_Stops` `Test_Capture_Goes_To_Satchel`
+`Test_Spawn_Points_On_Floor`(시드 0 스폰 후보가 벽에 붙음).
 
 **런타임 스크립트는 `Assembly-CSharp` 이 아니라 `Game.Gameplay` 어셈블리다.**
 오래된 프리팹의 `m_EditorClassIdentifier` 에 `Assembly-CSharp::` 가 남아

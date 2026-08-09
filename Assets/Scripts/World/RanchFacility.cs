@@ -17,7 +17,7 @@ namespace Game.Gameplay
         [SerializeField] private bool specialOnly;
 
         [Tooltip("이름표에 쓸 이름. 비우면 Rest Area.")]
-        [SerializeField] private string displayName = "Rest Area";
+        [SerializeField] private string displayName = "휴식소";
         [SerializeField] private LaborOutputTable outputTable;
         [SerializeField] private float tickSeconds = 2f;
 
@@ -35,7 +35,7 @@ namespace Game.Gameplay
 
         private float _elapsed;
         private TextMesh _label;
-        private string _selectionText = "None";
+        private string _selectionText = "없음";
         private bool _nearby;
         private float _nearbyUntil;
 
@@ -49,7 +49,7 @@ namespace Game.Gameplay
         /// </remarks>
         public void ShowSelection(string selectionText, int rosterCount)
         {
-            _selectionText = rosterCount > 0 ? selectionText : "None";
+            _selectionText = rosterCount > 0 ? selectionText : "없음";
 
             // 인터랙터는 범위를 벗어나면 아예 안 부른다. "안 불린 지 좀 됐으면
             // 멀어진 것" 으로 판정해야 근접 안내가 계속 떠 있지 않는다.
@@ -78,13 +78,13 @@ namespace Game.Gameplay
             // 이름과 상태만. 조작키 안내(Z/X/C)는 게임 설명 패널이 이미 적고
             // 있어서 뺐다 — 세 줄짜리 안내가 웅덩이 넷에 동시에 떠 있으면
             // 목장이 글자로 뒤덮인다(사용자, 2026-08-08).
-            string title = string.IsNullOrEmpty(displayName) ? "Rest Area" : displayName;
+            string title = string.IsNullOrEmpty(displayName) ? "휴식소" : displayName;
 
             if (Assigned == null)
             {
                 // 가까이 갔을 때만 지금 고른 슬라임을 보여준다. 그게 X 를 누르면
                 // 무엇이 들어가는지 알 수 있는 유일한 자리다.
-                _label.text = _nearby && _selectionText != "None" ? $"{title}\n{_selectionText}" : title;
+                _label.text = _nearby && _selectionText != "없음" ? $"{title}\n{_selectionText}" : title;
                 return;
             }
 

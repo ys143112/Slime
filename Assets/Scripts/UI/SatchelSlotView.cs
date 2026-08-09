@@ -15,7 +15,7 @@ namespace Game.Gameplay
                 return;
             }
 
-            string tag = instance.mutantFlag ? " [MUTANT]" : instance.corruptedGeneFlag ? " [CORRUPT]" : "";
+            string tag = instance.mutantFlag ? " [돌연변이]" : instance.corruptedGeneFlag ? " [오염]" : "";
             label.text = $"{SlimeSpeciesCatalog.DisplayName(instance.speciesId)}{tag}  HP {instance.baseStats.maxHp} ATK {instance.baseStats.attack}";
         }
     }
