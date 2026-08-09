@@ -77,6 +77,7 @@ namespace Game.Gameplay
                 // I 로 인벤토리를 열 때 교배 UI(U)가 떠 있으면 같이 닫는다 -
                 // 두 창이 동시에 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
                 BreedingUIPanel.Instance?.Close();
+                BestiaryPanel.CloseIfOpen();
                 Refresh();
             }
         }

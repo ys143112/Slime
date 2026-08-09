@@ -7,11 +7,22 @@ namespace Game.Gameplay
     {
         [SerializeField] private RectTransform arrowRect;
 
+        // 화면 위쪽 구석에 있는 데다 씬에서 잡힌 크기가 작아 눈에 안 들어왔다
+        // (팀 QA, 2026-08-09). 씬 셋을 각각 고치는 대신 여기서 곱한다 — 새
+        // 바이옴 씬을 만들어도 같은 크기로 나온다.
+        [SerializeField] private float arrowScale = 2f;
+
         private Transform _player;
         private Transform _extractionPoint;
 
         private void OnEnable()
         {
+            // 대입이라 OnEnable 이 여러 번 돌아도 누적되지 않는다.
+            if (arrowRect != null && arrowScale > 0f)
+            {
+                arrowRect.localScale = new Vector3(arrowScale, arrowScale, 1f);
+            }
+
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             _player = playerObj != null ? playerObj.transform : null;
 

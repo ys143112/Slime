@@ -40,8 +40,13 @@ namespace Game.Gameplay
                 return;
             }
 
+            // 예전엔 speciesId 를 그대로 찍어 "slime_lava captured!" 처럼 내부
+            // 식별자가 화면에 떴다 — 플레이어에게는 디버그 로그로 보인다
+            // (팀 QA, 2026-08-09). 이름 해석은 카탈로그 한 곳이 맡는다.
             SlimeInstance instance = gameEvent.Payload as SlimeInstance;
-            string species = instance != null ? instance.speciesId : "Slime";
+            string species = instance != null
+                ? SlimeSpeciesCatalog.DisplayName(instance.speciesId)
+                : "Slime";
             promptText.text = $"{species} captured!";
         }
 

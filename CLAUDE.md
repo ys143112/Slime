@@ -1,5 +1,10 @@
 # Slime (Slime Stigma Ranch)
 
+**표지판 먼저**: 이 파일은 42KB 라 통째로 읽지 말고 절 단위로만 본다.
+어디를 볼지는 [MAP.md](MAP.md) 가 정한다 — 코드는
+[Assets/Scripts/INDEX.md](Assets/Scripts/INDEX.md), 자산은
+[Assets/INDEX.md](Assets/INDEX.md).
+
 **도구가 실패하면 반복 재시도하지 말 것.** 한두 번 진단성 시도까지만 —
 그래도 안 되면 멈추고 상황과 해결 방법(우회안 포함)을 사용자에게 제시하고
 물어본다. 토큰 낭비된다(사용자 지시, 2026-08-06).
@@ -33,11 +38,24 @@ acceptanceCriteria 를 satchel 기준으로 고쳤다(원본:
 | 005 돌연변이 | `MutantRollService` |
 | 006 오염 유전 계보 | `CorruptedGeneTagger` `LineageEvolutionChecker` `LineageEvolutionTable` |
 | 007 전투 | `PlayerHealth` `PlayerMeleeAttack` `PlayerMovement` `IDamageable` `SlimeInstance` `SlimeStatBlock` `HealthBar` `DamageFlash` |
-| 008 교배장 상호작용 | `BreedingPenInteractor` |
+| 008 교배장 상호작용 | **`BreedingPenInteractor` 는 없어졌다** — 배치/회수를 U 패널(`BreedingUIPanel`)로 합쳤다. Q/F/G 키도 같이 사라졌다 |
 | 009 바이옴 로스터 | `BiomeCatalog` (`Assets/SO/BiomeCatalog.asset`, 3바이옴: default/marsh/ashfall) |
 | 010 목장 시설 | `RanchFacility` `RanchFacilityInteractor` `LaborOutputTable` |
 | 011 런 전리품 | `RunSatchel` `SatchelCounterUI` `SatchelSlotView` |
-| 012 야생 슬라임 AI | `WildSlimeAgent` |
+| 012 야생 슬라임 AI | `WildSlimeAgent` `Steering` |
+
+spec 밖(주말 작업)에서 들어와 표에 자리가 없는 것들:
+
+| 묶음 | 파일 |
+|---|---|
+| 스테이지 생성 (STAGE_A_DESIGN.md) | `StageLayout`(계산) `StageMapGenerator`(그리기) `StageRegionTrigger` `SlimeSpawner` `StagePalette` `FogOfWarReveal` |
+| 동행·패시브 (WEEKEND_PLAN.md §4) | `CompanionAgent` `SpeciesPassive` `PassiveRangeRing` `Slowable` `CompanionHudBar` |
+| 알·부화 | `EggIncubator` `SlimeEgg` `EggSlotView` |
+| 표현 계층 | `ActorAnimation` `AudioManager` `ShinyGlow` `ScreenWipe` `FloatingText` `WorldLabel` `HudRoot` `AttackCooldownBar` |
+| 시작 화면·설명 | `BootMenuUI` `SettingsPanel` `HelpPanel` |
+
+파일 단위 한 줄 설명은 [Assets/Scripts/INDEX.md](Assets/Scripts/INDEX.md) 에 있다 —
+이 표는 spec 추적용이고, 저 표가 전수 목록이다.
 
 ## 슬라임 종·이로치 (2026-08-06 신규)
 
@@ -74,8 +92,26 @@ acceptanceCriteria 를 satchel 기준으로 고쳤다(원본:
 건드리면 그 머티리얼을 쓰는 개체가 전부 같이 변하고 에디터에서는 자산 파일에까지
 남는다. 이로치 **전용 그림**이 있으면 색은 안 곱한다(두 번 어두워진다).
 
-**아직 안 만든 것**: 종별 패시브(방어형 도발, 무지개 범위 힐, 늪지대 둔화,
-용암 도트). 스탯 편향과 그림까지만 있고 스킬은 없다.
+**종별 패시브는 구현됐다**(`SpeciesPassive`, 주말 B 작업). 네 종류가 전부
+"주기마다 반경 안을 훑어 뭔가 한다" 라는 같은 모양이라 클래스를 넷으로 나누지
+않았다 — 값(`passive` `passiveRadius` `passiveInterval` `passiveAmount`
+`passiveSfx`)은 `SlimeSpecies` SO 가 들고 있어 밸런스는 재컴파일 없이 만진다.
+
+| 종류 | 종 | 동작 |
+|---|---|---|
+| `Taunt` | 방어형 | 반경 안의 적이 나를 먼저 노린다. **주기가 없다** — 정적 `Taunters` 목록에 있는 것만으로 성립하고, `WildSlimeAgent` 가 대상을 고를 때 `FindTauntTarget` 을 본다 |
+| `AreaHeal` | 무지개 | 반경 안을 **진영 가리지 않고** 회복(기획대로 적까지 낫는다) |
+| `Slow` | 늪지대 | 적에게 `ISlowable.ApplySlow` |
+| `Burn` | 용암 | 적에게 지속 피해 |
+
+- 컴포넌트는 프리팹에 얹지 않고 `SpeciesPassive.Attach(host, instance)` 가 붙인다
+  — 야생/동행 프리팹이 따로라 손으로 얹으면 종이 늘 때마다 두 번씩 고쳐야 한다.
+  종이 바뀌어 패시브가 없어지면 컴포넌트와 `PassiveRangeRing` 을 **둘 다** 뗀다.
+- 반경은 `PassiveRangeRing` 이 바닥에 원으로 그린다(회복 초록 / 도트 주황 /
+  둔화 보라 / 도발 파랑). 안 보이면 얼마나 붙어야 하는지 알 방법이 없다.
+- 효과음은 **실제로 대상이 걸렸을 때만** 낸다 — 주기마다 무조건 내면 아무도
+  없는 곳에 선 슬라임이 계속 운다.
+- `Taunters` 는 `static` 이라 `OnDisable` 에서 반드시 뺀다(씬 전환 시 죽은 참조).
 
 ## 애니메이션·효과음 (2026-08-06 신규)
 
@@ -202,31 +238,100 @@ python Tools/extract_slime_strips.py --demo   # 스트립 규칙 자체 검사
 — 제자리에서 통통 뛰므로 이동 그림이 따로 필요 없다(플레이어는 달리기 그림이
 있어 Resolve 가 그걸 집는다). Hit/Dead 는 방향이 없어 south 클립 한 장씩만 쓴다.
 
-**효과음은 애니메이션 이벤트가 아니라 스크립트가 낸다** — 클립이 아직 없는
-상태에서도 배선이 성립해야 하고(이벤트는 클립에 붙는다), 클립을 갈아 끼워도
-효과음 배선이 안 날아간다. `ActorAnimation` 인스펙터에 idle/이동/공격/피격/사망
-칸이 있고 전부 `AudioManager.PlaySfx` 를 거친다 — 여기서 `AudioSource` 를 직접
-두면 그 개체만 설정 패널의 효과음 슬라이더를 무시하게 된다.
+**효과음은 애니메이션 이벤트가 아니라 스크립트가 낸다** — 클립이 없는 상태에서도
+배선이 성립해야 하고(이벤트는 클립에 붙는다), 클립을 갈아 끼워도 효과음 배선이
+안 날아간다. `ActorAnimation` 인스펙터에 idle/이동/공격/피격/사망 칸이 있고
+전부 `AudioManager.PlaySfx` 를 거친다 — 여기서 `AudioSource` 를 직접 두면 그
+개체만 설정 패널의 효과음 슬라이더를 무시하게 된다.
 
 `AudioManager`(Boot 영속 싱글턴)는 BGM/SFX `AudioSource` 두 개와 볼륨을 들고
 `PlayerPrefs` 에 저장한다. 배경음 칸은 타이틀/목장/바이옴 세 개이고
 `GameManager.LoadContentScene` 이 씬마다 `PlaySceneBgm` 을 부른다(같은 곡이면
 다시 시작하지 않는다 — 씬을 오갈 때마다 처음으로 튀면 끊긴 것처럼 들린다).
-**클립은 아직 하나도 없다.** 전부 null 이면 조용히 넘어간다.
+
+**클립 10개가 `Assets/Sounds/` 에 들어왔고 전부 꽂혀 있다**(2026-08-09 확인).
+칸이 여러 자산에 흩어져 있으니 소리가 안 나면 아래에서 찾는다:
+
+| 꽂힌 곳 | 클립 |
+|---|---|
+| `Boot.unity` 의 `AudioManager` | `로비씬사운드.mp3`(hubBgm) `바이옴기본사운드.mp3`(biomeBgm) |
+| `Boot.unity` UI | `UI클릭사운드.wav` `교배완료사운드.wav` |
+| `Player.prefab` 의 `ActorAnimation` | `캐릭터이동사운드.wav` `캐릭터공격사운드.ogg` |
+| `WildSlime.prefab` · `Resources/Companion.prefab` | `슬라임이동사운드.ogg` `슬라임사망사운드.wav` |
+| `Hub.unity` | `텔레포트사운드.wav` |
+| `SO/Species/slime_lava.asset` 의 `passiveSfx` | `화염슬라임사운드.wav` |
+
+빈 칸은 `titleBgm` 하나뿐이다(타이틀 화면은 무음). null 이면 조용히 넘어가므로
+"안 들린다" 와 "안 꽂혔다" 가 겉으로 같다 — 위 표부터 볼 것.
 
 ## 조작
 
 WASD 이동, **마우스 좌클릭** 근접공격(2026-08-08, 예전 Space — 이동이 WASD 라
-왼손만 바빴다), E 포획, I 인벤토리, Q/F/G 교배장, Z/X/C 목장 시설.
+왼손만 바빴다), E 포획, I 인벤토리, U 교배 패널, B 배낭, **J 도감**,
+Z/X/C 목장 시설, ESC 일시정지 메뉴, **H 화면 조작 안내 접기**. 에디터 전용으로 바이옴 씬에서 R 을 누르면 `StageMapGenerator`
+가 시드를 다시 굴려 지도를 새로 그린다(`#if UNITY_EDITOR`).
+**Q/F/G 교배장 키는 없어졌다** — 배치·선택·교배를 전부 U 패널로 합쳤다.
 좌클릭은 `EventSystem.current.IsPointerOverGameObject()` 로 UI 위를 걸러낸다 —
 안 걸면 인벤토리 슬롯을 누를 때마다 뒤에서 칼을 휘두른다.
 spec-001 다이브 트리거는 키 없음 (`OnTriggerEnter2D` + `CompareTag("Player")`).
+
+## 화면에 늘 떠 있는 것 (2026-08-09, 팀 QA 반영)
+
+씬을 고치지 않고 **코드로 만든다** — 전부 `HudRoot.Get()` 캔버스(Screen Space
+Overlay, 1920×1080 기준, sortingOrder 100) 밑이다. Boot 씬은 병합 사고로 UI 가
+통째로 사라진 전력이 있어(「씬 병합 함정」) 새 위젯은 씬에 안 넣는다.
+
+| 무엇 | 스크립트 | 자리 |
+|---|---|---|
+| 조작 안내(H 로 접기, `PlayerPrefs` 에 기억) | `ScreenInfoHud` | 오른쪽 아래 |
+| 바이옴·오염 티어·돌연변이/이로치 확률·천장까지 남은 수 | 〃 | 오른쪽 위 |
+| 도감(J) | `BestiaryPanel` | 화면 가운데 |
+| 배경음·효과음 슬라이더 | `MainVolumeControls` | 시작/일시정지 메뉴 왼쪽 아래 |
+| `PAUSED - Esc to resume` | `BootMenuUI` | 게임 중 메뉴 열렸을 때 위쪽 |
+
+- `ScreenInfoHud`/`BestiaryPanel` 은 `GameManager.BeginGame()` 이 띄운다 —
+  타이틀 화면에 겹치면 시작 버튼을 가린다.
+- 확률 숫자는 `MutantRollService.MutantChance(tier)`/`ShinyChance`/`PityRemaining`
+  에서 읽는다. **UI 쪽에 상수를 다시 적지 말 것** — 밸런스를 고치면 둘이 어긋난다.
+- **`BootCanvas` 는 월드 스페이스 캔버스다.** `GetWorldCorners()` 가 픽셀이 아니라
+  월드 좌표(화면 ±8.9 × ±5)를 돌려준다 — 배치를 확인할 때 픽셀로 착각하지 말 것.
+  픽셀 단위로 잡은 RectTransform 값은 캔버스 스케일이 1920px→화면폭으로 접어
+  주므로 그대로 써도 된다.
+- 도감은 `SlimeBestiary`(정적, `SaveSystem` 키 `bestiary`)가 기록한다. 올리는
+  자리는 `RunSatchel.Add`(포획 — 죽어서 몰수돼도 남아야 한다)와
+  `PlayerRoster.Add`(부화·회수 — 교배 전용 종은 여기가 유일한 경로) 둘이다.
+
+## 현상수배 (2026-08-09 신규)
+
+`WantedBoard`(정적) — 다이브 한 번에 강화 개체 한 마리. 스포너가 가장 위험한
+방(Nest, 없으면 마지막 방)에 세운다. 안내판은 목장 마차의 `WorldLabel` 에
+`BiomeDiveTrigger` 가 같이 찍는다(새 오브젝트를 안 세우려는 선택).
+
+- **스탯 공식을 복사하지 않는다.** `WildSlimeAgent.Initialize(species, tier+2)`
+  로 티어 배율·종 편향까지 끝낸 **뒤** `WantedBoard.Promote` 가 배율(HP ×3,
+  공격 ×1.6, 방어 ×1.5)을 한 번만 더 얹고 `Initialize(instance)` 로 다시 심어
+  체력바·그림을 갱신한다.
+- 잡았는지는 `SlimeInstance.bossFlag` 로 안다. `CaptureTool` 이 배낭에 담기
+  직전에 `ReportCaptured` 를 부른다 — 도감과 같은 규칙(추출 실패해도 인정).
+- 대상은 `slime_lava` 고정. **서식지(잿벌)로 스폰을 묶지 않았다** —
+  `BiomeDiveTrigger.forceDefaultBiome` 이 켜져 있어 지금 다이브는 전부 초원으로
+  가므로, 묶으면 수배가 영영 안 뜬다.
 
 ## 전투 수치
 
 플레이어 HP 30 / 공격 8. 야생 슬라임 HP 20(tier0) / 공격 5. 티어 배율
 `1 + 0.15×tier`. `defense` 필드는 존재하지만 데미지 계산에서 안 읽힘(미사용).
-Space 3타로 약화, 접촉 6회로 플레이어 사망. 낙인 스택 3당 티어 1, 티어 캡 5.
+좌클릭 3타로 약화, 접촉 6회로 플레이어 사망. 낙인 스택 3당 티어 1, 티어 캡 5.
+
+## 슬라임이 프롭에 끼는 문제 (2026-08-09)
+
+`Steering.IsWall` 이 예전엔 **타일맵 콜라이더만** 벽으로 쳤다. 그래서 씬에 손으로
+놓은 오브젝트(별 모양 장식, 휴식소, 교배장)에는 접선 회피가 안 걸려 슬라임이
+정면으로 밀며 제자리걸음을 했다. 판정을 타입이 아니라 **"움직이지 않는가"**
+로 바꿨다 — 리지드바디가 없거나 `Static` 이면 벽이다. 슬라임끼리·플레이어는
+Dynamic 이라 그대로 제외된다(같이 피하게 하면 무리가 대상을 놓고 빙빙 돈다).
+검증은 `Assets/Tests/PlayMode/SteeringTests.cs` 2건(정적 프롭은 꺾고, 동적
+개체는 안 꺾는다).
 
 ## 진영 (2026-08-08 신규)
 
@@ -317,10 +422,8 @@ reference resolution 1920×1080, match 0.5. UI 좌표는 전부 이 해상도 �
 타일이 PPU 32, 슬라임 스트립이 PPU 60~172 로 섞여 있어 어떤 ortho 값도 전부를
 정수 배율로 못 맞춘다. 맞추려면 PPU 를 하나로 통일하는 게 먼저다.
 
-`AudioManager`(Boot 씬 영속 싱글턴)가 BGM/SFX `AudioSource` 두 개와 볼륨을
-들고 있고 `PlayerPrefs` 에 저장한다. **실제 클립은 아직 하나도 없다** —
-`PlayBgm`/`PlaySfx` 와 `BootMenuUI.clickSfx` 는 클립을 꽂으면 바로 도는
-빈 틀이다(클립이 null 이면 조용히 무시).
+소리는 위 「애니메이션·효과음」 절에 몰아 적었다 — 클립이 어느 자산에 꽂혀
+있는지 표가 거기 있다.
 
 **EventSystem 은 Boot 에 하나뿐이다**(2026-08-08 정리). `PersistentRoot` 가
 붙어 씬을 넘어가도 살아남으므로 다른 씬은 갖지 않는다 — 각자 하나씩 두면
@@ -422,6 +525,24 @@ Import 직후 `.meta` 기본값이 프로젝트 관례와 다르다 — 고쳐�
 `spritePixelsToUnits: 100`→ 생성 시 넘긴 `size` 값과 동일하게(예: 32px 요청
 → PPU 32, 128px 아이콘 → PPU 128) — 안 맞추면 씬에서 크기가 어긋난다.
 고친 뒤 `Unity_ManageAsset Action=Import` 로 강제 재임포트.
+
+## "보이지 않는 벽" — Hub 안마당 경계 (2026-08-09 처리)
+
+Hub 는 카메라가 빌지 않게 Ground 를 안마당보다 훨씬 넓게 칠하는데(아래 참고),
+그 바깥이 **인덱스 0 = 평범한 풀밭 그림**이라 걸어갈 수 있어 보였다. 실제
+콜라이더는 안마당 경계에서 끝난다 — 이것이 팀 QA 가 말한 보이지 않는 벽이다
+(실측: 안마당 셀 `x ∈ [-8, 7]`, `y ∈ [-5, 4]`, 그 밖은 전부 `blocked=True`).
+
+경계 한 겹에 **울타리 그림을 깔아** 눈에 보이게 했다:
+
+- 타일 자산 `Tiles/hub/Tile_HubFence.asset` — 그림은
+  `Props/trees/Structure_Fence.png`(64px/PPU 64 = 정확히 한 칸),
+  `colliderType = Grid`. **Grid 여야 한다** — `Tile_Fence`(콜라이더 None)를
+  그대로 쓰면 그 56칸의 충돌이 사라져 밖으로 걸어 나가진다.
+- `Walls` 타일맵의 링 셀 56칸에 깔고 `TilemapRenderer.enabled = true` 로 켰다.
+  같은 타일맵의 나머지 칸은 그림 없는 `Tile_HubCollision` 이라 안 보인다.
+- 검증: `CompositeCollider2D.pathCount` 가 그대로 2, 안마당 안은 통과,
+  바깥은 차단.
 
 ## Hub 안마당 (2026-08-08 재시공)
 

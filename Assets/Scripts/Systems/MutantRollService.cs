@@ -16,6 +16,23 @@ namespace Game.Gameplay
 
         private static int _pityCounter;
 
+        /// <summary>지금 오염 티어에서 돌연변이가 뜰 확률(0~1).</summary>
+        /// <remarks>
+        /// 확률이 코드 안에만 있어 플레이어는 오염 티어를 올릴 이유를 알 수 없었다
+        /// (팀 QA, 2026-08-09: "스탯·돌연변이 확률이 보이게"). 화면에 띄우려면
+        /// 밖에서 읽을 수 있어야 한다 — 상수를 UI 쪽에 다시 적으면 둘이 어긋난다.
+        /// </remarks>
+        public static float MutantChance(int corruptionTier)
+        {
+            return Mathf.Clamp01(BaseChance + ChancePerTier * corruptionTier);
+        }
+
+        /// <summary>돌연변이가 뜬 개체가 이로치까지 될 확률(0~1).</summary>
+        public static float ShinyChance => ShinyChanceWithinMutant;
+
+        /// <summary>천장까지 남은 굴림 수. 0 이면 다음 포획은 무조건 돌연변이다.</summary>
+        public static int PityRemaining => Mathf.Max(0, PityThreshold - _pityCounter);
+
         public static bool TryRollMutant(int corruptionTier)
         {
             float chance = BaseChance + ChancePerTier * corruptionTier;

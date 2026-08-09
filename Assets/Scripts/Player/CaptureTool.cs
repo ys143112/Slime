@@ -44,6 +44,10 @@ namespace Game.Gameplay
                 // spec-005: 돌연변이가 뜨면 그 안에서 이로치를 다시 굴린다.
                 MutantRollService.RollMutantAndShiny(agent.Instance, corruptionTier, biomeId);
 
+                // 수배 대상이면 이 자리에서 지운다. 배낭에 담기는 시점이라
+                // 추출에 실패해도 "잡았다" 는 남는다 — 도감과 같은 규칙이다.
+                WantedBoard.ReportCaptured(agent.Instance);
+
                 // spec-011: 런 중 포획은 곧바로 보유 목록에 들어가지 않는다.
                 // 추출에 성공해야 확정되고, 죽으면 몰수된다.
                 RunSatchel.Add(agent.Instance);

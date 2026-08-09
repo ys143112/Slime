@@ -19,6 +19,10 @@ namespace Game.Gameplay
         // 개체에서만 켜진다 - 이로치는 항상 돌연변이다(그 역은 아니다).
         public bool shinyFlag;
 
+        // 현상수배로 뜬 강화 개체인가. 잡으면 수배가 하나 지워진다 — 잡은 뒤에도
+        // 남는 값이라 개체가 들고 있어야 한다(WantedBoard.ReportCaptured).
+        public bool bossFlag;
+
         // 개체마다 다를 수 있어 종이 아니라 개체가 들고 있다. 흰색이면 색 변화
         // 없음이다(SpriteRenderer.color 의 항등원이라 그냥 곱해도 무해하다).
         public Color shinyTint = Color.white;
@@ -36,6 +40,7 @@ namespace Game.Gameplay
             capturedBiomeId = string.Empty;
             shinyFlag = false;
             shinyTint = Color.white;
+            bossFlag = false;
         }
     }
 }

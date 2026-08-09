@@ -54,6 +54,10 @@ namespace Game.Gameplay
         {
             if (string.IsNullOrEmpty(_activeContentScene))
             {
+                // 조작 안내와 돌연변이 확률은 게임에 들어간 뒤에만 띄운다 —
+                // 타이틀 화면에 겹치면 시작 버튼을 가린다.
+                ScreenInfoHud.Show();
+                BestiaryPanel.Show();
                 LoadContentScene(hubSceneName);
             }
         }

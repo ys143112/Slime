@@ -42,8 +42,38 @@ namespace Game.Gameplay
             AttackCooldownBar.Show(this);
             if (swingArc != null)
             {
+                FitSwingArcToHitbox();
                 swingArc.SetActive(false);
             }
+        }
+
+        /// <summary>궤적 그림을 판정 원 지름에 맞춘다.</summary>
+        /// <remarks>
+        /// 그림 크기가 씬에서 손으로 정해져 있어 판정(반지름 0.6, 지름 1.2유닛)보다
+        /// 훨씬 컸다 — 그림에 닿았는데 안 맞는 자리가 생겨 표시가 거짓말을 한다
+        /// (팀 QA, 2026-08-09). 배율을 상수로 박지 않고 스프라이트 실제 크기에서
+        /// 계산하는 이유: <see cref="hitboxRadius"/> 든 그림이든 한쪽만 바뀌어도
+        /// 다시 어긋나기 때문이다.
+        /// </remarks>
+        private void FitSwingArcToHitbox()
+        {
+            // 꺼진 오브젝트의 렌더러는 bounds 가 0 이다. 재는 동안만 켠다.
+            bool wasActive = swingArc.activeSelf;
+            swingArc.SetActive(true);
+
+            var renderer = swingArc.GetComponentInChildren<SpriteRenderer>();
+            float widest = renderer != null ? Mathf.Max(renderer.bounds.size.x, renderer.bounds.size.y) : 0f;
+            swingArc.SetActive(wasActive);
+
+            if (widest <= 0.0001f)
+            {
+                return;
+            }
+
+            // 지금 크기 대비 배율이라 자식이 자기 스케일을 들고 있어도 맞는다.
+            // Awake 에서 한 번만 부르므로 누적되지 않는다.
+            float factor = hitboxRadius * 2f / widest;
+            swingArc.transform.localScale *= factor;
         }
 
         // EventSystem 이 없으면(씬 배선 사고) 클릭을 통째로 막지 않는다 —

@@ -122,6 +122,7 @@ namespace Game.Gameplay
                 // 교배 UI 를 열 때 인벤토리(I)가 떠 있으면 같이 닫는다 — 두 창이
                 // 겹치면 어느 쪽이 입력을 받는지 알 수 없다.
                 InventoryUI.Instance?.Close();
+                BestiaryPanel.CloseIfOpen();
             }
 
             SetVisible(next);

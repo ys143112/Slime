@@ -23,6 +23,10 @@ namespace Game.Gameplay
             }
 
             Held.Add(instance);
+
+            // 도감은 배낭 단계에서 올린다 — 죽어서 몰수돼도 "봤다" 는 사실은
+            // 남아야 한다.
+            SlimeBestiary.Record(instance);
         }
 
         // 추출 지점 도달 — 담아온 전부를 보유 목록에 확정한다.

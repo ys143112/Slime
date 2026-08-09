@@ -39,7 +39,10 @@ namespace Game.Gameplay
             {
                 // 목적지만. "밟으면 들어간다" 는 안내는 뺐다 — 포털 그림 위에
                 // 서면 바로 들어가지므로 한 번 겪으면 안다.
-                _label.text = $"Dive: {name}";
+                //
+                // 현상수배는 여기 같이 붙인다. 목장에 안내판을 새로 세우면 씬을
+                // 고쳐야 하는데, 다이브 직전에 목표를 읽는 자리가 바로 여기다.
+                _label.text = $"Dive: {name}\n{WantedBoard.PosterLine()}";
             }
 
             if (destinationText != null)

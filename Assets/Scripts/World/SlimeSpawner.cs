@@ -106,6 +106,8 @@ namespace Game.Gameplay
                 spawned += SpawnInRoom(layout.SpawnCandidates(i), count, tier, pool, placed, _spawned);
             }
 
+            SpawnWantedBoss(layout, placed);
+
             Debug.Log($"slime_spawner_done count={spawned}");
         }
 
@@ -145,6 +147,63 @@ namespace Game.Gameplay
             }
 
             return spawned;
+        }
+
+        /// <summary>현상수배 대상을 지도에 한 마리 세운다.</summary>
+        /// <remarks>
+        /// 가장 위험한 방(Nest, 없으면 마지막 방)에 놓는다 — 시작 방에 세우면
+        /// 다이브하자마자 마주쳐 목표가 아니라 사고가 된다.
+        /// </remarks>
+        private void SpawnWantedBoss(StageLayout layout, List<Vector2> placed)
+        {
+            string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : null;
+            if (wildSlimePrefab == null || !WantedBoard.PendingForBiome(biomeId))
+            {
+                return;
+            }
+
+            int roomIndex = -1;
+            for (int i = layout.Rooms.Count - 1; i >= 0; i--)
+            {
+                if (layout.Rooms[i].pattern == RoomPattern.Nest)
+                {
+                    roomIndex = i;
+                    break;
+                }
+            }
+
+            if (roomIndex < 0)
+            {
+                roomIndex = layout.Rooms.Count - 1;
+            }
+
+            if (roomIndex < 0)
+            {
+                return;
+            }
+
+            List<Vector2Int> candidates = layout.SpawnCandidates(roomIndex);
+            if (candidates.Count == 0)
+            {
+                return;
+            }
+
+            Vector2Int cell = candidates[UnityEngine.Random.Range(0, candidates.Count)];
+            Vector2 world = generator.GroundTilemap.GetCellCenterWorld(new Vector3Int(cell.x, cell.y, 0));
+
+            GameObject boss = Instantiate(wildSlimePrefab, world, Quaternion.identity);
+            var agent = boss.GetComponent<WildSlimeAgent>();
+            if (agent != null)
+            {
+                // 티어 배율·종 편향은 이 호출이 맡는다. 보스 배율은 그 결과 위에
+                // 한 번만 더 얹는다(WantedBoard.Promote).
+                agent.Initialize(WantedBoard.TargetSpeciesId,
+                    CorruptionTierFor(layout.Rooms[roomIndex].biomeId) + WantedBoard.BossTierBonus);
+                WantedBoard.Promote(agent);
+            }
+
+            placed.Add(world);
+            _spawned.Add(boss);
         }
 
         private bool TooClose(Vector2 point, List<Vector2> placed)

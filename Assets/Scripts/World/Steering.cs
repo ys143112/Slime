@@ -82,9 +82,27 @@ namespace Game.Gameplay
             return nearest < float.MaxValue;
         }
 
+        /// <summary>피해서 돌아가야 하는 고정 장애물인가.</summary>
+        /// <remarks>
+        /// 예전엔 타일맵 콜라이더만 벽으로 쳤다. 그래서 씬에 손으로 놓은 오브젝트
+        /// (별 모양 장식, 휴식소 웅덩이, 교배장 같은 것)에는 접선 회피가 안 걸려
+        /// 슬라임이 정면으로 밀며 제자리걸음을 했다 — "별 오브젝트에 끼여서 안
+        /// 움직인다"(팀 QA, 2026-08-09).
+        ///
+        /// 판정 기준을 타입이 아니라 <b>움직이지 않는가</b>로 바꾼다. 리지드바디가
+        /// 없거나 Static 이면 밀어도 안 비키므로 돌아가는 수밖에 없다. 슬라임끼리
+        /// (Dynamic)와 플레이어는 그대로 제외된다 — 서로 밀어내면 그만이고, 여기서
+        /// 같이 피하게 하면 무리 전체가 대상을 놓고 빙빙 돈다.
+        /// </remarks>
         private static bool IsWall(Collider2D collider)
         {
-            return collider is TilemapCollider2D || collider is CompositeCollider2D;
+            if (collider.isTrigger)
+            {
+                return false;
+            }
+
+            Rigidbody2D body = collider.attachedRigidbody;
+            return body == null || body.bodyType == RigidbodyType2D.Static;
         }
     }
 }

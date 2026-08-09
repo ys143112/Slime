@@ -48,6 +48,12 @@ namespace Game.Gameplay
             }
 
             _roster.Add(instance);
+
+            // 부화·회수로 들어온 개체도 도감에 올린다. 포획 경로는 배낭이 이미
+            // 올리지만, 교배로만 나오는 종(방패·무지개)은 여기가 유일한 자리다.
+            // 같은 종을 다시 넣어도 도감 쪽에서 걸러진다.
+            SlimeBestiary.Record(instance);
+
             SaveSystem.Save(SaveKey, _roster);
             RosterChanged?.Invoke();
         }

@@ -21,6 +21,8 @@ namespace Game.Gameplay
         private GameObject _background;
         private GameObject _buttons;
         private GameObject _startButton;
+        private MainVolumeControls _volume;
+        private Text _pausedLabel;
         private bool _inGame;
         private bool _menuOpen = true;
 
@@ -52,6 +54,32 @@ namespace Game.Gameplay
             Wire("HelpButton", OnHelp);
             Wire("SettingsButton", OnSettings);
             Wire("QuitButton", OnQuit);
+
+            // 볼륨은 설정 안이 아니라 이 화면에도 있어야 한다(팀 QA, 2026-08-09).
+            // 버튼 묶음과 같은 부모에 붙여 메뉴와 함께 켜지고 꺼지게 한다.
+            Transform host = _buttons != null ? _buttons.transform.parent : transform;
+            _volume = MainVolumeControls.Build(host);
+
+            _pausedLabel = BuildPausedLabel(host);
+        }
+
+        // 일시정지가 이미 되고 있는데 화면에 아무 말이 없어 "멈춘 건지 멈춘 척인지"
+        // 알 수 없었다(팀 QA, 2026-08-09). 게임 중에 메뉴가 떠 있을 때만 띄운다.
+        private static Text BuildPausedLabel(Transform parent)
+        {
+            Text text = HudRoot.Label("PausedLabel", parent, 34);
+            text.text = "PAUSED  -  Esc to resume";
+            text.alignment = TextAnchor.UpperCenter;
+
+            var rect = text.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 1f);
+            rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(0f, -40f);
+            rect.sizeDelta = new Vector2(700f, 50f);
+
+            text.gameObject.SetActive(false);
+            return text;
         }
 
         private void Update()
@@ -86,6 +114,16 @@ namespace Game.Gameplay
             if (_startButton != null)
             {
                 _startButton.SetActive(!_inGame);
+            }
+
+            if (_volume != null)
+            {
+                _volume.gameObject.SetActive(visible);
+            }
+
+            if (_pausedLabel != null)
+            {
+                _pausedLabel.gameObject.SetActive(visible && _inGame);
             }
 
             if (!visible)
