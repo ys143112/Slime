@@ -1,0 +1,303 @@
+fileFormatVersion: 2
+guid: 056ddf313d460214b9cf89a5fc55c832
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2452168697605698808
+    second: slime_bog__Attack__north_0
+  - first:
+      213: -166919804693105586
+    second: slime_bog__Attack__north_1
+  - first:
+      213: -5313080984025322829
+    second: slime_bog__Attack__north_2
+  - first:
+      213: 5395507723891464029
+    second: slime_bog__Attack__north_3
+  - first:
+      213: 8839433222842901245
+    second: slime_bog__Attack__north_4
+  - first:
+      213: 7755171664935285230
+    second: slime_bog__Attack__north_5
+  - first:
+      213: -9217987782889065205
+    second: slime_bog__Attack__north_6
+  - first:
+      213: -1581128022193447021
+    second: slime_bog__Attack__north_7
+  - first:
+      213: 4222508159329944841
+    second: slime_bog__Attack__north_8
+  - first:
+      213: 4603489232840912692
+    second: slime_bog__Attack__north_9
+  - first:
+      213: 1486188372742995742
+    second: slime_bog__Attack__north_10
+  - first:
+      213: -1879586212526523781
+    second: slime_bog__Attack__north_11
+  - first:
+      213: 52433467342322971
+    second: slime_bog__Attack__north_12
+  - first:
+      213: -371124694775741726
+    second: slime_bog__Attack__north_13
+  - first:
+      213: 8091295033778764478
+    second: slime_bog__Attack__north_14
+  - first:
+      213: -366775169827038253
+    second: slime_bog__Attack__north_15
+  - first:
+      213: 4154139703094969674
+    second: slime_bog__Attack__north_16
+  - first:
+      213: 1522320261262702910
+    second: slime_bog__Attack__north_17
+  - first:
+      213: 8423668279987936681
+    second: slime_bog__Attack__north_18
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 61
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: slime_bog__Attack__north_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 92
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f4be16307ad70220800000000000000
+      internalID: 2452168697605698808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_bog__Attack__north_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 92
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e443a4f625bfeadf0800000000000000
+      internalID: -166919804693105586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_bog__Attack__north_2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 92
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3baa944bef42446b0800000000000000
+      internalID: -5313080984025322829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_bog__Attack__north_3
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 92
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d575d6130b1b0ea40800000000000000
+      internalID: 5395507723891464029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime_bog__Attack__north_4
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 0
+        width: 92
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df2665fcea9fbaa70800000000000000
+      internalID: 8839433222842901245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      slime_bog__Attack__north_0: 2452168697605698808
+      slime_bog__Attack__north_1: -166919804693105586
+      slime_bog__Attack__north_10: 1486188372742995742
+      slime_bog__Attack__north_11: -1879586212526523781
+      slime_bog__Attack__north_12: 52433467342322971
+      slime_bog__Attack__north_13: -371124694775741726
+      slime_bog__Attack__north_14: 8091295033778764478
+      slime_bog__Attack__north_15: -366775169827038253
+      slime_bog__Attack__north_16: 4154139703094969674
+      slime_bog__Attack__north_17: 1522320261262702910
+      slime_bog__Attack__north_18: 8423668279987936681
+      slime_bog__Attack__north_2: -5313080984025322829
+      slime_bog__Attack__north_3: 5395507723891464029
+      slime_bog__Attack__north_4: 8839433222842901245
+      slime_bog__Attack__north_5: 7755171664935285230
+      slime_bog__Attack__north_6: -9217987782889065205
+      slime_bog__Attack__north_7: -1581128022193447021
+      slime_bog__Attack__north_8: 4222508159329944841
+      slime_bog__Attack__north_9: 4603489232840912692
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

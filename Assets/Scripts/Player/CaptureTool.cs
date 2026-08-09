@@ -30,6 +30,7 @@ namespace Game.Gameplay
                 if (!agent.Instance.weakened)
                 {
                     Debug.Log("capture_failed: 대상이 약화되지 않았습니다.");
+                    PublishCaptureFailed("target is not weakened.");
                     continue;
                 }
 
@@ -39,18 +40,17 @@ namespace Game.Gameplay
                 int corruptionTier = BiomeStigmaManager.Instance != null
                     ? BiomeStigmaManager.Instance.GetCorruptionTier(biomeId)
                     : 0;
-                if (MutantRollService.TryRollMutant(corruptionTier))
-                {
-                    MutantRollService.ApplyReversal(agent.Instance);
-                }
 
-                if (PlayerRoster.Instance == null)
-                {
-                    Debug.LogError("CaptureTool: PlayerRoster 인스턴스가 없어 포획을 기록할 수 없습니다.");
-                    return;
-                }
+                // spec-005: 돌연변이가 뜨면 그 안에서 이로치를 다시 굴린다.
+                MutantRollService.RollMutantAndShiny(agent.Instance, corruptionTier, biomeId);
 
-                PlayerRoster.Instance.Add(agent.Instance);
+                // 수배 대상이면 이 자리에서 지운다. 배낭에 담기는 시점이라
+                // 추출에 실패해도 "잡았다" 는 남는다 — 도감과 같은 규칙이다.
+                WantedBoard.ReportCaptured(agent.Instance);
+
+                // spec-011: 런 중 포획은 곧바로 보유 목록에 들어가지 않는다.
+                // 추출에 성공해야 확정되고, 죽으면 몰수된다.
+                RunSatchel.Add(agent.Instance);
                 Destroy(hit.gameObject);
 
                 EventBus.Publish(new GameEvent(GameEventId.SlimeCaptured, biomeId, agent.Instance));
@@ -58,6 +58,13 @@ namespace Game.Gameplay
             }
 
             Debug.Log("capture_failed: 범위 안에 약화된 슬라임이 없습니다.");
+            PublishCaptureFailed("no weakened slime in range.");
+        }
+
+        private static void PublishCaptureFailed(string reason)
+        {
+            string biomeId = GameManager.Instance != null ? GameManager.Instance.CurrentBiomeId : string.Empty;
+            EventBus.Publish(new GameEvent(GameEventId.SlimeCaptureFailed, biomeId, reason));
         }
     }
 }

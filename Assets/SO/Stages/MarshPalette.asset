@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07e5c617b47e4e545886544adb5dedf4, type: 3}
+  m_Name: MarshPalette
+  m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.StagePalette
+  biomeId: biome_marsh
+  wangBlend:
+  - {fileID: 11400000, guid: f538730e0e3c3a24ba279828a8aa2a7a, type: 2}
+  - {fileID: 11400000, guid: baf8ed9d5d03e7542ae2e73ae03671fc, type: 2}
+  - {fileID: 11400000, guid: 17b43586828043644b382f3c339b04a6, type: 2}
+  - {fileID: 11400000, guid: 238d2f3acae1db240a1a6d4fcc7c6270, type: 2}
+  - {fileID: 11400000, guid: 97a4e0d3c17b22f44968ca68567fa421, type: 2}
+  - {fileID: 11400000, guid: cfc7321e236e66740839a750c7bfc26b, type: 2}
+  - {fileID: 11400000, guid: 602bcbca089c92546b78bee364c733c8, type: 2}
+  - {fileID: 11400000, guid: 7dd85acfeabbfba4da1843a44e82e0ec, type: 2}
+  - {fileID: 11400000, guid: 3af68e1cacd4ac94ab834781530ac7bb, type: 2}
+  - {fileID: 11400000, guid: b5c15cb47182dd64cb506bce369422d7, type: 2}
+  - {fileID: 11400000, guid: 110c7364c376b0c46803b2f53214abe7, type: 2}
+  - {fileID: 11400000, guid: a618ca3991034f144a08678d3b2ea453, type: 2}
+  - {fileID: 11400000, guid: fadfa3741178fdf4da23d8b0b4f3d71e, type: 2}
+  - {fileID: 11400000, guid: 16ab359d31577d24d83aa04c080d9f87, type: 2}
+  - {fileID: 11400000, guid: 42d188db76f621845a1f1e3177a30161, type: 2}
+  - {fileID: 11400000, guid: eb0774f10e04e3940822522e5fc781d5, type: 2}
+  wangBlendCollidable:
+  - {fileID: 11400000, guid: 39498edf9f7b220428765d614169af53, type: 2}
+  - {fileID: 11400000, guid: f6b7f6192f019a9459c1803e93d931e1, type: 2}
+  - {fileID: 11400000, guid: 89b99a2d2248510439d84511782f62a2, type: 2}
+  - {fileID: 11400000, guid: 551d8568ab0815a4c96ce88ff6506331, type: 2}
+  - {fileID: 11400000, guid: a7c691391c3322b4f9862ef092032a0b, type: 2}
+  - {fileID: 11400000, guid: e291ad813bf3f934b88c24b04d00a33f, type: 2}
+  - {fileID: 11400000, guid: aa20d6792d555314aba127865bfe1ec3, type: 2}
+  - {fileID: 11400000, guid: 21247c7549698644aae5e04aac24a8a4, type: 2}
+  - {fileID: 11400000, guid: 6f722e90bc9a32b4fa8bf3b7c92abce1, type: 2}
+  - {fileID: 11400000, guid: 7bc3d4c9eb549cf4bbb3a44280793da3, type: 2}
+  - {fileID: 11400000, guid: ed5e3064e1a892446ae8fa6a00c6e249, type: 2}
+  - {fileID: 11400000, guid: 9fdcf2e1873c081488e3c36baedf911d, type: 2}
+  - {fileID: 11400000, guid: cd591fcfddd24b542b84b7e9adb0eba5, type: 2}
+  - {fileID: 11400000, guid: a6845ba5384edcb4aae5257b740ab5f1, type: 2}
+  - {fileID: 11400000, guid: 184fe28cf765f7a45bfe0fcb541e952b, type: 2}
+  - {fileID: 11400000, guid: e1640d644ed0d6a4499589a6b9c6a34c, type: 2}
+  wallShadow: {fileID: 11400000, guid: 98db848664c6f5d4493a66fce79061ab, type: 2}
+  invisibleWall: {fileID: 11400000, guid: 98db848664c6f5d4493a66fce79061ab, type: 2}
+  fogLevels:
+  - {fileID: 11400000, guid: 0d4bae9be30ef454a925e6039abbea84, type: 2}
+  - {fileID: 11400000, guid: f7f47a9c2d48bf34289744bddafdb613, type: 2}
+  - {fileID: 11400000, guid: e0db9c9ce27688148a09d2245b961947, type: 2}
+  - {fileID: 11400000, guid: e32930da5203cab469d0d7c720df5559, type: 2}
+  - {fileID: 11400000, guid: 7c311922c062a184787864a838b06c41, type: 2}
+  decorTiles:
+  - {fileID: 11400000, guid: 2123f7ccab15ec44e812280f77c442ad, type: 2}
+  - {fileID: 11400000, guid: 35847106e505b7e479a6ca53fefd9fa7, type: 2}
+  - {fileID: 11400000, guid: 7fd8abd16655df34caec364733a1dcd7, type: 2}
+  - {fileID: 11400000, guid: ed0937f6968044a49ba5c9f1ad128020, type: 2}
+  treeProps:
+  - {fileID: 11400000, guid: a2e4320460bf87046940aecee4df6ae9, type: 2}
+  - {fileID: 11400000, guid: 9d47ee037c9d26a409624a3f4a3d1141, type: 2}
+  - {fileID: 11400000, guid: c7557531a0f93374387b8d9eb8398425, type: 2}
+  - {fileID: 11400000, guid: 788c7aafc62c56b4997038f5efbee346, type: 2}
+  - {fileID: 11400000, guid: 56ec4743b8f607749ae1df69a46453a2, type: 2}
+  - {fileID: 11400000, guid: cf78496ecd5b54b4fa0aefea863d9768, type: 2}
+  - {fileID: 11400000, guid: 3f4dc90056ca19342b06da0edb49a6c5, type: 2}
+  - {fileID: 11400000, guid: ec431ad41193dd040807193047050668, type: 2}
+  - {fileID: 11400000, guid: b7450357c3a3baf40b845ef960ea80b5, type: 2}
+  - {fileID: 11400000, guid: 1cf6e27b419c0c94d8a105b9b14d2d3a, type: 2}

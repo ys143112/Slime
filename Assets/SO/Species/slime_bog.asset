@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51a34b6d9142cb2419c448f9b4f56ed8, type: 3}
+  m_Name: slime_bog
+  m_EditorClassIdentifier: Game.Gameplay::Game.Gameplay.SlimeSpecies
+  speciesId: slime_bog
+  displayName: 늪지 슬라임
+  defaultSprite: {fileID: -3604789384580770694, guid: b61a5e4dd0843634dbadb5077a6f33da, type: 3}
+  shinySprite: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: a78a04124af357b4b96511fd2df531f4, type: 2}
+  canBeShiny: 1
+  biomeShinyTints: []
+  shinyTints:
+  - {r: 0.3, g: 0.7, b: 0.55, a: 1}
+  - {r: 0.6, g: 0.75, b: 0.25, a: 1}
+  - {r: 0.25, g: 0.55, b: 0.7, a: 1}
+  maxHpMultiplier: 1
+  attackMultiplier: 1
+  defenseMultiplier: 1
+  speedMultiplier: 1
+  passive: 3
+  passiveRadius: 3
+  passiveInterval: 1.5
+  passiveAmount: 0.55
+  breedingOnly: 0

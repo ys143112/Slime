@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa6c7b8b37ae06f4e8fc5c2bcbbdfe9d, type: 3}
+  m_Name: BiomeCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.BiomeCatalog
+  entries:
+  - biomeId: biome_default
+    displayName: "\uCD08\uC6D0"
+    sceneName: Biome
+    speciesPool:
+    - slime_basic
+  - biomeId: biome_ashfall
+    displayName: "\uC7BF\uBC8C"
+    sceneName: BiomeAshfall
+    speciesPool:
+    - slime_basic
+    - slime_lava
+  - biomeId: biome_marsh
+    displayName: "\uB2AA\uC9C0"
+    sceneName: BiomeMarsh
+    speciesPool:
+    - slime_basic
+    - slime_bog
