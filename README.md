@@ -6,7 +6,7 @@
 
 **귀여운 슬라임을 잡고, 짝지어 키우고, 수배된 보스 슬라임을 잡아요!**
 
-[![지금 바로 플레이](https://img.shields.io/badge/▶_지금_바로_플레이-브라우저에서_무료-4CAF50?style=for-the-badge)](https://ys143112.github.io/Slime/)
+[![지금 바로 플레이](https://img.shields.io/badge/▶_지금_바로_플레이-브라우저에서_무료-4CAF50?style=for-the-badge)](https://juglegame.github.io/Slime/)
 [![Unity](https://img.shields.io/badge/Unity-6000.5.5f1-000000?style=flat-square&logo=unity)](https://unity.com/)
 [![2D URP](https://img.shields.io/badge/2D-URP-blue?style=flat-square)](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest)
 
